@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools - LowGPA to Germany</title>
+    <meta name="description" content="German Grade Calculator and other tools for students.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="de/index.html" class="nav-link">Germany</a>
+                <a href="path.html" class="nav-link">Path</a>
+                <a href="community.html" class="nav-link">Connect</a>
+                <a href="resources.html" class="nav-link">Resources</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <div class="badge">Utilities</div>
+                <h1>Tools</h1>
+                <p>Simple utilities to help you plan.</p>
+
+                <div class="grid grid-2" style="margin-top: var(--spacing-lg);">
+
+                    <!-- GPA Calculator -->
+                    <div class="card">
+                        <h3>German Grade Calculator</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Uses the Modified Bavarian Formula. Lower is
+                            better (1.0 = Best, 4.0 = Just Pass).</p>
+
+                        <form id="gpaForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <label style="font-weight: 500; font-size: 0.9rem;">Your Score (CGPA/%)</label>
+                                <input type="number" step="0.01" id="myScore" placeholder="e.g. 7.5"
+                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-light); border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+                            <div>
+                                <label style="font-weight: 500; font-size: 0.9rem;">Max Possible Score</label>
+                                <input type="number" step="0.01" id="maxScore" value="10"
+                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-light); border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+                            <div>
+                                <label style="font-weight: 500; font-size: 0.9rem;">Min Passing Score</label>
+                                <input type="number" step="0.01" id="minScore" value="4"
+                                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-light); border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+
+                            <button type="button" id="calcBtn" class="btn btn-primary"
+                                style="margin-top: 0.5rem;">Calculate</button>
+                        </form>
+
+                        <div id="resultArea"
+                            style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-accent-light); border-radius: var(--radius-sm); display: none;">
+                            <span style="font-weight: 600; color: var(--accent-primary);">German Grade:</span>
+                            <span id="gradeResult" style="font-weight: 800; font-size: 1.5rem; display: block;"></span>
+                            <p id="gradeComment"
+                                style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-secondary);"></p>
+                        </div>
+                    </div>
+
+                    <!-- Other Tools -->
+                    <div>
+                        <div class="card" style="margin-bottom: var(--spacing-md);">
+                            <h3>Semester Fee / Blocked Account</h3>
+                            <p>Current Blocked Account Requirement: <strong>€11,208 / year</strong> (as of 2026).</p>
+                            <p>Semester Contribution: ~€150 - €350 / semester.</p>
+                        </div>
+
+                        <div class="card">
+                            <h3>University Check</h3>
+                            <p>Use Anabin or DAAD to check if your university is H+ (recognized).</p>
+                            <br>
+                            <a href="https://anabin.kmk.org/anabin.html" target="_blank" class="btn btn-secondary">Go to
+                                Anabin</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="logo" style="font-size: 1.2rem;">LowGPA to Germany</div>
+                    <p class="copyright">© 2026 LowGPA to Germany. All Rights Reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="about.html">About</a>
+                    <a href="disclaimer.html">Disclaimer</a>
+                    <a href="community.html">Connect</a>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('calcBtn').addEventListener('click', function () {
+            const myScore = parseFloat(document.getElementById('myScore').value);
+            const maxScore = parseFloat(document.getElementById('maxScore').value);
+            const minScore = parseFloat(document.getElementById('minScore').value);
+
+            if (isNaN(myScore) || isNaN(maxScore) || isNaN(minScore)) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            // Bavarian Formula: 1 + 3 * ((Pmax - P) / (Pmax - Pmin))
+            let result = 1 + 3 * ((maxScore - myScore) / (maxScore - minScore));
+
+            // Clamp strictly? Usually grades act weird if outside bounds, but let's just show raw.
+            // If result < 1, it's better than 1.0 (rare but possible with bonus).
+            // If result > 4, it's a fail.
+
+            const resultArea = document.getElementById('resultArea');
+            const gradeDisplay = document.getElementById('gradeResult');
+            const comment = document.getElementById('gradeComment');
+
+            resultArea.style.display = 'block';
+            gradeDisplay.textContent = result.toFixed(2);
+
+            if (result <= 1.5) comment.textContent = "Excellent. You can apply almost anywhere.";
+            else if (result <= 2.5) comment.textContent = "Good. Most public universities are open to you.";
+            else if (result <= 3.0) comment.textContent = "Average/Low. Restricted options. Focus on smaller cities/unis.";
+            else comment.textContent = "Very Low / Fail. Extremely difficult for Public Universities.";
+        });
+    </script>
+</body>
+
+</html>
