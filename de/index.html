@@ -80,7 +80,6 @@
             <nav class="nav-links">
                 <a href="../index.html" class="nav-link">Home</a>
                 <a href="../de/index.html" class="nav-link active">Germany</a>
-                <a href="../path.html" class="nav-link">Path</a>
                 <a href="../community.html" class="nav-link">Connect</a>
                 <a href="../resources.html" class="nav-link">Resources</a>
             </nav>
@@ -141,35 +140,48 @@
             <div class="container">
                 <div class="text-center" style="margin-bottom: 3rem;">
                     <h2>The Logic of Admission</h2>
-                    <p>German admissions are binary. You either meet the requirement, or you don't. <br>Your "passion"
-                        and SOP rarely override a lack of ECTS credits.</p>
+                    <p style="max-width: 600px; margin: 0 auto;">German admissions are binary. Your "passion" rarely
+                        overrides a lack of ECTS credits. Before applying, you must audit your own profile.</p>
                 </div>
 
-                <div class="grid grid-3">
-                    <div class="card">
+                <div class="grid grid-3" style="align-items: start;">
+                    <!-- Card 1: ECTS -->
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
                         <h3>1. ECTS Matching</h3>
-                        <p><strong>The #1 Reason for Rejection.</strong></p>
-                        <p style="font-size: 0.95rem;">If a Master's program requires "30 Credits in Math", and you have
-                            28, you are rejected. Computer Science programs often reject IT grads because they lack
-                            "Theoretical CS" credits.</p>
+                        <p style="font-size: 0.95rem; flex-grow: 1;"><strong>The #1 Reason for Rejection.</strong><br>
+                            Universities check if your Bachelor's subjects match their Master's requirements. IT grads
+                            are often rejected from CS for lacking "Theoretical CS". <strong>Relevance > GPA.</strong>
+                        </p>
+                        <a href="../tools.html#ects" class="btn btn-sm btn-secondary">Calculate ECTS Credits</a>
                     </div>
-                    <div class="card">
+
+                    <!-- Card 2: GPA -->
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
                         <h3>2. The Grade (NC)</h3>
-                        <p><strong>Numerus Clausus.</strong></p>
-                        <p style="font-size: 0.95rem;">Many courses have a hard cutoff (e.g., 2.5 German Grade). If you
-                            have 2.6, the computer filters you out before a human even reads your name. <a
-                                href="../tools.html"
-                                style="color: var(--accent-primary); text-decoration: underline;">Check your grade
-                                here.</a></p>
+                        <p style="font-size: 0.95rem; flex-grow: 1;"><strong>Numerus Clausus (NC).</strong><br>
+                            Many courses have a hard cutoff (e.g., 2.5 German Grade). If you have 2.6, the computer
+                            filters you out immediately.</p>
+                        <a href="../tools.html" class="btn btn-sm btn-secondary">Calculate German GPA</a>
                     </div>
-                    <div class="card">
+
+                    <!-- Card 3: Language -->
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
                         <h3>3. Language</h3>
-                        <p><strong>The Filter.</strong></p>
-                        <p style="font-size: 0.95rem;">English C1 (IELTS 6.5) is usually enough, though 7.0 is ideal.
-                            But having German A2/B1 on
-                            your CV typically boosts your profile significantly for "mixed" courses where competition is
-                            lower.</p>
+                        <p style="font-size: 0.95rem; flex-grow: 1;"><strong>The Tie-Breaker.</strong><br>
+                            English C1 (IELTS 6.5) is the baseline. But German A2/B1 is usually what gets "average"
+                            profiles admitted into competitive mixed-language courses.</p>
+                        <a href="../resources.html" class="btn btn-text"
+                            style="align-self: center; margin-top: 1rem; font-size: 0.85rem;">See Language Resources
+                            &rarr;</a>
                     </div>
+                </div>
+
+                <!-- Subtle Identity Check Note -->
+                <div
+                    style="margin-top: 2rem; padding-top: 2rem; border-top: 1px dashed var(--border-light); text-align: center; color: var(--text-secondary); font-size: 0.95rem;">
+                    <strong>Phase 0 Self-Audit:</strong> Be honest with your starting point. <br>
+                    <span style="opacity: 0.8;">If you have a degree, you are a postgraduate applicant. Don't compare
+                        your GPA blindly; look for subject relevance.</span>
                 </div>
             </div>
         </section>
@@ -250,6 +262,14 @@
                             <p style="font-size: 0.9rem; margin-top: 0.5rem;">Download the "Modulhandbuch" (Module
                                 Handbook) of the course. Compare it subject-by-subject with your Bachelor's transcript.
                                 If you are missing credits, do not apply.</p>
+
+                            <div class="timeline-highlight"
+                                style="background: #EFF6FF; border-color: #BFDBFE; color: #1E40AF;">
+                                <strong>💡 Pro-Tip: The Timing</strong><br>
+                                Missing a deadline isn't failure, it's a recalibration. Germany has two intakes:
+                                <strong>Winter (classes start Oct)</strong> and <strong>Summer (classes start
+                                    April)</strong>. Use the gap to learn German.
+                            </div>
                         </div>
                     </div>
 
@@ -262,7 +282,8 @@
                             <p>Prepare your documents: Europass CV, Letter of Motivation (LoM), IELTS, and Degree
                                 Certificates.</p>
                             <p style="font-size: 0.9rem; margin-top: 0.5rem;">Most universities use
-                                <strong>uni-assist.de</strong>.</p>
+                                <strong>uni-assist.de</strong>.
+                            </p>
                             <ul style="font-size: 0.9rem; margin-top: 0.5rem; list-style: inside;">
                                 <li>First Application: ~€75</li>
                                 <li>Additional Applications: ~€30 each</li>

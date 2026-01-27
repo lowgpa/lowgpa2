@@ -261,6 +261,14 @@ p {
     text-decoration: underline;
 }
 
+/* Small Button Variant */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
 /* Cards */
 .card {
     background: var(--bg-surface);
