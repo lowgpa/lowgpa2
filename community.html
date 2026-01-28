@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect - LowGPA to Germany</title>
-    <meta name="description" content="Official WhatsApp communities for Low GPA to Germany students.">
+    <meta name="description"
+        content="Official WhatsApp communities for Low GPA to Germany students. Join the Global or Pakistan-specific groups.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,20 +14,33 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .community-card {
-            border-left: 4px solid var(--accent-primary);
+            border-top: 4px solid var(--accent-primary);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        .community-card.focused {
-            border-left-color: #F59E0B;
-            /* Amber for focused/serious */
-            background-color: #FFFBEB;
+        .community-card .btn {
+            margin-top: auto;
+        }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 
 <body>
 
-    <header class="site-header">
+    <header class="site-header glass">
         <div class="container nav-container">
             <a href="index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
             <nav class="nav-links">
@@ -39,96 +53,109 @@
     </header>
 
     <main>
-        <section class="section">
-            <div class="container" style="max-width: 800px;">
-                <div class="badge">Connection</div>
-                <h1>Connect</h1>
-                <p class="lead" style="font-size: 1.25rem; margin-bottom: 2rem; color: var(--text-primary);">
-                    This page lists the official Low GPA to Germany WhatsApp communities.
-                    Each group exists for a specific purpose. Please join only the group that matches your current
-                    stage.
+        <section class="section hero bg-gradient-premium">
+            <div class="container text-center animate-fade-up">
+                <div class="badge">Join the Community</div>
+                <h1><span class="text-gradient">Connect with Peers</span></h1>
+                <p class="lead" style="max-width: 600px; margin: 0 auto; margin-bottom: 2rem;">
+                    Join our managed WhatsApp communities to get support, share updates, and stay motivated on your
+                    journey to Germany.
                 </p>
-                <p>These communities are meant to support preparation and clarity, not entertainment or promotion.</p>
-            </div>
-        </section>
-
-        <section class="section"
-            style="background-color: var(--bg-surface); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
-            <div class="container">
-                <h2 style="margin-bottom: 1.5rem;">Available WhatsApp Groups</h2>
-                <p style="margin-bottom: 2rem; max-width: 800px;">
-                    We currently operate a small number of WhatsApp groups to keep discussions focused and useful.
-                    <strong>There are no Discord servers, Telegram channels, or third-party communities associated with
-                        this platform.</strong>
-                    <br><br>
-                    All official links are listed here only.
-                </p>
-
-                <div class="grid grid-2">
-                    <!-- Open Groups -->
-                    <div class="card community-card">
-                        <div class="badge" style="background-color: #DCFCE7; color: #166534;">Open Access</div>
-                        <h3>Pakistan Community 🇵🇰</h3>
-                        <p>Dedicated support for applicants from Pakistan. Discuss HEC attestation, Embassy
-                            appointments, and local visa processes.</p>
-                        <p style="font-size: 0.95rem; margin-top: 1rem;">Direct admission discussions and peer support.
-                        </p>
-                        <br>
-                        <a href="https://chat.whatsapp.com/Buuw5ZqUVjv5VDNigTZS34" class="btn btn-primary"
-                            style="background-color: #25D366;">Join Pakistan Group</a>
-                        <p style="font-size: 0.85rem; margin-top: 1rem; color: var(--text-muted);">Global Community
-                            coming soon.</p>
-                    </div>
-
-                    <!-- Focused Groups -->
-                    <div class="card community-card focused">
-                        <div class="badge" style="background-color: #FEF3C7; color: #92400E;">Limited Access</div>
-                        <h3>Focused / Serious Groups</h3>
-                        <p>These groups are intentionally limited. They are for students who are actively preparing
-                            applications and are willing to participate responsibly.</p>
-                        <p style="font-size: 0.95rem; margin-top: 1rem;">Entry may require form submission or approval
-                            to maintain quality. These groups are discussion-focused, structured, and
-                            expectation-driven.</p>
-                        <br>
-                        <a href="#" class="btn btn-text" style="color: #B45309;">Check Eligibility &rarr;</a>
-                    </div>
+                <div class="flex items-center justify-center gap-4"
+                    style="font-size: 0.9rem; color: var(--text-muted); gap: 2rem;">
+                    <span class="flex items-center" style="gap:0.5rem">✅ No Spam</span>
+                    <span class="flex items-center" style="gap:0.5rem">🛡️ Moderated</span>
+                    <span class="flex items-center" style="gap:0.5rem">🎓 Student Focused</span>
                 </div>
             </div>
         </section>
 
         <section class="section">
+            <div class="container">
+                <h2 class="animate-fade-up delay-100" style="margin-bottom: 2rem; font-size: 1.75rem;">Choose Your Group
+                </h2>
+
+                <div class="grid grid-3">
+                    <!-- Global Community -->
+                    <div class="card community-card animate-fade-up delay-100">
+                        <div class="icon-circle" style="background-color: #E0F2FE; color: #0284C7;">🌍</div>
+                        <h3>Global Community</h3>
+                        <div class="badge"
+                            style="background-color: #E0F2FE; color: #0284C7; align-self: flex-start; margin-bottom: 1rem;">
+                            Open for All</div>
+                        <p>The central hub for students worldwide. Ask general questions, network with peers, and share
+                            general updates about German universities.</p>
+                        <br>
+                        <a href="https://chat.whatsapp.com/IIj29a0ib0TBCttAZQgqSd" class="btn btn-primary"
+                            style="background-color: #0284C7; width: 100%;">Join Global Group</a>
+                    </div>
+
+                    <!-- Pakistan Community -->
+                    <div class="card community-card animate-fade-up delay-200" style="border-top-color: #16A34A;">
+                        <div class="icon-circle" style="background-color: #DCFCE7; color: #16A34A;">🇵🇰</div>
+                        <h3>Pakistan Community</h3>
+                        <div class="badge"
+                            style="background-color: #DCFCE7; color: #16A34A; align-self: flex-start; margin-bottom: 1rem;">
+                            Regional</div>
+                        <p>Dedicated processing support for Pakistan. Discuss HEC attestation, Embassy appointments, and
+                            local visa requirements.</p>
+                        <br>
+                        <a href="https://chat.whatsapp.com/Buuw5ZqUVjv5VDNigTZS34" class="btn btn-primary"
+                            style="background-color: #16A34A; width: 100%;">Join Pakistan Group</a>
+                    </div>
+
+                    <!-- Serious Groups -->
+                    <div class="card community-card animate-fade-up delay-300"
+                        style="border-top-color: #D97706; background-color: #FFFBEB;">
+                        <div class="icon-circle" style="background-color: #FEF3C7; color: #D97706;">🎯</div>
+                        <h3>Serious Groups</h3>
+                        <div class="badge"
+                            style="background-color: #FEF3C7; color: #D97706; align-self: flex-start; margin-bottom: 1rem;">
+                            Limited Access</div>
+                        <p>Focus-driven groups for active applicants. Strictly educational with higher expectations for
+                            participation/quality.</p>
+                        <br>
+                        <a href="#" class="btn btn-secondary"
+                            style="width: 100%; border-color: #D97706; color: #D97706;">Check Info</a>
+                    </div>
+                </div>
+
+                <div class="card animate-fade-up delay-300"
+                    style="margin-top: 3rem; background: var(--bg-surface); border: none; padding: 0;">
+                    <p class="text-center"
+                        style="color: var(--text-secondary); max-width: 800px; margin: 0 auto; font-size: 0.95rem;">
+                        <strong>Note:</strong> We do not operate Discord servers or Telegram channels. These are the
+                        only official WhatsApp communities for LowGPA to Germany.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" style="background-color: var(--bg-body);">
             <div class="container" style="max-width: 800px;">
-                <h2>Community Rules</h2>
-                <p style="margin-bottom: 1.5rem;">All communities follow the same core rules:</p>
+                <h2 class="text-center animate-fade-up" style="margin-bottom: 2rem;">Community Guidelines</h2>
 
-                <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.5rem;">
-                    <li style="padding-left: 1.5rem; border-left: 3px solid var(--border-light);">
-                        <strong>Strictly Educational</strong><br>
-                        Discussions must remain strictly related to studies and admissions, especially German university
-                        preparation where applicable. This is not a general chat or entertainment space.
-                    </li>
-                    <li style="padding-left: 1.5rem; border-left: 3px solid var(--border-light);">
-                        <strong>Respect & Professionalism</strong><br>
-                        Members are expected to communicate respectfully and professionally. Harassment, aggressive
-                        language, or personal attacks are not tolerated.
-                    </li>
-                    <li style="padding-left: 1.5rem; border-left: 3px solid var(--border-light);">
-                        <strong>No Spam or Agents</strong><br>
-                        Spam, promotions, agents, paid services, and unsolicited links are strictly prohibited. This
-                        includes private messages sent to members without consent.
-                    </li>
-                    <li style="padding-left: 1.5rem; border-left: 3px solid #EF4444;">
-                        <strong>Zero Tolerance</strong><br>
-                        Failure to follow these rules may result in removal from the group without prior warning.
-                    </li>
-                </ul>
-
-                <div class="card" style="margin-top: 3rem; background-color: var(--bg-accent-light); border: none;">
-                    <h3>A Note Before You Join</h3>
-                    <p>Joining a community is optional. If you are unsure which group fits you, it is better to first
-                        review the guidance and understand your next step before joining any group.</p>
-                    <p style="margin-top: 1rem; font-weight: 500;">The goal of these communities is not volume, but
-                        useful, honest discussion.</p>
+                <div class="grid grid-2 animate-fade-up delay-100" style="gap: 1.5rem;">
+                    <div class="card" style="border:none; box-shadow: var(--shadow-sm);">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">🎓 Education First</h4>
+                        <p style="font-size: 0.95rem;">Discussions must be related to studies, admissions, and careers
+                            in Germany.</p>
+                    </div>
+                    <div class="card" style="border:none; box-shadow: var(--shadow-sm);">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">🤝 Be Respectful</h4>
+                        <p style="font-size: 0.95rem;">Zero tolerance for harassment, aggression, or unprofessional
+                            behavior.</p>
+                    </div>
+                    <div class="card" style="border:none; box-shadow: var(--shadow-sm);">
+                        <h4 style="color: #EF4444; margin-bottom: 0.5rem;">🚫 No Agents/Spam</h4>
+                        <p style="font-size: 0.95rem;">Strictly no paid services, agents, or unsolicited promotions.
+                            Instant ban.</p>
+                    </div>
+                    <div class="card" style="border:none; box-shadow: var(--shadow-sm);">
+                        <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">🔒 Safety</h4>
+                        <p style="font-size: 0.95rem;">Do not share personal financial info. Report suspicious DMs to
+                            admins.</p>
+                    </div>
                 </div>
             </div>
         </section>
