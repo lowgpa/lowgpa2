@@ -246,13 +246,41 @@
                 </div>
 
                 <!-- Results Grid -->
+                <!-- Results Grid -->
                 <div id="tracker-container" class="tracker-grid">
-                    <!-- Cards will be injected here by JS -->
+                    <!-- Loading State -->
+                    <div id="loading-spinner"
+                        style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
+                        <div class="loader-circle"></div>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data from Google Sheets...</p>
+                    </div>
                 </div>
 
             </div>
         </section>
     </main>
+
+    <style>
+        /* Spinner Animation */
+        .loader-circle {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 
     <footer class="site-footer">
         <div class="container">
