@@ -17,20 +17,22 @@
     <style>
         .hero {
             padding: 8rem 0 6rem;
-            background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-body) 100%);
+            /* background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-body) 100%); Removed in favor of liquid-bg class */
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             padding: 0.5rem 1rem;
-            background: #FFFBEB;
-            border: 1px solid #FCD34D;
-            color: #B45309;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(13, 148, 136, 0.2);
+            color: var(--accent-primary);
             border-radius: 9999px;
             font-size: 0.9rem;
             font-weight: 500;
             margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(4px);
         }
 
         .stat-grid {
@@ -68,12 +70,26 @@
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
         }
+
+        .roadmap-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            height: 100%;
+            transition: transform 0.2s;
+        }
+
+        .roadmap-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
     </style>
 </head>
 
 <body>
 
-    <header class="site-header">
+    <header class="site-header glass">
         <div class="container nav-container">
             <a href="index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
             <nav class="nav-links">
@@ -86,14 +102,14 @@
     </header>
 
     <main>
-        <!-- Enhanced Hero -->
-        <section class="hero">
-            <div class="container text-center" style="max-width: 900px;">
+        <!-- Enhanced Hero with Liquid Background -->
+        <section class="hero liquid-bg">
+            <div class="container text-center animate-fade-up" style="max-width: 900px;">
                 <div class="hero-badge">
                     <span style="margin-right: 0.5rem;">⚠️</span> Updated for 2026 Admissions
                 </div>
                 <h1 style="font-size: 3.5rem; letter-spacing: -0.03em; margin-bottom: 1.5rem;">
-                    Academic redemption starts with honesty.
+                    Academic redemption starts with <span class="text-gradient">honesty</span>.
                 </h1>
                 <p class="lead"
                     style="font-size: 1.35rem; color: var(--text-secondary); margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
@@ -101,10 +117,50 @@
                     promises, expensive agents, or shortcuts.
                 </p>
                 <div class="flex items-center" style="justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                    <a href="path.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Start
-                        Your Roadmap</a>
-                    <a href="de/index.html" class="btn btn-secondary"
+                    <a href="#roadmap" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Start
+                        Here</a>
+                    <a href="de/index.html" class="btn btn-secondary glass"
                         style="padding: 1rem 2rem; font-size: 1.1rem;">Germany Guide</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Roadmap Preview (New Section) -->
+        <section id="roadmap" class="section">
+            <div class="container">
+                <div class="text-center animate-fade-up delay-100" style="margin-bottom: 3rem;">
+                    <h2>The Process</h2>
+                    <p>It's not magic. It's a 4-step algorithm.</p>
+                </div>
+
+                <div class="grid grid-2 animate-fade-up delay-200">
+                    <div class="roadmap-card">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📄</div>
+                        <h3>1. Bureaucracy First</h3>
+                        <p style="font-size: 0.95rem;">Before you apply, you must verify your degree. APS
+                            (India/China/Vietnam) or HEC (Pakistan) attestation is mandatory.</p>
+                    </div>
+                    <div class="roadmap-card">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                        <h3>2. Smart Shortlisting</h3>
+                        <p style="font-size: 0.95rem;">Don't apply blindly. Match your ECTS credits to the course
+                            modules. This is where 90% of rejections happen.</p>
+                    </div>
+                    <div class="roadmap-card">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
+                        <h3>3. The Application</h3>
+                        <p style="font-size: 0.95rem;">Use Uni-Assist. Write a generic LoM means a generic rejection. We
+                            teach you how to write a real one.</p>
+                    </div>
+                    <div class="roadmap-card">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">💶</div>
+                        <h3>4. The Visa & Blocked Account</h3>
+                        <p style="font-size: 0.95rem;">You need ~€11k in a blocked account. This is your living cost for
+                            the first year.</p>
+                    </div>
+                </div>
+                <div class="text-center" style="margin-top: 2rem;">
+                    <a href="de/index.html" class="btn btn-text">Read the Full Guide &rarr;</a>
                 </div>
             </div>
         </section>
@@ -112,7 +168,7 @@
         <!-- The Core Philosophy / Value Prop -->
         <section class="section" style="padding-top: 0;">
             <div class="container">
-                <div class="grid grid-2" style="align-items: center;">
+                <div class="grid grid-2 animate-fade-up delay-200" style="align-items: center;">
                     <div>
                         <h2 style="font-size: 2.25rem; margin-bottom: 1.5rem;">The "Filter" Problem.</h2>
                         <p style="font-size: 1.1rem;">Most students fail not because their profile is bad, but because
@@ -122,7 +178,7 @@
                             target specific universities, specific courses, and leverage specific assets like language
                             skills.</p>
                     </div>
-                    <div class="card"
+                    <div class="card glass"
                         style="background: #F8FAFC; border: 2px dashed var(--border-light); padding: 2rem;">
                         <h3
                             style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
@@ -148,55 +204,9 @@
             </div>
         </section>
 
-        <!-- Stats / Reality Bar -->
-        <div class="stat-grid">
-            <div class="container">
-                <div class="grid grid-3 text-center">
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">0€</div>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Consultancy Fees Charged</p>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">100%</div>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Student Driven</p>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">2026</div>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Current Admission Cycle</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Pillars -->
-        <section class="section">
-            <div class="container">
-                <div class="text-center" style="margin-bottom: 3rem;">
-                    <h2>Everything you need. Nothing you don't.</h2>
-                    <p>We stripped away the marketing fluff. This is the raw infrastructure for your application.</p>
-                </div>
-
-                <div class="grid grid-2">
-                    <a href="de/index.html" class="card">
-                        <div class="feature-icon">📖</div>
-                        <h3 class="card-title">Germany Guide</h3>
-                        <p>The core manual. Understanding APS, Blocked Accounts (11k€+), and the binary admission logic.
-                        </p>
-                    </a>
-
-                    <a href="serious.html" class="card">
-                        <div class="feature-icon">⚖️</div>
-                        <h3 class="card-title">Reality Check</h3>
-                        <p>Low GPA often means no "top" universities. Accept the trade-offs before you start spending
-                            money.</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <!-- Tools Highlight -->
         <section class="section">
-            <div class="container">
+            <div class="container animate-fade-up delay-300">
                 <div class="tools-preview">
                     <div class="grid grid-2" style="align-items: center;">
                         <div>
@@ -228,11 +238,31 @@
                     We provide the map; you have to walk the path.
                 </p>
                 <div class="flex items-center" style="justify-content: center; gap: 1rem;">
-                    <a href="community.html" class="btn btn-secondary">Connect</a>
+                    <a href="community.html" class="btn btn-secondary glass">Connect</a>
                     <a href="about.html" class="btn btn-text">Why we do this &rarr;</a>
                 </div>
             </div>
         </section>
+
+        <!-- Stats / Reality Bar (Moved to bottom as footer-like element) -->
+        <div class="stat-grid">
+            <div class="container">
+                <div class="grid grid-3 text-center">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">0€</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Consultancy Fees Charged</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">100%</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Student Driven</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary);">2026</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Current Admission Cycle</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main>
 

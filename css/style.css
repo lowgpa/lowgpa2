@@ -602,11 +602,41 @@ p {
 
 /* Glassmorphism Hints */
 .glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
 
-    border: 1px solid rgba(255, 255, 255, 0.5);
+/* Liquid / Aurora Background Effect */
+.liquid-bg {
+    position: relative;
+    overflow: hidden;
+}
+
+.liquid-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.05), transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.05), transparent 40%);
+    animation: liquidMove 15s infinite alternate linear;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes liquidMove {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    100% {
+        transform: rotate(10deg) scale(1.1);
+    }
 }
 
 /* Modal */
