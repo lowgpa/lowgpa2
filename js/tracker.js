@@ -1,3 +1,7 @@
+// CONFIGURATION
+// REPLACE THE URL BELOW with your "Publish to Web > CSV" link from Google Sheets
+const SHEET_CSV_URL = "";
+
 document.addEventListener('DOMContentLoaded', () => {
     const trackerContainer = document.getElementById('tracker-container');
     const searchInput = document.getElementById('search-input');
@@ -8,14 +12,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allAdmissions = [];
 
-    // Fetch Data
-    fetch('data/admissions.json')
-        .then(response => response.json())
-        .then(data => {
-            allAdmissions = data;
-            renderCards(allAdmissions);
-        })
-        .catch(error => console.error('Error loading admissions data:', error));
+    init();
+
+    function init() {
+        if (SHEET_CSV_URL && SHEET_CSV_URL.length > 10) {
+            console.log("Fetching from Google Sheets...");
+            fetch(SHEET_CSV_URL)
+                .then(response => response.text())
+                .then(csvText => {
+                    const data = parseCSV(csvText);
+                    allAdmissions = data;
+                    renderCards(allAdmissions);
+                })
+                .catch(err => {
+                    console.error("Sheet Fetch Error, falling back to local JSON:", err);
+                    fetchLocalJSON();
+                });
+        } else {
+            console.log("No Sheet URL configured, using local JSON.");
+            fetchLocalJSON();
+        }
+    }
+
+    function fetchLocalJSON() {
+        fetch('data/admissions.json')
+            .then(response => response.json())
+            .then(data => {
+                allAdmissions = data;
+                renderCards(allAdmissions);
+            })
+            .catch(error => console.error('Error loading local data:', error));
+    }
+
+    // Simple CSV Parser
+    function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '')); // Remove quotes
+
+        const results = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            // Handle commas inside quotes properly-ish (Basic regex split)
+            const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+            if (!row) continue;
+
+            // Normalize row data
+            const cleanRow = row.map(val => val.replace(/^"|"$/g, '').trim()); // Remove quotes
+
+            // Map to our Object Structure
+            // Expected Sheet Cols: University, Program, Intake, Deadline, Portal, Cost, Link, Tags
+            const entry = {
+                university: cleanRow[0] || "Unknown Uni",
+                program: cleanRow[1] || "Unknown Program",
+                intake: cleanRow[2] || "Unknown",
+                deadline_date: cleanRow[3] || "2026-01-01",
+                portal_type: cleanRow[4] || "Direct",
+                cost_type: cleanRow[5] || "Free",
+                link: cleanRow[6] || "#",
+                tags: (cleanRow[7] || "").split(',').map(t => t.trim()),
+                is_open: true // Calculated dynamically by date usually
+            };
+            results.push(entry);
+        }
+        return results;
+    }
 
     // Render Logic
     function renderCards(data) {
@@ -38,9 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let deadlineClass = 'badge-neutral';
             let deadlineText = `${daysLeft} days left`;
-            let isOpen = item.is_open;
+            let isOpen = true;
 
-            // Date Logic overrides manual 'is_open' if passed
+            // Date Logic overrides manual 'is_open'
             if (daysLeft < 0) {
                 deadlineClass = 'badge-closed';
                 deadlineText = 'Closed';
@@ -107,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Status (Calculated)
             const today = new Date();
             const deadline = new Date(item.deadline_date);
-            const isActuallyOpen = item.is_open && (deadline >= today);
+            const isActuallyOpen = (deadline >= today);
 
             let matchesStatus = true;
             if (statusValue === 'open') matchesStatus = isActuallyOpen;
