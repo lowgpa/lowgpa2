@@ -115,8 +115,8 @@
                         <p>Focus-driven groups for active applicants. Strictly educational with higher expectations for
                             participation/quality.</p>
                         <br>
-                        <a href="#" class="btn btn-secondary"
-                            style="width: 100%; border-color: #D97706; color: #D97706;">Check Info</a>
+                        <a href="javascript:void(0)" onclick="openModal()" class="btn btn-secondary"
+                            style="width: 100%; border-color: #D97706; color: #D97706;">Check Details</a>
                     </div>
                 </div>
 
@@ -159,7 +159,68 @@
                 </div>
             </div>
         </section>
+
+        <!-- Volunteer Section -->
+        <section class="container" style="max-width: 1000px;">
+            <div class="volunteer-section animate-fade-up">
+                <h2>Want to Help Others?</h2>
+                <p>We are looking for dedicated volunteers to help moderate communities and guide new students. If you
+                    have been through the process or just want to give back, join us.</p>
+                <a href="mailto:info@lowgpa.online?subject=Volunteer Application" class="btn">Become a Moderator</a>
+            </div>
+        </section>
+
     </main>
+
+    <!-- Modal for Serious Groups -->
+    <div class="modal-overlay" id="seriousModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: #D97706;">Serious Groups Access</h3>
+            <p style="margin-bottom: 1rem;">These groups are restricted to maintain a high-quality, focused environment
+                for students who are actively applying.</p>
+
+            <div style="background: #FFFBEB; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">Why Restricted?</h4>
+                <ul style="list-style: disc; padding-left: 1.5rem; font-size: 0.95rem; color: var(--text-secondary);">
+                    <li>To prevent spam and irrelevant discussions.</li>
+                    <li>To ensure every member is committed to the goal.</li>
+                    <li>To keep the ratio of serious queries to noise high.</li>
+                </ul>
+            </div>
+
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">How to Join?</h4>
+            <p style="font-size: 0.95rem; margin-bottom: 1.5rem;">You generally need to demonstrate that you have
+                started your application process (e.g., have shortlisted universities, prepared documents). Access is
+                often granted via the open groups or occasional intake forms.</p>
+
+            <div class="text-center">
+                <button onclick="closeModal()" class="btn btn-primary"
+                    style="background-color: #D97706;">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            const modal = document.getElementById('seriousModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('seriousModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close modal if clicking outside
+        document.getElementById('seriousModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
 
     <footer class="site-footer">
         <div class="container">
