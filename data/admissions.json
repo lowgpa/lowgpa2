@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "university": "TU Chemnitz",
+        "program": "MSc Web Engineering",
+        "intake": "Winter 2026",
+        "deadline_date": "2026-07-15",
+        "portal_type": "Direct",
+        "cost_type": "Free",
+        "tags": ["CS", "English"],
+        "link": "https://www.tu-chemnitz.de/informatik/WebEngineering/",
+        "is_open": true
+    },
+    {
+        "id": 2,
+        "university": "Hof University of Applied Sciences",
+        "program": "MSc Software Engineering for Industrial Ops",
+        "intake": "Winter 2026",
+        "deadline_date": "2026-05-31",
+        "portal_type": "Uni-Assist",
+        "cost_type": "Free",
+        "tags": ["Software", "English"],
+        "link": "#",
+        "is_open": true
+    },
+    {
+        "id": 3,
+        "university": "RWTH Aachen",
+        "program": "MSc Data Science",
+        "intake": "Winter 2026",
+        "deadline_date": "2026-03-01",
+        "portal_type": "Direct",
+        "cost_type": "Free",
+        "tags": ["Data Science", "Greedy GPA"],
+        "link": "#",
+        "is_open": true
+    },
+    {
+        "id": 4,
+        "university": "TH Deggendorf",
+        "program": "MSc Artificial Intelligence",
+        "intake": "Winter 2026",
+        "deadline_date": "2026-04-15",
+        "portal_type": "VPD + Direct",
+        "cost_type": "Free",
+        "tags": ["AI", "English"],
+        "link": "#",
+        "is_open": true
+    },
+    {
+        "id": 5,
+        "university": "SRH Berlin (Private)",
+        "program": "MSc Computer Science",
+        "intake": "Summer 2026",
+        "deadline_date": "2026-02-28",
+        "portal_type": "Direct",
+        "cost_type": "Paid",
+        "tags": ["CS", "Private"],
+        "link": "#",
+        "is_open": true
+    },
+    {
+        "id": 6,
+        "university": "TU Munich (TUM)",
+        "program": "MSc Informatics",
+        "intake": "Summer 2026",
+        "deadline_date": "2025-11-30",
+        "portal_type": "Direct",
+        "cost_type": "Paid",
+        "tags": ["CS", "Elite"],
+        "link": "#",
+        "is_open": false
+    }
+]
