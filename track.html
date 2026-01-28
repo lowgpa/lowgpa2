@@ -428,6 +428,25 @@
                     </div>
                 </div>
 
+                <!-- Pagination Controls -->
+                <div class="pagination-bar">
+                    <div class="rows-selector">
+                        <span>Show rows:</span>
+                        <select id="page-size-select" class="page-size-select">
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+
+                    <div class="pagination-nav">
+                        <span id="page-info"
+                            style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 1rem;">Loading...</span>
+                        <button id="prev-btn" class="btn-page" disabled>Previous</button>
+                        <button id="next-btn" class="btn-page" disabled>Next</button>
+                    </div>
+                </div>
+
             </div>
         </section>
     </main>
