@@ -1,6 +1,6 @@
 // CONFIGURATION
-// REPLACE THE URL BELOW with your "Publish to Web > CSV" link from Google Sheets
-const SHEET_CSV_URL = "";
+// REPLACE with your Google Apps Script Web App URL
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyeSm-5xl0xBUJGZMsr4CZzHbmPyyk7KxdbWLv_uyUEzaTM9Pu5SxsXC9MbsVaI8XA8/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
     const trackerContainer = document.getElementById('tracker-container');
@@ -15,21 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
 
     function init() {
-        if (SHEET_CSV_URL && SHEET_CSV_URL.length > 10) {
-            console.log("Fetching from Google Sheets...");
-            fetch(SHEET_CSV_URL)
-                .then(response => response.text())
-                .then(csvText => {
-                    const data = parseCSV(csvText);
-                    allAdmissions = data;
+        if (SHEET_API_URL && SHEET_API_URL.length > 10) {
+            console.log("Fetching from Google Apps Script API...");
+            fetch(SHEET_API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    // Apps Script returns raw objects with header keys
+                    // We map them to ensure our internal variable names match
+                    allAdmissions = normalizeSheetData(data);
                     renderCards(allAdmissions);
                 })
                 .catch(err => {
-                    console.error("Sheet Fetch Error, falling back to local JSON:", err);
+                    console.error("API Fetch Error, falling back to local JSON:", err);
                     fetchLocalJSON();
                 });
         } else {
-            console.log("No Sheet URL configured, using local JSON.");
+            console.log("No API URL configured, using local JSON.");
             fetchLocalJSON();
         }
     }
@@ -44,37 +45,32 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error loading local data:', error));
     }
 
-    // Simple CSV Parser
-    function parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '')); // Remove quotes
-
-        const results = [];
-
-        for (let i = 1; i < lines.length; i++) {
-            // Handle commas inside quotes properly-ish (Basic regex split)
-            const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-            if (!row) continue;
-
-            // Normalize row data
-            const cleanRow = row.map(val => val.replace(/^"|"$/g, '').trim()); // Remove quotes
-
-            // Map to our Object Structure
-            // Expected Sheet Cols: University, Program, Intake, Deadline, Portal, Cost, Link, Tags
-            const entry = {
-                university: cleanRow[0] || "Unknown Uni",
-                program: cleanRow[1] || "Unknown Program",
-                intake: cleanRow[2] || "Unknown",
-                deadline_date: cleanRow[3] || "2026-01-01",
-                portal_type: cleanRow[4] || "Direct",
-                cost_type: cleanRow[5] || "Free",
-                link: cleanRow[6] || "#",
-                tags: (cleanRow[7] || "").split(',').map(t => t.trim()),
-                is_open: true // Calculated dynamically by date usually
+    // Convert Sheet Columns to our Internal Schema
+    function normalizeSheetData(sheetData) {
+        return sheetData.map(item => {
+            return {
+                university: item.University || item.university || "Unknown",
+                program: item.Program || item.program || "Unknown",
+                intake: item.Intake || item.intake || "",
+                deadline_date: formatDate(item.Deadline || item.deadline), // Helper to ensure YYYY-MM-DD
+                portal_type: item.Portal || item.portal || "Direct",
+                cost_type: item.Cost || item.cost || "Free",
+                link: item.Link || item.link || "#",
+                tags: (item.Tags || item.tags || "").split(',').map(t => t.trim()),
+                is_open: true // Handled by date calculation
             };
-            results.push(entry);
+        });
+    }
+
+    // Helper to handle Sheet Date Strings if they come in weird formats
+    function formatDate(dateInput) {
+        if (!dateInput) return "2026-01-01";
+        // If it's already a standard string, return it. 
+        // Google Script might return ISO string "2026-07-15T00:00:00.000Z" which is fine.
+        if (dateInput.toString().includes('T')) {
+            return dateInput.toString().split('T')[0];
         }
-        return results;
+        return dateInput;
     }
 
     // Render Logic
