@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageSizeSelect = document.getElementById('page-size-select');
 
     let allAdmissions = [];
-    let currentFilteredData = []; // Store filtered result to paginate it
+    let currentFilteredData = [];
     let favorites = JSON.parse(localStorage.getItem('lowgpa_favorites') || '[]');
 
     // Pagination State
     let currentPage = 1;
-    let itemsPerPage = 10; // Default
+    let itemsPerPage = 10;
 
     init();
 
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             favorites.splice(index, 1);
         }
         localStorage.setItem('lowgpa_favorites', JSON.stringify(favorites));
-        renderPage(); // Update UI to show/hide star
+        renderPage(); // Update UI
     }
     window.toggleFavorite = toggleFavorite;
 
@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalItems = currentFilteredData.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-        // Count Text
         if (totalItems === 0) {
             resultCount.textContent = "0 results";
             pageInfo.textContent = "0-0 of 0";
@@ -161,17 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
         resultCount.textContent = `${totalItems} results`;
         pageInfo.textContent = `${startItem}-${endItem} of ${totalItems}`;
 
-        // Button State
         prevBtn.disabled = (currentPage === 1);
         nextBtn.disabled = (currentPage === totalPages);
     }
 
     function changePage(direction) {
-        currentPage += direction;
-        renderPaginationUI();
-        renderPage();
-        // Scroll to top of list
-        document.getElementById('tracker-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const totalItems = currentFilteredData.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        const newPage = currentPage + direction;
+        if (newPage > 0 && newPage <= totalPages) {
+            currentPage = newPage;
+            renderPaginationUI();
+            renderPage();
+            document.getElementById('tracker-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
     function renderPage() {
@@ -186,11 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
         trackerContainer.innerHTML = '';
 
         if (data.length === 0) {
-            trackerContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">No results match your filters.</div>';
+            trackerContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted); animation: fadeInUp 0.3s ease;">No results match your filters.</div>';
             return;
         }
 
-        data.forEach(item => {
+        data.forEach((item, index) => {
+            const globalIndex = (currentPage - 1) * itemsPerPage + index + 1;
+
             const today = new Date();
             const deadline = new Date(item.deadline_date);
             const opening = item.opening_date ? new Date(item.opening_date) : null;
@@ -219,18 +224,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const card = document.createElement('div');
             card.className = `tracker-item ${!isOpen ? 'opacity-50' : ''} ${isFav ? 'fav-active-border' : ''}`;
+
+            // Staggered Animation Delay
+            card.style.animationDelay = `${index * 0.05}s`;
+
             card.innerHTML = `
+                <div class="tracker-col-num">#${globalIndex}</div>
                 <div class="tracker-col-main">
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <div style="display:flex; align-items:flex-start; gap:0.5rem;">
                         <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${uniqueId}')" title="Add to Shortlist">
                             ${isFav ? '★' : '☆'}
                         </button>
-                        <h3 class="tracker-program">${item.program}</h3>
-                    </div>
-                    <div class="tracker-uni">${item.university}</div>
-                    <div class="mobile-only-meta">
-                        <span class="meta-tag-sm">${item.intake}</span>
-                        <span class="meta-tag-sm">${item.portal_type}</span>
+                        <div>
+                            <h3 class="tracker-program">${item.program}</h3>
+                            <div class="tracker-uni">${item.university}</div>
+                        </div>
                     </div>
                 </div>
                 <div class="tracker-col-intake desktop-only">${item.intake}</div>
@@ -258,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pagination Listeners
     pageSizeSelect.addEventListener('change', (e) => {
         itemsPerPage = parseInt(e.target.value);
-        currentPage = 1; // Reset to page 1 on size change
+        currentPage = 1;
         renderPaginationUI();
         renderPage();
     });
