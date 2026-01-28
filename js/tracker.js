@@ -1,5 +1,4 @@
 // CONFIGURATION
-// REPLACE with your Google Apps Script Web App URL
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyeSm-5xl0xBUJGZMsr4CZzHbmPyyk7KxdbWLv_uyUEzaTM9Pu5SxsXC9MbsVaI8XA8/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,9 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterIntake = document.getElementById('filter-intake');
     const filterPortal = document.getElementById('filter-portal');
     const filterStatus = document.getElementById('filter-status');
+    const filterFav = document.getElementById('filter-fav'); // New Favorites Toggle
     const resultCount = document.getElementById('result-count');
+    const lastUpdatedEl = document.getElementById('last-updated-date');
 
     let allAdmissions = [];
+    let favorites = JSON.parse(localStorage.getItem('lowgpa_favorites') || '[]');
 
     init();
 
@@ -20,9 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(SHEET_API_URL)
                 .then(response => response.json())
                 .then(data => {
-                    // Apps Script returns raw objects with header keys
-                    // We map them to ensure our internal variable names match
                     allAdmissions = normalizeSheetData(data);
+                    calculateLastUpdated(allAdmissions);
                     renderCards(allAdmissions);
                 })
                 .catch(err => {
@@ -45,35 +46,55 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error loading local data:', error));
     }
 
-    // Convert Sheet Columns to our Internal Schema
     function normalizeSheetData(sheetData) {
         return sheetData.map(item => {
             return {
                 university: item.University || item.university || "Unknown",
                 program: item.Program || item.program || "Unknown",
                 intake: item.Intake || item.intake || "",
-                deadline_date: formatDate(item.Deadline || item.deadline), // Helper to ensure YYYY-MM-DD
+                opening_date: formatDate(item.Opening || item.opening), // New Column
+                deadline_date: formatDate(item.Deadline || item.deadline),
                 portal_type: item.Portal || item.portal || "Direct",
-                cost_type: item.Cost || item.cost || "Free",
+                // Cost removed
                 link: item.Link || item.link || "#",
                 tags: (item.Tags || item.tags || "").split(',').map(t => t.trim()),
-                is_open: true // Handled by date calculation
+                is_open: true
             };
         });
     }
 
-    // Helper to handle Sheet Date Strings if they come in weird formats
     function formatDate(dateInput) {
-        if (!dateInput) return "2026-01-01";
-        // If it's already a standard string, return it. 
-        // Google Script might return ISO string "2026-07-15T00:00:00.000Z" which is fine.
+        if (!dateInput) return "";
         if (dateInput.toString().includes('T')) {
             return dateInput.toString().split('T')[0];
         }
         return dateInput;
     }
 
-    // Render Logic
+    function calculateLastUpdated(data) {
+        if (!lastUpdatedEl) return;
+        const now = new Date();
+        // Since we don't have a specific "updated_at" field, we'll use "Today" to signify Live Sync
+        // or we could try to find the latest opening date?
+        // Let's just say "Live" for now.
+        const dateString = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        lastUpdatedEl.textContent = `Records updated on: ${dateString}`;
+    }
+
+    function toggleFavorite(id) {
+        const index = favorites.indexOf(id);
+        if (index === -1) {
+            favorites.push(id);
+        } else {
+            favorites.splice(index, 1);
+        }
+        localStorage.setItem('lowgpa_favorites', JSON.stringify(favorites));
+        filterData(); // Re-render
+    }
+
+    // Expose to window so onclick works
+    window.toggleFavorite = toggleFavorite;
+
     function renderCards(data) {
         trackerContainer.innerHTML = '';
 
@@ -86,17 +107,21 @@ document.addEventListener('DOMContentLoaded', () => {
         resultCount.textContent = `${data.length} results`;
 
         data.forEach(item => {
-            // Calculate Days Left
             const today = new Date();
             const deadline = new Date(item.deadline_date);
+            const opening = item.opening_date ? new Date(item.opening_date) : null;
+
             const timeDiff = deadline - today;
             const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+            // Generate unique ID for favorites
+            const uniqueId = (item.university + item.program).replace(/\s+/g, '').toLowerCase();
+            const isFav = favorites.includes(uniqueId);
 
             let deadlineClass = 'badge-neutral';
             let deadlineText = `${daysLeft} days left`;
             let isOpen = true;
 
-            // Date Logic overrides manual 'is_open'
             if (daysLeft < 0) {
                 deadlineClass = 'badge-closed';
                 deadlineText = 'Closed';
@@ -105,14 +130,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 deadlineClass = 'badge-urgent';
             } else if (daysLeft > 60) {
                 deadlineClass = 'badge-safe';
+            } else if (opening && today < opening) {
+                // Not open yet
+                isOpen = false;
+                deadlineClass = 'badge-neutral';
+                deadlineText = `Opens ${item.opening_date}`;
             }
 
             const card = document.createElement('div');
-            card.className = `tracker-item ${!isOpen ? 'opacity-50' : ''}`;
+            card.className = `tracker-item ${!isOpen ? 'opacity-50' : ''} ${isFav ? 'fav-active-border' : ''}`;
 
             card.innerHTML = `
                 <div class="tracker-col-main">
-                    <h3 class="tracker-program">${item.program}</h3>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${uniqueId}')" title="Add to Shortlist">
+                            ${isFav ? '★' : '☆'}
+                        </button>
+                        <h3 class="tracker-program">${item.program}</h3>
+                    </div>
                     <div class="tracker-uni">${item.university}</div>
                     <div class="mobile-only-meta">
                         <span class="meta-tag-sm">${item.intake}</span>
@@ -121,6 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="tracker-col-intake desktop-only">${item.intake}</div>
+                <div class="tracker-col-opening desktop-only" style="font-size:0.85rem; color:var(--text-secondary);">
+                    ${item.opening_date || '-'}
+                </div>
                 <div class="tracker-col-portal desktop-only">${item.portal_type}</div>
                 
                 <div class="tracker-col-deadline">
@@ -141,43 +179,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Filter Logic
     function filterData() {
         const searchTerm = searchInput.value.toLowerCase();
         const intakeValue = filterIntake.value;
         const portalValue = filterPortal.value;
-        const statusValue = filterStatus.value; // 'all', 'open', 'closed'
+        const statusValue = filterStatus.value;
+        const showFavs = filterFav ? filterFav.checked : false;
 
         const filtered = allAdmissions.filter(item => {
-            // Search Text
+            const uniqueId = (item.university + item.program).replace(/\s+/g, '').toLowerCase();
+
+            // Search
             const matchesSearch = item.university.toLowerCase().includes(searchTerm) ||
                 item.program.toLowerCase().includes(searchTerm) ||
                 item.tags.some(tag => tag.toLowerCase().includes(searchTerm));
 
-            // Intake
+            // Dropdowns
             const matchesIntake = intakeValue === 'all' || item.intake.includes(intakeValue);
-
-            // Portal
             const matchesPortal = portalValue === 'all' || item.portal_type.includes(portalValue);
 
-            // Status (Calculated)
+            // Status
             const today = new Date();
             const deadline = new Date(item.deadline_date);
-            const isActuallyOpen = (deadline >= today);
+            const matchesStatus = (statusValue === 'all') ||
+                (statusValue === 'open' && deadline >= today) ||
+                (statusValue === 'closed' && deadline < today);
 
-            let matchesStatus = true;
-            if (statusValue === 'open') matchesStatus = isActuallyOpen;
-            if (statusValue === 'closed') matchesStatus = !isActuallyOpen;
+            // Favorites Filter
+            const matchesFav = showFavs ? favorites.includes(uniqueId) : true;
 
-            return matchesSearch && matchesIntake && matchesPortal && matchesStatus;
+            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav;
         });
 
         renderCards(filtered);
     }
 
-    // Event Listeners
+    // Listeners
     searchInput.addEventListener('input', filterData);
     filterIntake.addEventListener('change', filterData);
     filterPortal.addEventListener('change', filterData);
     filterStatus.addEventListener('change', filterData);
+    if (filterFav) filterFav.addEventListener('change', filterData);
 });
