@@ -215,48 +215,51 @@
 
                 <!-- Controls -->
                 <div class="controls-panel">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <input type="text" id="search-input" class="search-box"
-                            style="margin-bottom: 0; max-width: 600px;"
-                            placeholder="Search by University, Program, or Field (e.g. 'Data Science')...">
-                        <div id="last-updated-date"
-                            style="font-size: 0.85rem; color: var(--text-muted); text-align: right; display: none;">
+
+                    <!-- Top Row: Search & Last Updated -->
+                    <div class="toolbar-row">
+                        <div class="search-wrapper">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="search-input" class="search-box"
+                                placeholder="Search university, program, or tags...">
                         </div>
+                        <div id="last-updated-date" class="last-updated-text"></div>
                     </div>
 
+                    <!-- Filters Row -->
                     <div class="filters-row">
-                        <select id="filter-intake" class="filter-select">
-                            <option value="all">Any Intake</option>
-                            <option value="Winter">Winter Intake</option>
-                            <option value="Summer">Summer Intake</option>
-                        </select>
-
-                        <select id="filter-portal" class="filter-select">
-                            <option value="all">Any Application Method</option>
-                            <option value="Direct">Direct Application</option>
-                            <option value="Uni-Assist">Uni-Assist (Paid)</option>
-                            <option value="VPD">VPD Required</option>
-                        </select>
-
                         <select id="filter-status" class="filter-select">
-                            <option value="open" selected>Status: Open Now</option>
-                            <option value="all">Status: Show All</option>
+                            <option value="all" selected>Status: Show All</option>
+                            <option value="open">Status: Open Now</option>
                             <option value="closed">Status: Closed</option>
                         </select>
 
+                        <select id="filter-portal" class="filter-select">
+                            <option value="all">Application Method</option>
+                            <option value="Direct">Direct Application</option>
+                            <option value="Uni-Assist">Uni-Assist</option>
+                            <option value="VPD">VPD Required</option>
+                        </select>
+
+                        <select id="filter-intake" class="filter-select">
+                            <option value="all">Intake: All</option>
+                            <option value="Winter">Winter</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+
                         <!-- Favorites Toggle -->
-                        <label class="filter-select"
-                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <label class="filter-toggle">
                             <input type="checkbox" id="filter-fav">
-                            <span>⭐ My Shortlist</span>
+                            <span>⭐ Shortlist</span>
                         </label>
 
-                        <div style="margin-left: auto; align-self: center; color: var(--text-muted); font-size: 0.9rem;"
-                            id="result-count">
-                            Loading...
-                        </div>
+                        <div id="result-count" class="result-count">Loading...</div>
                     </div>
+
+                    <p class="db-disclaimer">
+                        * Database is updated frequently but limited. We are constantly adding more universities.
+                        Always verify dates on the official university portal.
+                    </p>
                 </div>
 
                 <!-- Results Grid -->
@@ -265,7 +268,7 @@
                     <div id="loading-spinner"
                         style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
                         <div class="loader-circle"></div>
-                        <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data from our servers...</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data...</p>
                     </div>
                 </div>
 
@@ -274,171 +277,22 @@
     </main>
 
     <style>
-        /* Spinner */
-        .loader-circle {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border-light);
-            border-top: 4px solid var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Fav Button */
-        .fav-btn {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: color 0.2s;
-        }
-
-        .fav-btn.active {
-            color: #EAB308;
-        }
-
-        /* Gold Star */
-        .fav-active-border {
-            border-left: 4px solid #EAB308 !important;
-        }
-
-        /* List View Styles */
-        .tracker-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .tracker-item {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.5rem;
-            display: grid;
-            /* Updated Columns: Main | Intake | Opening | Portal | Deadline | Action */
-            grid-template-columns: 3fr 0.8fr 1fr 1fr 1.2fr 0.5fr;
-            align-items: center;
-            gap: 1rem;
-            transition: background-color 0.2s;
-        }
-
-        .tracker-item:hover {
-            background-color: var(--bg-accent-light);
-            border-color: var(--accent-primary);
-        }
-
-        .tracker-program {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.1rem;
-        }
-
-        .tracker-uni {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .tracker-col-intake,
-        .tracker-col-portal,
-        .tracker-col-opening {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .deadline-badge-row {
-            font-size: 0.9rem;
-            font-weight: 700;
-            display: inline-block;
-        }
-
-        .badge-urgent {
-            color: #DC2626;
-        }
-
-        .badge-safe {
-            color: #16A34A;
-        }
-
-        .badge-neutral {
-            color: #CA8A04;
-        }
-
-        .badge-closed {
-            color: #94A3B8;
-        }
-
-        .opacity-50 {
-            opacity: 0.6;
+        display: none;
         }
 
         .mobile-only-meta {
-            display: none;
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
         }
 
-        .desktop-only {
-            display: block;
+        .filters-row {
+            flex-direction: column;
         }
 
-        .meta-tag-sm {
-            font-size: 0.75rem;
-            background: var(--bg-body);
-            padding: 0.1rem 0.4rem;
-            border: 1px solid var(--border-light);
-            border-radius: 4px;
+        .filter-select {
+            width: 100%;
         }
-
-        @media (max-width: 1000px) {
-            .tracker-item {
-                grid-template-columns: 1fr auto;
-                grid-template-rows: auto auto;
-                gap: 0.5rem;
-                padding: 1rem;
-            }
-
-            .tracker-col-main {
-                grid-column: 1 / -1;
-            }
-
-            .tracker-col-deadline {
-                grid-column: 1 / 2;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .tracker-col-action {
-                grid-column: 2 / 3;
-            }
-
-            .desktop-only {
-                display: none;
-            }
-
-            .mobile-only-meta {
-                display: flex;
-                gap: 0.5rem;
-                margin-top: 0.25rem;
-            }
-
-            .filters-row {
-                flex-direction: column;
-            }
-
-            .filter-select {
-                width: 100%;
-            }
         }
     </style>
 
