@@ -272,6 +272,29 @@
             animation: fadeInUp 0.4s ease forwards;
         }
 
+        .tracker-header {
+            display: grid;
+            /* Match tracker-item columns */
+            grid-template-columns: 0.3fr 3fr 0.8fr 1fr 1fr 1.2fr 0.5fr;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-light);
+
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 900px) {
+            .tracker-header {
+                display: none;
+                /* Hide header on mobile */
+            }
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -526,38 +549,48 @@
                         * Database is updated frequently but limited. We are constantly adding more universities.
                         Always verify dates on the official university portal.
                     </p>
-                </div>
 
-                <!-- Results Grid -->
-                <div id="tracker-container" class="tracker-grid">
-                    <!-- Loading State -->
-                    <div id="loading-spinner"
-                        style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
-                        <div class="loader-circle"></div>
-                        <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data...</p>
-                    </div>
-                </div>
-
-                <!-- Pagination Controls -->
-                <div class="pagination-bar">
-                    <div class="rows-selector">
-                        <span>Show rows:</span>
-                        <select id="page-size-select" class="page-size-select">
-                            <option value="10" selected>10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                        </select>
+                    <!-- Tracker Header Row (Desktop Only) -->
+                    <div class="tracker-header">
+                        <div>#</div>
+                        <div>Program & University</div>
+                        <div>Intake</div>
+                        <div>Opening</div>
+                        <div>Portal</div>
+                        <div style="text-align:right; padding-right:1rem;">Deadline</div>
+                        <div></div>
                     </div>
 
-                    <div class="pagination-nav">
-                        <span id="page-info"
-                            style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 1rem;">Loading...</span>
-                        <button id="prev-btn" class="btn-page" disabled>Previous</button>
-                        <button id="next-btn" class="btn-page" disabled>Next</button>
+                    <!-- Results Grid -->
+                    <div id="tracker-container" class="tracker-grid">
+                        <!-- Loading State -->
+                        <div id="loading-spinner"
+                            style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
+                            <div class="loader-circle"></div>
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data...</p>
+                        </div>
                     </div>
-                </div>
 
-            </div>
+                    <!-- Pagination Controls -->
+                    <div class="pagination-bar">
+                        <div class="rows-selector">
+                            <span>Show rows:</span>
+                            <select id="page-size-select" class="page-size-select">
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+
+                        <div class="pagination-nav">
+                            <span id="page-info"
+                                style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 1rem;">Loading...</span>
+                            <button id="prev-btn" class="btn-page" disabled>Previous</button>
+                            <button id="next-btn" class="btn-page" disabled>Next</button>
+                        </div>
+                    </div>
+
+                </div>
         </section>
     </main>
 
