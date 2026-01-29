@@ -1,128 +1,92 @@
 [
     {
         "id": 1,
-        "university": "TU Chemnitz",
-        "program": "MSc Web Engineering",
-        "intake": "Winter 2026",
-        "deadline_date": "2026-07-15",
-        "opening_date": "2026-05-01",
-        "portal_type": "Direct",
-        "cost_type": "Free",
-        "tags": [
-            "CS",
-            "English"
-        ],
-        "link": "https://www.tu-chemnitz.de/informatik/WebEngineering/",
-        "is_open": true,
-        "gpa_req": "2.5",
-        "intakes": [
-            "Winter",
-            "Summer"
-        ],
-        "assessment": "Interview"
+        "University": "TU Chemnitz",
+        "Program": "MSc Web Engineering",
+        "Intake": "Winter 2026",
+        "Opening": "2026-05-01T00:00:00.000Z",
+        "Deadline": "2026-07-15T00:00:00.000Z",
+        "Portal": "Direct",
+        "Link": "https://www.tu-chemnitz.de/informatik/WebEngineering/",
+        "Tags": "CS, English",
+        "GPA": "2.5",
+        "Intakes": "Winter, Summer",
+        "Assessment": "Interview",
+        "Language": "English C1"
     },
     {
         "id": 2,
-        "university": "Hof University",
-        "program": "MSc Software Engineering",
-        "intake": "Winter 2026",
-        "deadline_date": "2026-05-31",
-        "opening_date": "2026-04-15",
-        "portal_type": "Uni-Assist",
-        "cost_type": "Free",
-        "tags": [
-            "Software",
-            "English"
-        ],
-        "link": "#",
-        "is_open": true,
-        "gpa_req": "No Limit",
-        "intakes": [
-            "Winter"
-        ],
-        "assessment": "None"
+        "University": "RWTH Aachen",
+        "Program": "MSc Computer Science",
+        "Intake": "Winter 2026",
+        "Opening": "2025-11-30T19:00:00.000Z",
+        "Deadline": "2026-01-14T19:00:00.000Z",
+        "Portal": "Uni-Assist",
+        "Link": "https://uni-assist.de",
+        "Tags": "Strong math background required",
+        "GPA": "None",
+        "Intakes": "Summer",
+        "Assessment": "None",
+        "Language": "Ielts 6.5"
     },
     {
         "id": 3,
-        "university": "RWTH Aachen",
-        "program": "MSc Data Science",
-        "intake": "Winter 2026",
-        "deadline_date": "2026-03-01",
-        "portal_type": "Direct",
-        "cost_type": "Free",
-        "tags": [
-            "Data Science",
-            "Greedy GPA"
-        ],
-        "link": "#",
-        "is_open": true,
-        "gpa_req": "1.7",
-        "intakes": [
-            "Winter"
-        ],
-        "assessment": "GRE Required"
+        "University": "Hof University",
+        "Program": "MSc Software Engineering",
+        "Intake": "Winter 2026",
+        "Opening": "2026-04-15T00:00:00.000Z",
+        "Deadline": "2026-05-31T00:00:00.000Z",
+        "Portal": "Uni-Assist",
+        "Link": "#",
+        "Tags": "Software, English",
+        "GPA": "No Limit",
+        "Intakes": "Winter",
+        "Assessment": "None",
+        "Language": "German A2"
     },
     {
         "id": 4,
-        "university": "TH Deggendorf",
-        "program": "MSc AI",
-        "intake": "Winter 2026",
-        "deadline_date": "2026-04-15",
-        "portal_type": "VPD + Direct",
-        "cost_type": "Free",
-        "tags": [
-            "AI",
-            "English"
-        ],
-        "link": "#",
-        "is_open": true,
-        "gpa_req": "2.7",
-        "intakes": [
-            "Winter",
-            "Summer"
-        ],
-        "assessment": "Assessment Test"
+        "University": "TH Deggendorf",
+        "Program": "MSc AI",
+        "Intake": "Winter 2026",
+        "Opening": "2026-03-01T00:00:00.000Z",
+        "Deadline": "2026-04-15T00:00:00.000Z",
+        "Portal": "VPD + Direct",
+        "Link": "#",
+        "Tags": "AI, English",
+        "GPA": "2.7",
+        "Intakes": "Winter, Summer",
+        "Assessment": "Test",
+        "Language": "English B2"
     },
     {
         "id": 5,
-        "university": "SRH Berlin",
-        "program": "MSc CS",
-        "intake": "Summer 2026",
-        "deadline_date": "2026-02-28",
-        "portal_type": "Direct",
-        "cost_type": "Paid",
-        "tags": [
-            "CS",
-            "Private"
-        ],
-        "link": "#",
-        "is_open": true,
-        "gpa_req": "3.0",
-        "intakes": [
-            "Winter",
-            "Summer"
-        ],
-        "assessment": "Interview"
+        "University": "SRH Berlin",
+        "Program": "MSc CS",
+        "Intake": "Summer 2026",
+        "Opening": "2025-12-01T00:00:00.000Z",
+        "Deadline": "2026-02-28T00:00:00.000Z",
+        "Portal": "Direct",
+        "Link": "#",
+        "Tags": "CS, Private",
+        "GPA": "3.0",
+        "Intakes": "Winter, Summer",
+        "Assessment": "Interview",
+        "Language": "English"
     },
     {
         "id": 6,
-        "university": "TU Munich",
-        "program": "MSc Informatics",
-        "intake": "Summer 2026",
-        "deadline_date": "2025-11-30",
-        "portal_type": "Direct",
-        "cost_type": "Paid",
-        "tags": [
-            "CS",
-            "Elite"
-        ],
-        "link": "#",
-        "is_open": false,
-        "gpa_req": "2.0",
-        "intakes": [
-            "Winter",
-            "Summer"
-        ],
-        "assessment": "Aptitude Test"
+        "University": "TU Munich",
+        "Program": "MSc Informatics",
+        "Intake": "Summer 2026",
+        "Opening": "2025-09-01T00:00:00.000Z",
+        "Deadline": "2025-11-30T00:00:00.000Z",
+        "Portal": "Direct",
+        "Link": "#",
+        "Tags": "CS, Elite",
+        "GPA": "2.0",
+        "Intakes": "Winter, Summer",
+        "Assessment": "Aptitude Test",
+        "Language": "German B2"
     }
 ]
