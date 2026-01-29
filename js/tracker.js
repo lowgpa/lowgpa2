@@ -218,7 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Category Filter
             let matchesCategory = true;
             if (categoryValue !== 'all') {
-                matchesCategory = item.category === categoryValue || item.category.includes(categoryValue);
+                const catItem = (item.category || "").toLowerCase();
+                const catFilter = categoryValue.toLowerCase();
+                matchesCategory = catItem.includes(catFilter);
             }
 
             return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa && matchesCategory;
