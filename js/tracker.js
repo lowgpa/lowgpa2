@@ -276,20 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Formatting Metadata - Clean, No Emojis
             let gpaBadge = '';
+            // Only show GPA badge if there is a specific requirement (value < 5.0)
             if (item.gpa_val < 5.0) {
                 gpaBadge = `<span class="meta-badge badge-gpa">GPA ${item.gpa_req}</span>`;
-            } else {
-                gpaBadge = `<span class="meta-badge badge-gpa">Any GPA</span>`;
             }
 
-            let intakeBadge = '';
-            const isWinter = item.intake.includes('Winter') || (item.intakes_list && item.intakes_list.includes('Winter'));
-            const isSummer = item.intake.includes('Summer') || (item.intakes_list && item.intakes_list.includes('Summer'));
-
-            if (isWinter && isSummer) intakeBadge = `<span class="meta-badge badge-intake">Winter • Summer</span>`;
-            else if (isWinter) intakeBadge = `<span class="meta-badge badge-intake">Winter</span>`;
-            else if (isSummer) intakeBadge = `<span class="meta-badge badge-intake">Summer</span>`;
-            else intakeBadge = `<span class="meta-badge badge-intake">${item.intake}</span>`;
+            // Intake Badge: Just show the specific intake (e.g. "Winter 2026")
+            let intakeBadge = `<span class="meta-badge badge-intake">${item.intake}</span>`;
 
             let assessBadge = '';
             // Only show assessment badge if it exists and is NOT "None"
