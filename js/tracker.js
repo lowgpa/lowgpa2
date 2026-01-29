@@ -166,19 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // GPA Logic:
             // "2.7 or better" filter usually means "I have 2.7".
-            // Germany: Lower is better. 1.0 is Best. 4.0 is Pass.
-            // Requirement 2.5 means you need <= 2.5.
-            // If I have 2.7, I CANNOT apply to 2.5.
-            // If I have 2.7, I CAN apply to 3.0.
-            // So, Condition: MyGrade (Filter) <= UniReq (Value).
+            // Condition: MyGrade (Filter) <= UniReq (Value).
             let matchesGpa = true;
             if (gpaValue !== 'all') {
-                const filterFloat = parseFloat(gpaValue);
-                // item.gpa_val is the Uni Requirement.
-                // If Item is "No Limit" (99.0), then 2.7 <= 99.0 -> TRUE (Show).
-                // If Item is 2.5, then 2.7 <= 2.5 -> FALSE (Hide).
-                // If Item is 3.0, then 2.7 <= 3.0 -> TRUE (Show).
-                matchesGpa = (filterFloat <= item.gpa_val);
+                if (gpaValue === 'none') {
+                    // "No Limit" is encoded as 99.0 or similar high value
+                    matchesGpa = (item.gpa_val > 5.0);
+                } else {
+                    const filterFloat = parseFloat(gpaValue);
+                    matchesGpa = (filterFloat <= item.gpa_val);
+                }
             }
 
             // Status
