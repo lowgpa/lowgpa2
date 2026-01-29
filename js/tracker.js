@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterPortal = document.getElementById('filter-portal');
     const filterStatus = document.getElementById('filter-status');
     const filterGpa = document.getElementById('filter-gpa');
+    const filterCategory = document.getElementById('filter-category');
     const filterFav = document.getElementById('filter-fav');
 
     // UI Elements
@@ -99,19 +100,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 gpa_req: gpaRaw,
                 gpa_val: gpaVal,
                 assessment: get("Assessment") || get("assessment") || "None",
-                language: get("Language") || get("language") || ""
+                language: get("Language") || get("language") || "",
+                category: get("Category") || get("category") || "Other"
             };
         });
     }
 
     function formatDate(dateInput) {
         if (!dateInput) return "";
-        let dStr = dateInput.toString();
-        // Handle ISO format like 2026-05-01T00:00:00.000Z
+        const dStr = dateInput.toString();
+
+        // Check if it's a full ISO string (e.g. from Sheet API)
         if (dStr.includes('T')) {
+            // Attempt to handle timezone shifts if the user meant a specific date
+            // But relying on the T split is usually safest for UTC APIs.
+            // If the user reports "31 Jan" instead of "1 Feb", the API might be returning the date shifted.
+            // We will stick to splitting for now but ensure consistency.
             return dStr.split('T')[0];
         }
         return dStr;
+    }
+
+    function calculateDaysRemaining(dateStr) {
+        if (!dateStr) return -9999;
+        const today = new Date();
+        const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+
+        let dlUTC;
+        // Check for YYYY-MM-DD format
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const parts = dateStr.split('-');
+            dlUTC = Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        } else {
+            // Fallback for other formats
+            const dl = new Date(dateStr);
+            if (isNaN(dl.getTime())) return -9999;
+            dlUTC = Date.UTC(dl.getFullYear(), dl.getMonth(), dl.getDate());
+        }
+
+        return Math.ceil((dlUTC - todayUTC) / (1000 * 60 * 60 * 24));
     }
 
     function calculateLastUpdated(data) {
@@ -146,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const portalValue = filterPortal.value;
         const statusValue = filterStatus.value;
         const gpaValue = filterGpa ? filterGpa.value : 'all';
+        const categoryValue = filterCategory ? filterCategory.value : 'all';
         const showFavs = filterFav ? filterFav.checked : false;
 
         currentFilteredData = allAdmissions.filter(item => {
@@ -179,16 +207,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Status
-            const today = new Date();
-            const deadline = new Date(item.deadline_date);
+            const daysLeft = calculateDaysRemaining(item.deadline_date);
             const matchesStatus = (statusValue === 'all') ||
-                (statusValue === 'open' && deadline >= today) ||
-                (statusValue === 'closed' && deadline < today);
+                (statusValue === 'open' && daysLeft >= 0) ||
+                (statusValue === 'closed' && daysLeft < 0);
 
             // Favorites Filter
             const matchesFav = showFavs ? favorites.includes(uniqueId) : true;
 
-            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa;
+            // Category Filter
+            let matchesCategory = true;
+            if (categoryValue !== 'all') {
+                matchesCategory = item.category === categoryValue || item.category.includes(categoryValue);
+            }
+
+            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa && matchesCategory;
         });
 
         // Reset to Page 1 when filters change
@@ -254,10 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const globalIndex = (currentPage - 1) * itemsPerPage + index + 1;
 
             const today = new Date();
-            const deadline = new Date(item.deadline_date);
+            const daysLeft = calculateDaysRemaining(item.deadline_date);
+
             const opening = item.opening_date ? new Date(item.opening_date) : null;
-            const timeDiff = deadline - today;
-            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            // opening logic might need similar robustness but sticking to simple for now
+            const isFutureOpening = opening && today < opening;
+
             const uniqueId = (item.university + item.program).replace(/\s+/g, '').toLowerCase();
             const isFav = favorites.includes(uniqueId);
 
@@ -273,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 deadlineClass = 'badge-urgent';
             } else if (daysLeft > 60) {
                 deadlineClass = 'badge-safe';
-            } else if (opening && today < opening) {
+            } else if (isFutureOpening) {
                 isOpen = false;
                 deadlineClass = 'badge-neutral';
                 deadlineText = `Opens ${item.opening_date}`;
@@ -366,6 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterPortal.addEventListener('change', filterData);
     filterStatus.addEventListener('change', filterData);
     if (filterGpa) filterGpa.addEventListener('change', filterData);
+    if (filterCategory) filterCategory.addEventListener('change', filterData);
     if (filterFav) filterFav.addEventListener('change', filterData);
 
     // Pagination Listeners
