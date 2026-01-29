@@ -117,6 +117,42 @@
             font-style: italic;
         }
 
+        /* Badge Styles for New Fields */
+        .badge-info-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.25rem;
+        }
+
+        .meta-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-gpa {
+            background-color: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FCD34D;
+        }
+
+        .badge-intake {
+            background-color: #E0F2FE;
+            color: #0369A1;
+            border: 1px solid #BAE6FD;
+        }
+
+        .badge-assessment {
+            background-color: #F3E8FF;
+            color: #7E22CE;
+            border: 1px solid #E9D5FF;
+        }
+
         /* Spinner & Favs */
         .loader-circle {
             width: 40px;
@@ -261,7 +297,8 @@
 
         .tracker-col-intake,
         .tracker-col-portal,
-        .tracker-col-opening {
+        .tracker-col-opening,
+        .tracker-col-gpa {
             font-size: 0.9rem;
             color: var(--text-secondary);
         }
@@ -330,36 +367,66 @@
                 text-align: center;
             }
 
+            /* Mobile Grid Refinement */
             .tracker-item {
-                grid-template-columns: 1fr auto;
-                grid-template-rows: auto auto;
-                gap: 0.5rem;
-                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.25rem;
+                position: relative;
             }
 
+            /* Hide Desktop Columns explicitly if not handled by layout */
+            .tracker-col-num,
+            .tracker-col-intake,
+            .tracker-col-opening,
+            .tracker-col-portal {
+                display: none;
+            }
+
+            /* Re-enable important bits via Flex order or specific classes */
             .tracker-col-main {
-                grid-column: 1 / -1;
+                order: 1;
+                width: 100%;
+            }
+
+            /* New Container for Badge Row on Mobile */
+            .mobile-meta-row {
+                order: 2;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
 
             .tracker-col-deadline {
-                grid-column: 1 / 2;
+                order: 3;
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                background: var(--bg-body);
+                padding: 0.75rem;
+                border-radius: 6px;
+                border: 1px solid var(--border-light);
             }
 
             .tracker-col-action {
-                grid-column: 2 / 3;
+                order: 4;
+                width: 100%;
             }
 
-            .desktop-only {
-                display: none;
+            .btn-sm {
+                width: 100%;
+                margin-top: 0;
+                justify-content: center;
+                padding: 0.8rem;
             }
 
             .mobile-only-meta {
                 display: flex;
+                flex-wrap: wrap;
                 gap: 0.5rem;
-                margin-top: 0.25rem;
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -431,6 +498,23 @@
                             <input type="checkbox" id="filter-fav">
                             <span>⭐ Shortlist</span>
                         </label>
+
+                        <!-- GPA Filter -->
+                        <select id="filter-gpa" class="filter-select">
+                            <option value="all">GPA Cutoff: Any</option>
+                            <option value="2.5">Up to 2.5</option>
+                            <option value="2.7">Up to 2.7</option>
+                            <option value="3.0">Up to 3.0</option>
+                            <option value="none">No GPA Limit</option>
+                        </select>
+
+                        <!-- Assessment Filter -->
+                        <select id="filter-assessment" class="filter-select">
+                            <option value="all">Assessment: Any</option>
+                            <option value="none">No Assessment</option>
+                            <option value="interview">Interview</option>
+                            <option value="test">Written Test</option>
+                        </select>
 
                         <div id="result-count" class="result-count">Loading...</div>
                     </div>
