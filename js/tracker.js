@@ -164,13 +164,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const matchesPortal = portalValue === 'all' || item.portal_type.includes(portalValue);
 
-            // GPA
+            // GPA Logic:
+            // "2.7 or better" filter usually means "I have 2.7".
+            // Germany: Lower is better. 1.0 is Best. 4.0 is Pass.
+            // Requirement 2.5 means you need <= 2.5.
+            // If I have 2.7, I CANNOT apply to 2.5.
+            // If I have 2.7, I CAN apply to 3.0.
+            // So, Condition: MyGrade (Filter) <= UniReq (Value).
             let matchesGpa = true;
             if (gpaValue !== 'all') {
                 const filterFloat = parseFloat(gpaValue);
-                // Condition: UniReq (Value) >= UserGPA (Filter).
-                // Example: User has 2.5. Uni Req 2.5 (OK). Uni Req 3.0 (Easier, OK). Uni Req 2.0 (Harder, Fail).
-                matchesGpa = (item.gpa_val >= filterFloat);
+                // item.gpa_val is the Uni Requirement.
+                // If Item is "No Limit" (99.0), then 2.7 <= 99.0 -> TRUE (Show).
+                // If Item is 2.5, then 2.7 <= 2.5 -> FALSE (Hide).
+                // If Item is 3.0, then 2.7 <= 3.0 -> TRUE (Show).
+                matchesGpa = (filterFloat <= item.gpa_val);
             }
 
             // Status
@@ -281,12 +289,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 gpaBadge = `<span class="meta-badge badge-gpa">GPA ${item.gpa_req}</span>`;
             }
 
-            // Intake Badge: Just show the specific intake (e.g. "Winter 2026")
-            let intakeBadge = `<span class="meta-badge badge-intake">${item.intake}</span>`;
+            // Removed Intake Badge as it's redundant (User Request)
 
             let assessBadge = '';
             // Only show assessment badge if it exists and is NOT "None"
-            // Also avoid "Direct" or similar redundant info handled by Portal
             if (item.assessment && !item.assessment.toLowerCase().includes('none') && !item.assessment.toLowerCase().includes('direct')) {
                 assessBadge = `<span class="meta-badge badge-assessment">${item.assessment}</span>`;
             }
@@ -314,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <!-- Badges -->
                             <div class="badge-info-row">
                                 ${gpaBadge}
-                                ${intakeBadge}
                                 ${assessBadge}
                                 ${langBadge}
                             </div>
@@ -341,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="tracker-col-action">
-                    <a href="${item.link}" target="_blank" class="btn btn-sm btn-secondary" ${!isOpen ? 'disabled style="pointer-events:none;"' : ''}>View &rarr;</a>
+                    <a href="${item.link}" target="_blank" class="btn btn-sm btn-primary" style="min-width:80px; ${!isOpen ? 'pointer-events:none; opacity:0.5;' : ''}">View</a>
                 </div>
             `;
             trackerContainer.appendChild(card);
