@@ -526,179 +526,176 @@
     </header>
 
     <main>
-        <main>
-            <section class="section hero" style="padding: 4rem 0 2rem;">
-                <div class="container text-center">
-                    <div class="badge" style="background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5;">🔴 Live
-                        Updates</div>
-                    <h1 style="margin-top: 1rem;">Universities Deadline Tracker</h1>
-                    <p
-                        style="font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">
-                        Stay ahead of your application schedule. Track live admission dates, deadlines, and requirements
-                        for master's programs across Germany.
-                    </p>
-                </div>
-            </section>
-
-            <section class="section" style="padding-top: 0;">
-                <div class="container">
-                    <!-- Controls Container -->
-
-                    <!-- Controls Container -->
-                    <div class="tracker-controls fade-in">
-                        <!-- Search Bar Row -->
-                        <div class="search-wrapper">
-                            <input type="text" id="search-input" placeholder="Search university, program, or tags..."
-                                autocomplete="off">
-                            <div class="search-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div id="last-updated-date" class="last-updated">Updating...</div>
-                    </div>
-
-                    <div class="tracker-controls fade-in" style="margin-top: 1rem;">
-                        <!-- Filters Row -->
-                        <div class="filters-row">
-                            <select id="filter-status" class="filter-select">
-                                <option value="all" selected>Status: Show All</option>
-                                <option value="open">Status: Open Now</option>
-                                <option value="closed">Status: Closed</option>
-                            </select>
-
-                            <select id="filter-portal" class="filter-select">
-                                <option value="all">Application Method</option>
-                                <option value="Direct">Direct Application</option>
-                                <option value="Uni-Assist">Uni-Assist</option>
-                                <option value="VPD">VPD Required</option>
-                            </select>
-
-                            <select id="filter-intake" class="filter-select">
-                                <option value="all">Intake: All</option>
-                                <option value="Winter">Winter</option>
-                                <option value="Summer">Summer</option>
-                            </select>
-
-                            <!-- Favorites Toggle -->
-                            <label class="filter-toggle">
-                                <input type="checkbox" id="filter-fav">
-                                <span>⭐ Shortlist</span>
-                            </label>
-
-                            <!-- GPA Filter -->
-                            <select id="filter-gpa" class="filter-select">
-                                <option value="all">GPA Cutoff: Any</option>
-                                <option value="2.5">2.5 or better</option>
-                                <option value="2.7">2.7 or better</option>
-                                <option value="none">No GPA Limit</option>
-                            </select>
-
-                            <div id="result-count" class="result-count">Loading...</div>
-                        </div>
-
-                        <p class="db-disclaimer">
-                            * Database is updated frequently but limited. We are constantly adding more universities.
-                            Always verify dates on the official university portal.
-                        </p>
-
-                        <!-- Tracker Header Row (Desktop Only) -->
-                        <div class="tracker-header">
-                            <div>#</div>
-                            <div>Program & University</div>
-                            <div>Intake</div>
-                            <div>Opening</div>
-                            <div>Portal</div>
-                            <div style="text-align:right; padding-right:1rem;">Deadline</div>
-                            <div></div>
-                        </div>
-
-                        <!-- Results Grid -->
-                        <div id="tracker-container" class="tracker-grid">
-                            <!-- Loading State -->
-                            <div id="loading-spinner"
-                                style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
-                                <div class="loader-circle"></div>
-                                <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data...</p>
-                            </div>
-                        </div>
-
-                        <!-- Pagination Controls -->
-                        <div class="pagination-bar">
-                            <div class="rows-selector">
-                                <span>Show rows:</span>
-                                <select id="page-size-select" class="page-size-select">
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                </select>
-                            </div>
-
-                            <div class="pagination-nav">
-                                <span id="page-info"
-                                    style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 1rem;">Loading...</span>
-                                <button id="prev-btn" class="btn-page" disabled>Previous</button>
-                                <button id="next-btn" class="btn-page" disabled>Next</button>
-                            </div>
-                        </div>
-
-                    </div> <!-- End tracker-controls -->
-                </div> <!-- End container -->
-            </section>
-        </main>
-
-        <!-- Shortlist Info Section (Simple Row) -->
-        <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
-            <div class="container">
-                <div
-                    style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md);">
-                    <div>
-                        <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">⭐ Your
-                            Shortlist
-                        </h3>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            Saved programs are stored locally in your browser.
-                        </p>
-                    </div>
-                    <button
-                        onclick="document.getElementById('filter-fav').click(); document.getElementById('tracker-container').scrollIntoView({behavior: 'smooth', block: 'start'});"
-                        class="btn btn-secondary"
-                        style="margin:0; width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">
-                        View Shortlist
-                    </button>
-                </div>
+        <section class="section hero" style="padding: 4rem 0 2rem;">
+            <div class="container text-center">
+                <div class="badge" style="background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5;">🔴 Live
+                    Updates</div>
+                <h1 style="margin-top: 1rem;">Universities Deadline Tracker</h1>
+                <p
+                    style="font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Stay ahead of your application schedule. Track live admission dates, deadlines, and requirements for
+                    master's programs across Germany.
+                </p>
             </div>
         </section>
 
-
-
-        <footer class="site-footer">
+        <section class="section" style="padding-top: 0;">
             <div class="container">
-                <div class="footer-content">
-                    <div class="footer-left">
-                        <div class="logo" style="font-size: 1.2rem;">LowGPA to Germany</div>
-                        <p class="copyright">© 2026 LowGPA to Germany. All Rights Reserved.</p>
-                        <p class="built-with">Built with ❤️ in Pakistan 🇵🇰</p>
-                    </div>
-                    <div class="footer-right">
-                        <div class="footer-links">
-                            <a href="about.html">About</a>
-                            <a href="disclaimer.html">Disclaimer</a>
-                            <a href="community.html">Connect</a>
+                <!-- Controls Container -->
+                <div class="tracker-controls fade-in">
+                    <!-- Search Bar Row -->
+                    <div class="search-wrapper">
+                        <input type="text" id="search-input" placeholder="Search university, program, or tags..."
+                            autocomplete="off">
+                        <div class="search-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
                         </div>
-                        <a href="mailto:info@lowgpa.online" class="footer-email">info@lowgpa.online</a>
+                    </div>
+
+                    <div id="last-updated-date" class="last-updated">Updating...</div>
+                </div>
+
+                <div class="tracker-controls fade-in" style="margin-top: 1rem;">
+                    <!-- Filters Row -->
+                    <div class="filters-row">
+                        <select id="filter-status" class="filter-select">
+                            <option value="all" selected>Status: Show All</option>
+                            <option value="open">Status: Open Now</option>
+                            <option value="closed">Status: Closed</option>
+                        </select>
+
+                        <select id="filter-portal" class="filter-select">
+                            <option value="all">Application Method</option>
+                            <option value="Direct">Direct Application</option>
+                            <option value="Uni-Assist">Uni-Assist</option>
+                            <option value="VPD">VPD Required</option>
+                        </select>
+
+                        <select id="filter-intake" class="filter-select">
+                            <option value="all">Intake: All</option>
+                            <option value="Winter">Winter</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+
+                        <!-- Favorites Toggle -->
+                        <label class="filter-toggle">
+                            <input type="checkbox" id="filter-fav">
+                            <span>⭐ Shortlist</span>
+                        </label>
+
+                        <!-- GPA Filter -->
+                        <select id="filter-gpa" class="filter-select">
+                            <option value="all">GPA Cutoff: Any</option>
+                            <option value="2.5">2.5 or better</option>
+                            <option value="2.7">2.7 or better</option>
+                            <option value="none">No GPA Limit</option>
+                        </select>
+
+                        <div id="result-count" class="result-count">Loading...</div>
+                    </div>
+                </div> <!-- End tracker-controls (Filters) -->
+
+                <p class="db-disclaimer">
+                    * Database is updated frequently but limited. We are constantly adding more universities.
+                    Always verify dates on the official university portal.
+                </p>
+
+                <!-- Tracker Header Row (Desktop Only) -->
+                <div class="tracker-header">
+                    <div>#</div>
+                    <div>Program & University</div>
+                    <div>Intake</div>
+                    <div>Opening</div>
+                    <div>Portal</div>
+                    <div style="text-align:right; padding-right:1rem;">Deadline</div>
+                    <div></div>
+                </div>
+
+                <!-- Results Grid -->
+                <div id="tracker-container" class="tracker-grid">
+                    <!-- Loading State -->
+                    <div id="loading-spinner"
+                        style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: var(--text-muted);">
+                        <div class="loader-circle"></div>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">Fetching live data...</p>
                     </div>
                 </div>
-            </div>
-        </footer>
 
-        <script src="js/main.js"></script>
-        <script src="js/tracker.js"></script>
+                <!-- Pagination Controls -->
+                <div class="pagination-bar">
+                    <div class="rows-selector">
+                        <span>Show rows:</span>
+                        <select id="page-size-select" class="page-size-select">
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+
+                    <div class="pagination-nav">
+                        <span id="page-info"
+                            style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 1rem;">Loading...</span>
+                        <button id="prev-btn" class="btn-page" disabled>Previous</button>
+                        <button id="next-btn" class="btn-page" disabled>Next</button>
+                    </div>
+                </div>
+
+            </div> <!-- End tracker-controls -->
+            </div> <!-- End container -->
+        </section>
+    </main>
+
+    <!-- Shortlist Info Section (Simple Row) -->
+    <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
+        <div class="container">
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md);">
+                <div>
+                    <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">⭐ Your
+                        Shortlist
+                    </h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                        Saved programs are stored locally in your browser.
+                    </p>
+                </div>
+                <button
+                    onclick="document.getElementById('filter-fav').click(); document.getElementById('tracker-container').scrollIntoView({behavior: 'smooth', block: 'start'});"
+                    class="btn btn-secondary" style="margin:0; width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    View Shortlist
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="logo" style="font-size: 1.2rem;">LowGPA to Germany</div>
+                    <p class="copyright">© 2026 LowGPA to Germany. All Rights Reserved.</p>
+                    <p class="built-with">Built with ❤️ in Pakistan 🇵🇰</p>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-links">
+                        <a href="about.html">About</a>
+                        <a href="disclaimer.html">Disclaimer</a>
+                        <a href="community.html">Connect</a>
+                    </div>
+                    <a href="mailto:info@lowgpa.online" class="footer-email">info@lowgpa.online</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/tracker.js"></script>
 </body>
 
 </html>
