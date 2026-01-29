@@ -135,6 +135,16 @@
             gap: 4px;
         }
 
+        /* Controls Container Card */
+        .controls-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
         /* Tracker Controls Layout */
         .tracker-controls {
             display: flex;
@@ -541,69 +551,71 @@
 
         <section class="section" style="padding-top: 0;">
             <div class="container">
-                <!-- Controls Container -->
-                <div class="tracker-controls fade-in">
-                    <!-- Search Bar Row -->
-                    <div class="search-wrapper">
-                        <input type="text" id="search-input" placeholder="Search university, program, or tags..."
-                            autocomplete="off">
-                        <div class="search-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
+                <!-- Controls Card -->
+                <div class="controls-card">
+                    <div class="tracker-controls fade-in">
+                        <!-- Search Bar Row -->
+                        <div class="search-wrapper">
+                            <input type="text" id="search-input" placeholder="Search university, program, or tags..."
+                                autocomplete="off">
+                            <div class="search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div id="last-updated-date" class="last-updated">Updating...</div>
+                    </div>
+
+                    <div class="tracker-controls fade-in" style="margin-top: 1rem; margin-bottom: 0;">
+                        <!-- Filters Row -->
+                        <div class="filters-row">
+                            <select id="filter-status" class="filter-select">
+                                <option value="all" selected>Status: Show All</option>
+                                <option value="open">Status: Open Now</option>
+                                <option value="closed">Status: Closed</option>
+                            </select>
+
+                            <select id="filter-portal" class="filter-select">
+                                <option value="all">Application Method</option>
+                                <option value="Direct">Direct Application</option>
+                                <option value="Uni-Assist">Uni-Assist</option>
+                                <option value="VPD">VPD Required</option>
+                            </select>
+
+                            <select id="filter-intake" class="filter-select">
+                                <option value="all">Intake: All</option>
+                                <option value="Winter">Winter</option>
+                                <option value="Summer">Summer</option>
+                            </select>
+
+                            <!-- Favorites Toggle -->
+                            <label class="filter-toggle">
+                                <input type="checkbox" id="filter-fav">
+                                <span>⭐ Shortlist</span>
+                            </label>
+
+                            <!-- GPA Filter -->
+                            <select id="filter-gpa" class="filter-select">
+                                <option value="all">GPA Cutoff: Any</option>
+                                <option value="2.5">2.5 or better</option>
+                                <option value="2.7">2.7 or better</option>
+                                <option value="none">No GPA Limit</option>
+                            </select>
+
+                            <div id="result-count" class="result-count">Loading...</div>
                         </div>
                     </div>
 
-                    <div id="last-updated-date" class="last-updated">Updating...</div>
-                </div>
-
-                <div class="tracker-controls fade-in" style="margin-top: 1rem;">
-                    <!-- Filters Row -->
-                    <div class="filters-row">
-                        <select id="filter-status" class="filter-select">
-                            <option value="all" selected>Status: Show All</option>
-                            <option value="open">Status: Open Now</option>
-                            <option value="closed">Status: Closed</option>
-                        </select>
-
-                        <select id="filter-portal" class="filter-select">
-                            <option value="all">Application Method</option>
-                            <option value="Direct">Direct Application</option>
-                            <option value="Uni-Assist">Uni-Assist</option>
-                            <option value="VPD">VPD Required</option>
-                        </select>
-
-                        <select id="filter-intake" class="filter-select">
-                            <option value="all">Intake: All</option>
-                            <option value="Winter">Winter</option>
-                            <option value="Summer">Summer</option>
-                        </select>
-
-                        <!-- Favorites Toggle -->
-                        <label class="filter-toggle">
-                            <input type="checkbox" id="filter-fav">
-                            <span>⭐ Shortlist</span>
-                        </label>
-
-                        <!-- GPA Filter -->
-                        <select id="filter-gpa" class="filter-select">
-                            <option value="all">GPA Cutoff: Any</option>
-                            <option value="2.5">2.5 or better</option>
-                            <option value="2.7">2.7 or better</option>
-                            <option value="none">No GPA Limit</option>
-                        </select>
-
-                        <div id="result-count" class="result-count">Loading...</div>
-                    </div>
-                </div> <!-- End tracker-controls (Filters) -->
-
-                <p class="db-disclaimer">
-                    * Database is updated frequently but limited. We are constantly adding more universities.
-                    Always verify dates on the official university portal.
-                </p>
+                    <p class="db-disclaimer" style="margin-top: 1rem; margin-bottom: 0;">
+                        * Database is updated frequently but limited. We are constantly adding more universities.
+                        Always verify dates on the official university portal.
+                    </p>
+                </div> <!-- End Controls Card -->
 
                 <!-- Tracker Header Row (Desktop Only) -->
                 <div class="tracker-header">
