@@ -531,7 +531,15 @@
                 padding: 1rem;
             }
 
-            .tracker-col-num,
+            .tracker-col-num {
+                display: block;
+                grid-column: 1 / -1;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                margin-bottom: 0px;
+            }
+
             .tracker-col-intake,
             .tracker-col-opening,
             .tracker-col-portal {
@@ -559,6 +567,11 @@
                 padding: 0.75rem;
                 border-radius: 8px;
                 border: 1px solid var(--border-light);
+            }
+
+            /* Force left alignment of date text on mobile */
+            .tracker-col-deadline>div {
+                align-items: flex-start !important;
             }
 
             /* Action Button - Right Side (Align with Deadline Box height) */
