@@ -85,7 +85,10 @@
             font-size: 0.9rem;
             color: var(--text-secondary);
             cursor: pointer;
-            min-width: 140px;
+            min-width: 120px;
+            /* Reduced from 140px */
+            flex-grow: 1;
+            /* Allow them to fill space evenly */
         }
 
         .filter-toggle {
@@ -99,6 +102,10 @@
             background: var(--bg-body);
             font-size: 0.9rem;
             user-select: none;
+            white-space: nowrap;
+            flex-grow: 1;
+            /* Match select behavior */
+            justify-content: center;
         }
 
         .result-count {

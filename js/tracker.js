@@ -112,10 +112,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check if it's a full ISO string (e.g. from Sheet API)
         if (dStr.includes('T')) {
-            // Attempt to handle timezone shifts if the user meant a specific date
-            // But relying on the T split is usually safest for UTC APIs.
-            // If the user reports "31 Jan" instead of "1 Feb", the API might be returning the date shifted.
-            // We will stick to splitting for now but ensure consistency.
+            // Fix for Timezone offsets (e.g. T23:00:00 returning previous day)
+            // We assume deadlines are meant to be 'End of Day' or 'Midnight' of the target date.
+            // If we see a time, parsing it as UTC might show previous day.
+            // Strategy: Add 12 hours to the timestamp to push any Late-Previous-Day time into the Correct Day.
+            const dateObj = new Date(dStr);
+            if (!isNaN(dateObj.getTime())) {
+                const shiftedDate = new Date(dateObj.getTime() + (12 * 60 * 60 * 1000));
+                return shiftedDate.toISOString().split('T')[0];
+            }
             return dStr.split('T')[0];
         }
         return dStr;
