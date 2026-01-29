@@ -4,15 +4,19 @@ const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyeSm-5xl0xBUJGZM
 document.addEventListener('DOMContentLoaded', () => {
     const trackerContainer = document.getElementById('tracker-container');
     const searchInput = document.getElementById('search-input');
+    // Filters
     const filterIntake = document.getElementById('filter-intake');
     const filterPortal = document.getElementById('filter-portal');
     const filterStatus = document.getElementById('filter-status');
+    const filterGpa = document.getElementById('filter-gpa');
+    const filterAssessment = document.getElementById('filter-assessment');
     const filterFav = document.getElementById('filter-fav');
+
+    // UI Elements
     const resultCount = document.getElementById('result-count');
     const lastUpdatedEl = document.getElementById('last-updated-date');
 
     // Pagination Controls
-    const paginationControls = document.getElementById('pagination-controls');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const pageInfo = document.getElementById('page-info');
@@ -52,6 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('data/admissions.json')
             .then(response => response.json())
             .then(data => {
+                allAdmissions = data; // Already normalized in local JSON usually, but robust to run it through
+                // If local JSON keys exactly match, this is fine. 
+                // However, our local JSON now has 'intakes' as array, while sheet might return string.
+                // Let's normalize it to be safe if structure differs slightly or effectively simple pass-through.
+                if (data.length > 0 && !data[0].gpa_req) {
+                    // Fallback for old json structure if any
+                }
                 allAdmissions = data;
                 filterData();
             })
@@ -60,15 +71,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function normalizeSheetData(sheetData) {
         return sheetData.map(item => {
+            // Helper to get case-insensitive property
+            const get = (key) => item[key] || item[key.toLowerCase()] || "";
+
+            // Parse GPA: "2.5" -> 2.5
+            let gpaRaw = get("GPA") || get("gpa_req") || "No Limit";
+            let gpaVal = 99.0;
+            if (gpaRaw !== "No Limit" && gpaRaw !== "None") {
+                const match = gpaRaw.toString().match(/[0-9]\.[0-9]/);
+                if (match) gpaVal = parseFloat(match[0]);
+            }
+
+            // Parse Intakes: "Winter, Summer" -> ["Winter", "Summer"]
+            let intakesRaw = get("Intakes") || get("intakes");
+            let intakes = [];
+            if (Array.isArray(intakesRaw)) {
+                intakes = intakesRaw;
+            } else if (typeof intakesRaw === 'string') {
+                intakes = intakesRaw.split(',').map(s => s.trim());
+            }
+
             return {
-                university: item.University || item.university || "Unknown",
-                program: item.Program || item.program || "Unknown",
-                intake: item.Intake || item.intake || "",
-                opening_date: formatDate(item.Opening || item.opening),
-                deadline_date: formatDate(item.Deadline || item.deadline),
-                portal_type: item.Portal || item.portal || "Direct",
-                link: item.Link || item.link || "#",
-                tags: (item.Tags || item.tags || "").split(',').map(t => t.trim())
+                university: get("University") || get("university") || "Unknown",
+                program: get("Program") || get("program") || "Unknown",
+                intake: get("Intake") || get("intake") || "", // Primary intake focus
+                intakes_list: intakes,
+                opening_date: formatDate(get("Opening") || get("opening_date") || get("opening")),
+                deadline_date: formatDate(get("Deadline") || get("deadline_date") || get("deadline")),
+                portal_type: get("Portal") || get("portal_type") || get("portal") || "Direct",
+                link: get("Link") || get("link") || "#",
+                tags: (get("Tags") || get("tags") || "").toString().split(',').map(t => t.trim()),
+                gpa_req: gpaRaw,
+                gpa_val: gpaVal,
+                assessment: get("Assessment") || get("assessment") || "None"
             };
         });
     }
@@ -96,7 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
             favorites.splice(index, 1);
         }
         localStorage.setItem('lowgpa_favorites', JSON.stringify(favorites));
-        renderPage(); // Update UI
+        // Don't re-render entire page to avoid scatter, just toggle class if element exists
+        const btn = document.querySelector(`button[data-fav-id="${id}"]`);
+        if (btn) {
+            btn.innerHTML = favorites.includes(id) ? '★' : '☆';
+            btn.classList.toggle('active');
+        }
     }
     window.toggleFavorite = toggleFavorite;
 
@@ -107,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const intakeValue = filterIntake.value;
         const portalValue = filterPortal.value;
         const statusValue = filterStatus.value;
+        const gpaValue = filterGpa ? filterGpa.value : 'all';
+        const assessmentValue = filterAssessment ? filterAssessment.value : 'all';
         const showFavs = filterFav ? filterFav.checked : false;
 
         currentFilteredData = allAdmissions.filter(item => {
@@ -118,8 +160,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.tags.some(tag => tag.toLowerCase().includes(searchTerm));
 
             // Dropdowns
-            const matchesIntake = intakeValue === 'all' || item.intake.includes(intakeValue);
+            // Intake: Check if filtered intake is in the list of available intakes
+            const matchesIntake = intakeValue === 'all' ||
+                item.intake.includes(intakeValue) ||
+                (item.intakes_list && item.intakes_list.some(i => i.includes(intakeValue)));
+
             const matchesPortal = portalValue === 'all' || item.portal_type.includes(portalValue);
+
+            // Assessment
+            let matchesAssessment = true;
+            if (assessmentValue !== 'all') {
+                const assess = item.assessment.toLowerCase();
+                if (assessmentValue === 'none') matchesAssessment = assess.includes('none') || assess === '';
+                if (assessmentValue === 'interview') matchesAssessment = assess.includes('interview');
+                if (assessmentValue === 'test') matchesAssessment = assess.includes('test') || assess.includes('grey');
+            }
+
+            // GPA
+            let matchesGpa = true;
+            if (gpaValue !== 'all') {
+                if (gpaValue === 'none') {
+                    matchesGpa = item.gpa_val > 5.0; // Assuming encoded "No Limit" is 99.0
+                } else {
+                    const filterFloat = parseFloat(gpaValue);
+                    // Match if Uni GPA Limit >= Filter Value (e.g. Uni 3.0 >= User 2.5 -> OK)
+                    // OR if Uni has no limit
+                    matchesGpa = (item.gpa_val >= filterFloat);
+                }
+            }
 
             // Status
             const today = new Date();
@@ -131,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Favorites Filter
             const matchesFav = showFavs ? favorites.includes(uniqueId) : true;
 
-            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav;
+            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa && matchesAssessment;
         });
 
         // Reset to Page 1 when filters change
@@ -222,32 +290,74 @@ document.addEventListener('DOMContentLoaded', () => {
                 deadlineText = `Opens ${item.opening_date}`;
             }
 
+            // Formatting Metadata
+            let gpaBadge = '';
+            if (item.gpa_val < 5.0) {
+                gpaBadge = `<span class="meta-badge badge-gpa">🎓 GPA ${item.gpa_req}</span>`;
+            } else {
+                gpaBadge = `<span class="meta-badge badge-gpa">🎓 Any GPA</span>`;
+            }
+
+            let intakeBadge = '';
+            // Assuming item.intake is raw string e.g. "Winter 2026", try to detect Seasons
+            const isWinter = item.intake.includes('Winter') || (item.intakes_list && item.intakes_list.includes('Winter'));
+            const isSummer = item.intake.includes('Summer') || (item.intakes_list && item.intakes_list.includes('Summer'));
+
+            if (isWinter && isSummer) intakeBadge = `<span class="meta-badge badge-intake">❄️ Winter • ☀️ Summer</span>`;
+            else if (isWinter) intakeBadge = `<span class="meta-badge badge-intake">❄️ Winter</span>`;
+            else if (isSummer) intakeBadge = `<span class="meta-badge badge-intake">☀️ Summer</span>`;
+            else intakeBadge = `<span class="meta-badge badge-intake">📅 ${item.intake}</span>`;
+
+            let assessBadge = '';
+            if (item.assessment && item.assessment !== 'None') {
+                assessBadge = `<span class="meta-badge badge-assessment">📝 ${item.assessment}</span>`;
+            } else {
+                assessBadge = `<span class="meta-badge badge-assessment" style="background:#f0fdf4; color:#166534; border-color:#bbf7d0;">✅ Direct</span>`;
+            }
+
             const card = document.createElement('div');
             card.className = `tracker-item ${!isOpen ? 'opacity-50' : ''} ${isFav ? 'fav-active-border' : ''}`;
-
-            // Staggered Animation Delay
             card.style.animationDelay = `${index * 0.05}s`;
 
             card.innerHTML = `
                 <div class="tracker-col-num">#${globalIndex}</div>
                 <div class="tracker-col-main">
                     <div style="display:flex; align-items:flex-start; gap:0.5rem;">
-                        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${uniqueId}')" title="Add to Shortlist">
+                        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav-id="${uniqueId}" onclick="toggleFavorite('${uniqueId}')" title="Add to Shortlist">
                             ${isFav ? '★' : '☆'}
                         </button>
                         <div>
                             <h3 class="tracker-program">${item.program}</h3>
                             <div class="tracker-uni">${item.university}</div>
+                            
+                            <!-- Badges -->
+                            <div class="badge-info-row">
+                                ${gpaBadge}
+                                ${intakeBadge}
+                                ${assessBadge}
+                            </div>
+                            
+                            <!-- Mobile Only Meta -->
+                            <div class="mobile-meta-row">
+                                <!-- Mobile row content injected here via CSS Flex Order -->
+                            </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="tracker-col-intake desktop-only">${item.intake}</div>
                 <div class="tracker-col-opening desktop-only" style="font-size:0.85rem; color:var(--text-secondary);">${item.opening_date || '-'}</div>
                 <div class="tracker-col-portal desktop-only">${item.portal_type}</div>
+                
                 <div class="tracker-col-deadline">
-                   <div class="deadline-badge-row ${deadlineClass}">${deadlineText}</div>
-                   <div style="font-size:0.75rem; color:var(--text-muted);">${item.deadline_date}</div>
+                   <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                       <div class="deadline-badge-row ${deadlineClass}">${deadlineText}</div>
+                       <div style="font-size:0.75rem; color:var(--text-muted);">${item.deadline_date || 'TBA'}</div>
+                   </div>
+                   <!-- Mobile Only Deadline Label -->
+                   <div class="mobile-only-meta" style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); display:none;">Deadline:</div>
                 </div>
+                
                 <div class="tracker-col-action">
                     <a href="${item.link}" target="_blank" class="btn btn-sm btn-secondary" ${!isOpen ? 'disabled style="pointer-events:none;"' : ''}>View &rarr;</a>
                 </div>
@@ -261,6 +371,8 @@ document.addEventListener('DOMContentLoaded', () => {
     filterIntake.addEventListener('change', filterData);
     filterPortal.addEventListener('change', filterData);
     filterStatus.addEventListener('change', filterData);
+    if (filterGpa) filterGpa.addEventListener('change', filterData);
+    if (filterAssessment) filterAssessment.addEventListener('change', filterData);
     if (filterFav) filterFav.addEventListener('change', filterData);
 
     // Pagination Listeners
