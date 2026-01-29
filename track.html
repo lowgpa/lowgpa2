@@ -605,27 +605,27 @@
                         </div>
                     </div>
 
-                </div>
+                </div> <!-- End tracker-controls -->
+            </div> <!-- End container -->
         </section>
     </main>
 
-    <!-- Shortlist Info Section -->
-    <section class="section" style="padding-top: 0; padding-bottom: 4rem;">
+    <!-- Shortlist Info Section (Simple Row) -->
+    <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
         <div class="container">
             <div
-                style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border: 1px solid #dbeafe; border-radius: 16px; padding: 2.5rem; text-align: center; max-width: 800px; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
-                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.75rem;">Your Personal
-                    Shortlist</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                    Click the star icon next to any program to save it here. <br>
-                    Your list is saved locally on your device, so you can revisit your top choices anytime without
-                    logging in.
-                </p>
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md);">
+                <div>
+                    <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">⭐ Your Shortlist
+                    </h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                        Saved programs are stored locally in your browser.
+                    </p>
+                </div>
                 <button
                     onclick="document.getElementById('filter-fav').click(); document.getElementById('tracker-container').scrollIntoView({behavior: 'smooth', block: 'start'});"
-                    class="btn btn-secondary">
-                    View My Shortlist
+                    class="btn btn-secondary" style="margin:0; width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    View Shortlist
                 </button>
             </div>
         </div>
