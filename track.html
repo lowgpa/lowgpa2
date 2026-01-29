@@ -153,6 +153,12 @@
             border: 1px solid #E9D5FF;
         }
 
+        .badge-lang {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
         /* Spinner & Favs */
         .loader-circle {
             width: 40px;
@@ -502,18 +508,8 @@
                         <!-- GPA Filter -->
                         <select id="filter-gpa" class="filter-select">
                             <option value="all">GPA Cutoff: Any</option>
-                            <option value="2.5">Up to 2.5</option>
-                            <option value="2.7">Up to 2.7</option>
-                            <option value="3.0">Up to 3.0</option>
-                            <option value="none">No GPA Limit</option>
-                        </select>
-
-                        <!-- Assessment Filter -->
-                        <select id="filter-assessment" class="filter-select">
-                            <option value="all">Assessment: Any</option>
-                            <option value="none">No Assessment</option>
-                            <option value="interview">Interview</option>
-                            <option value="test">Written Test</option>
+                            <option value="2.5">2.5 or better</option>
+                            <option value="2.7">2.7 or better</option>
                         </select>
 
                         <div id="result-count" class="result-count">Loading...</div>

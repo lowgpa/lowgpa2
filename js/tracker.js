@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterPortal = document.getElementById('filter-portal');
     const filterStatus = document.getElementById('filter-status');
     const filterGpa = document.getElementById('filter-gpa');
-    const filterAssessment = document.getElementById('filter-assessment');
     const filterFav = document.getElementById('filter-fav');
 
     // UI Elements
@@ -56,14 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('data/admissions.json')
             .then(response => response.json())
             .then(data => {
-                allAdmissions = data; // Already normalized in local JSON usually, but robust to run it through
-                // If local JSON keys exactly match, this is fine. 
-                // However, our local JSON now has 'intakes' as array, while sheet might return string.
-                // Let's normalize it to be safe if structure differs slightly or effectively simple pass-through.
-                if (data.length > 0 && !data[0].gpa_req) {
-                    // Fallback for old json structure if any
-                }
-                allAdmissions = data;
+                allAdmissions = normalizeSheetData(data);
                 filterData();
             })
             .catch(error => console.error('Error loading local data:', error));
@@ -91,6 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 intakes = intakesRaw.split(',').map(s => s.trim());
             }
 
+            // Tags fallback (user typo "Tages")
+            let tagsRaw = get("Tags") || get("tags") || get("Tages") || "";
+
             return {
                 university: get("University") || get("university") || "Unknown",
                 program: get("Program") || get("program") || "Unknown",
@@ -100,20 +95,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 deadline_date: formatDate(get("Deadline") || get("deadline_date") || get("deadline")),
                 portal_type: get("Portal") || get("portal_type") || get("portal") || "Direct",
                 link: get("Link") || get("link") || "#",
-                tags: (get("Tags") || get("tags") || "").toString().split(',').map(t => t.trim()),
+                tags: tagsRaw.toString().split(',').map(t => t.trim()),
                 gpa_req: gpaRaw,
                 gpa_val: gpaVal,
-                assessment: get("Assessment") || get("assessment") || "None"
+                assessment: get("Assessment") || get("assessment") || "None",
+                language: get("Language") || get("language") || ""
             };
         });
     }
 
     function formatDate(dateInput) {
         if (!dateInput) return "";
-        if (dateInput.toString().includes('T')) {
-            return dateInput.toString().split('T')[0];
+        let dStr = dateInput.toString();
+        // Handle ISO format like 2026-05-01T00:00:00.000Z
+        if (dStr.includes('T')) {
+            return dStr.split('T')[0];
         }
-        return dateInput;
+        return dStr;
     }
 
     function calculateLastUpdated(data) {
@@ -148,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const portalValue = filterPortal.value;
         const statusValue = filterStatus.value;
         const gpaValue = filterGpa ? filterGpa.value : 'all';
-        const assessmentValue = filterAssessment ? filterAssessment.value : 'all';
         const showFavs = filterFav ? filterFav.checked : false;
 
         currentFilteredData = allAdmissions.filter(item => {
@@ -160,33 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.tags.some(tag => tag.toLowerCase().includes(searchTerm));
 
             // Dropdowns
-            // Intake: Check if filtered intake is in the list of available intakes
+            // Intake
             const matchesIntake = intakeValue === 'all' ||
                 item.intake.includes(intakeValue) ||
                 (item.intakes_list && item.intakes_list.some(i => i.includes(intakeValue)));
 
             const matchesPortal = portalValue === 'all' || item.portal_type.includes(portalValue);
 
-            // Assessment
-            let matchesAssessment = true;
-            if (assessmentValue !== 'all') {
-                const assess = item.assessment.toLowerCase();
-                if (assessmentValue === 'none') matchesAssessment = assess.includes('none') || assess === '';
-                if (assessmentValue === 'interview') matchesAssessment = assess.includes('interview');
-                if (assessmentValue === 'test') matchesAssessment = assess.includes('test') || assess.includes('grey');
-            }
-
             // GPA
             let matchesGpa = true;
             if (gpaValue !== 'all') {
-                if (gpaValue === 'none') {
-                    matchesGpa = item.gpa_val > 5.0; // Assuming encoded "No Limit" is 99.0
-                } else {
-                    const filterFloat = parseFloat(gpaValue);
-                    // Match if Uni GPA Limit >= Filter Value (e.g. Uni 3.0 >= User 2.5 -> OK)
-                    // OR if Uni has no limit
-                    matchesGpa = (item.gpa_val >= filterFloat);
-                }
+                const filterFloat = parseFloat(gpaValue);
+                // Condition: UniReq (Value) >= UserGPA (Filter).
+                // Example: User has 2.5. Uni Req 2.5 (OK). Uni Req 3.0 (Easier, OK). Uni Req 2.0 (Harder, Fail).
+                matchesGpa = (item.gpa_val >= filterFloat);
             }
 
             // Status
@@ -199,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Favorites Filter
             const matchesFav = showFavs ? favorites.includes(uniqueId) : true;
 
-            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa && matchesAssessment;
+            return matchesSearch && matchesIntake && matchesPortal && matchesStatus && matchesFav && matchesGpa;
         });
 
         // Reset to Page 1 when filters change
@@ -290,29 +274,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 deadlineText = `Opens ${item.opening_date}`;
             }
 
-            // Formatting Metadata
+            // Formatting Metadata - Clean, No Emojis
             let gpaBadge = '';
             if (item.gpa_val < 5.0) {
-                gpaBadge = `<span class="meta-badge badge-gpa">🎓 GPA ${item.gpa_req}</span>`;
+                gpaBadge = `<span class="meta-badge badge-gpa">GPA ${item.gpa_req}</span>`;
             } else {
-                gpaBadge = `<span class="meta-badge badge-gpa">🎓 Any GPA</span>`;
+                gpaBadge = `<span class="meta-badge badge-gpa">Any GPA</span>`;
             }
 
             let intakeBadge = '';
-            // Assuming item.intake is raw string e.g. "Winter 2026", try to detect Seasons
             const isWinter = item.intake.includes('Winter') || (item.intakes_list && item.intakes_list.includes('Winter'));
             const isSummer = item.intake.includes('Summer') || (item.intakes_list && item.intakes_list.includes('Summer'));
 
-            if (isWinter && isSummer) intakeBadge = `<span class="meta-badge badge-intake">❄️ Winter • ☀️ Summer</span>`;
-            else if (isWinter) intakeBadge = `<span class="meta-badge badge-intake">❄️ Winter</span>`;
-            else if (isSummer) intakeBadge = `<span class="meta-badge badge-intake">☀️ Summer</span>`;
-            else intakeBadge = `<span class="meta-badge badge-intake">📅 ${item.intake}</span>`;
+            if (isWinter && isSummer) intakeBadge = `<span class="meta-badge badge-intake">Winter • Summer</span>`;
+            else if (isWinter) intakeBadge = `<span class="meta-badge badge-intake">Winter</span>`;
+            else if (isSummer) intakeBadge = `<span class="meta-badge badge-intake">Summer</span>`;
+            else intakeBadge = `<span class="meta-badge badge-intake">${item.intake}</span>`;
 
             let assessBadge = '';
-            if (item.assessment && item.assessment !== 'None') {
-                assessBadge = `<span class="meta-badge badge-assessment">📝 ${item.assessment}</span>`;
-            } else {
-                assessBadge = `<span class="meta-badge badge-assessment" style="background:#f0fdf4; color:#166534; border-color:#bbf7d0;">✅ Direct</span>`;
+            // Only show assessment badge if it exists and is NOT "None"
+            // Also avoid "Direct" or similar redundant info handled by Portal
+            if (item.assessment && !item.assessment.toLowerCase().includes('none') && !item.assessment.toLowerCase().includes('direct')) {
+                assessBadge = `<span class="meta-badge badge-assessment">${item.assessment}</span>`;
+            }
+
+            let langBadge = '';
+            if (item.language) {
+                langBadge = `<span class="meta-badge badge-lang" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;">${item.language}</span>`;
             }
 
             const card = document.createElement('div');
@@ -335,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${gpaBadge}
                                 ${intakeBadge}
                                 ${assessBadge}
+                                ${langBadge}
                             </div>
                             
                             <!-- Mobile Only Meta -->
@@ -372,7 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
     filterPortal.addEventListener('change', filterData);
     filterStatus.addEventListener('change', filterData);
     if (filterGpa) filterGpa.addEventListener('change', filterData);
-    if (filterAssessment) filterAssessment.addEventListener('change', filterData);
     if (filterFav) filterFav.addEventListener('change', filterData);
 
     // Pagination Listeners
