@@ -302,6 +302,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 langBadge = `<span class="meta-badge badge-lang" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;">${item.language}</span>`;
             }
 
+            // Tags Badges
+            let tagsHtml = '';
+            if (item.tags && item.tags.length > 0) {
+                // Filter out empty tags
+                item.tags.filter(t => t && t.length > 0).forEach(tag => {
+                    tagsHtml += `<span class="meta-badge badge-tag">${tag}</span>`;
+                });
+            }
+
             const card = document.createElement('div');
             card.className = `tracker-item ${!isOpen ? 'opacity-50' : ''} ${isFav ? 'fav-active-border' : ''}`;
             card.style.animationDelay = `${index * 0.05}s`;
@@ -322,6 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${gpaBadge}
                                 ${assessBadge}
                                 ${langBadge}
+                                ${tagsHtml}
                             </div>
                             
                             <!-- Mobile Only Meta -->
