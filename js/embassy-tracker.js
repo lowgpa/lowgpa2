@@ -154,6 +154,13 @@ function openSummaryModal() {
     currentWeekOffset = 0; // Reset to current week
     const modal = document.getElementById('summaryModal');
     const content = document.getElementById('summary-content');
+
+    // Update Header with Timeframe
+    const title = document.getElementById('summary-title');
+    if (title && API_CONFIG && API_CONFIG[currentCategory]) {
+        title.innerHTML = 'Weekly Activity Report <span style="font-weight:400; font-size:0.9em; color:var(--text-secondary)"> - ' + API_CONFIG[currentCategory].label + '</span>';
+    }
+
     modal.classList.add('active');
 
     // Check if data is available
@@ -222,9 +229,20 @@ function generateWeeklySummary(data, offset = 0) {
     const dailyStats = { submitted: 0, correction: 0, appointment: 0, gotSubmission: 0 };
 
     // Helper to add update
-    const addUpdate = (dateStr, type, personName, joinDate) => {
-        if (!dateStr) return;
-        const date = new Date(dateStr);
+    const addUpdate = (rawContent, type, personName, joinDate) => {
+        if (!rawContent) return;
+
+        // 1. Try strict date first (standard columns)
+        let date = new Date(rawContent);
+
+        // 2. If invalid (e.g. Correction text), try to extract date
+        if (isNaN(date.getTime()) && type === 'correction') {
+            const dateMatch = String(rawContent).match(/(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/);
+            if (dateMatch) {
+                date = new Date(dateMatch[0]);
+            }
+        }
+
         if (isNaN(date.getTime())) return;
 
         // Filter: Must be within target week
@@ -235,7 +253,8 @@ function generateWeeklySummary(data, offset = 0) {
                 weeklyUpdates[dateKey] = { updates: [] };
             }
 
-            weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate });
+            // Pass original content for display
+            weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate, content: rawContent });
 
             // Stats logic - Aggregate stats for the WHOLE viewed week 
             dailyStats[type]++;
@@ -302,7 +321,9 @@ function generateWeeklySummary(data, offset = 0) {
                     text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} submitted their file.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received a correction request.`;
+                    // Show content if available, else generic message
+                    const corrText = upd.content || 'received a correction request';
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo}: ${corrText}`;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
                     text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} booked an appointment!`;
