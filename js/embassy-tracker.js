@@ -301,26 +301,30 @@ function generateWeeklySummary(data, offset = 0) {
         <div class="summary-block">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
                 <h4 style="margin:0; color:var(--text-primary)">Summary for this Period</h4>
-                <div class="badge-update" style="background:var(--text-primary); color:var(--bg-body); font-size:0.9rem; border:1px solid var(--text-primary);">
-                    Total Activity: <strong>${totalUpdates}</strong>
+                <div class="stat-total">
+                    Total Activity: ${totalUpdates}
                 </div>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem;">
-                <div class="badge-update sub" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
-                    Submission Emails: <strong>${dailyStats.gotSubmission}</strong>
+            <div class="stats-grid">
+                <div class="stat-item sub badge-update">
+                    Submission Emails
+                    <strong>${dailyStats.gotSubmission}</strong>
                 </div>
-                <div class="badge-update" style="background:#E0E7FF; color:#3730A3; font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
-                    Files Submitted: <strong>${dailyStats.submitted}</strong>
+                <div class="stat-item badge-update" style="background:#E0E7FF; color:#3730A3;">
+                    Files Submitted
+                    <strong>${dailyStats.submitted}</strong>
                 </div>
-                <div class="badge-update corr" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
-                    Corrections: <strong>${dailyStats.correction}</strong>
+                <div class="stat-item corr badge-update">
+                    Corrections
+                    <strong>${dailyStats.correction}</strong>
                 </div>
-                <div class="badge-update app" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
-                    Appointments: <strong>${dailyStats.appointment}</strong>
+                <div class="stat-item app badge-update">
+                    Appointments
+                    <strong>${dailyStats.appointment}</strong>
                 </div>
             </div>
-        </div>
-    `;
+        </div >
+        `;
 
     // 2. Daily Breakdown Loop
     const sortedDates = Object.keys(weeklyUpdates).sort((a, b) => new Date(b) - new Date(a)); // Newest first
@@ -331,7 +335,7 @@ function generateWeeklySummary(data, offset = 0) {
         html += '<h4 style="margin-bottom:1rem;color:var(--text-primary)">Daily Breakdown</h4>';
 
         sortedDates.forEach(dateKey => {
-            html += `<span class="summary-date">${dateKey}</span>`;
+            html += `< span class="summary-date" > ${dateKey}</span > `;
 
             weeklyUpdates[dateKey].updates.forEach(upd => {
                 let badge = '';
@@ -339,31 +343,31 @@ function generateWeeklySummary(data, offset = 0) {
 
                 // Format helper
                 const jDate = upd.joinDate ? new Date(upd.joinDate).toLocaleDateString() : 'Unknown';
-                const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
+                const joinedInfo = `< span style = "color:var(--text-muted); font-size:0.85em; margin-left:4px;" > (Joined: ${jDate})</span > `;
 
 
                 if (upd.type === 'gotSubmission') {
                     badge = '<span class="badge-update sub">Got Submission Email</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received submission request.`;
+                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} received submission request.`;
                 } else if (upd.type === 'submitted') {
                     badge = '<span class="badge-update" style="background:#E0E7FF; color:#3730A3">Submitted</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} submitted their file.`;
+                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} submitted their file.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
                     // Show content if available, else generic message
                     const corrText = upd.content || 'received a correction request';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo}: ${corrText}`;
+                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo}: ${corrText} `;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} booked an appointment!`;
+                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} booked an appointment!`;
                 }
 
                 html += `
-                    <div class="summary-item">
+        < div class="summary-item" >
                         <div style="min-width:120px">${badge}</div>
                         <div style="color:var(--text-secondary)">${text}</div>
-                    </div>
-                `;
+                    </div >
+        `;
             });
             html += '<br>';
         });
