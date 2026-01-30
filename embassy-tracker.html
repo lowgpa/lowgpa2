@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embassy Appointment Tracker - LowGPA to Germany</title>
+    <meta name="description"
+        content="Track Islamabad Embassy appointment applicant status and timeline. Real-time updates from community data.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .container {
+            max-width: 1400px !important;
+        }
+
+        .tracker-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .tab-btn {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border-light);
+            background: var(--bg-body);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .stats-badge {
+            background: #F0FDF4;
+            color: #15803D;
+            border: 1px solid #BBF7D0;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Modern Table Styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            background: var(--bg-surface);
+        }
+
+        .app-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .app-table th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--bg-body);
+            border-bottom: 2px solid var(--border-light);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .app-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .app-table tr:hover td {
+            background-color: var(--bg-accent-light);
+        }
+
+        .status-cell {
+            font-weight: 500;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.has-date {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-badge.no-date {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .status-badge.correction {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* Responsive Mobile View - Card Layout */
+        @media (max-width: 768px) {
+
+            .app-table,
+            .app-table tbody,
+            .app-table tr,
+            .app-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .app-table thead {
+                display: none;
+                /* Hide header on mobile */
+            }
+
+            .app-table tr {
+                margin-bottom: 1rem;
+                background: var(--bg-surface);
+                border: 1px solid var(--border-light);
+                border-radius: var(--radius-md);
+                padding: 1rem;
+            }
+
+            .app-table td {
+                padding: 0.5rem 0;
+                border: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right;
+            }
+
+            .app-table td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+                margin-right: 1rem;
+            }
+
+            .app-table td:first-child {
+                border-bottom: 1px solid var(--border-light);
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.5rem;
+                font-weight: 700;
+                color: var(--accent-primary);
+            }
+        }
+
+        .loading-state {
+            padding: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--bg-surface);
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-body);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .summary-block {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-body);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .summary-date {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 0.25rem;
+            display: block;
+            margin-top: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            padding: 0.75rem;
+            background: var(--bg-body);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            align-items: center;
+        }
+
+        .badge-update {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            height: fit-content;
+            white-space: nowrap;
+        }
+
+        .badge-update.sub {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .badge-update.corr {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-update.app {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .btn-summary {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-summary:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-summary:active {
+            transform: scale(0.96);
+        }
+
+        /* Dark mode tweaks if necessary */
+        @media (prefers-color-scheme: dark) {
+            .btn-summary {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="de/index.html" class="nav-link">Germany</a>
+                <a href="community.html" class="nav-link">Connect</a>
+                <a href="resources.html" class="nav-link">Resources</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section hero" style="padding: 4rem 0 2rem;">
+            <div class="container text-center">
+                <div class="badge" style="background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">🇵🇰
+                    Islamabad Embassy</div>
+                <h1 style="margin-top: 1rem;">Appointment Tracker</h1>
+                <p
+                    style="font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Community-driven tracking for student visa appointments. Select your application perioid to see the
+                    latest status.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top: 0;">
+            <div class="container">
+
+                <!-- Controls -->
+                <div class="tracker-controls fade-in">
+                    <div class="category-tabs">
+                        <button class="tab-btn active" onclick="loadCategory('july25')">July 2025</button>
+                        <button class="tab-btn" onclick="loadCategory('augOct25')">Aug - Oct 2025</button>
+                        <button class="tab-btn" onclick="loadCategory('novDec25')">Nov - Dec 2025</button>
+                        <button class="tab-btn" onclick="loadCategory('janFeb26')">Jan - Feb 2026</button>
+                    </div>
+
+                    <div style="display:flex; gap: 0.5rem; align-items:center;">
+                        <button onclick="openSummaryModal()" class="btn-summary">📊 Weekly Summary</button>
+                        <div id="stats-badge" class="stats-badge">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container fade-in">
+                    <table class="app-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Time</th>
+                                <th>Got Submission</th>
+                                <th>Submitted</th>
+                                <th>Correction</th>
+                                <th>Appointment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracker-body">
+                            <!-- Rows will be populated by JS -->
+                        </tbody>
+                    </table>
+
+                    <div id="loading-indicator" class="loading-state">
+                        <div class="loader-circle" style="margin: 0 auto 1rem; width: 30px; height: 30px;"></div>
+                        Fetching latest data...
+                    </div>
+                </div>
+
+                <p class="text-center" style="margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                    <em>*Data is sourced from community spreadsheets. Times are in PKT.</em>
+                </p>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Weekly Summary Modal -->
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0">Weekly Activity Report</h3>
+                <button onclick="document.getElementById('summaryModal').classList.remove('active')"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted)">&times;</button>
+            </div>
+            <div class="modal-body" id="summary-content">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="logo" style="font-size: 1.2rem;">LowGPA to Germany</div>
+                    <p class="copyright">© 2026 LowGPA to Germany. All Rights Reserved.</p>
+                    <p class="built-with">Built with ❤️ in Pakistan 🇵🇰</p>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-links">
+                        <a href="about.html">About</a>
+                        <a href="disclaimer.html">Disclaimer</a>
+                        <a href="community.html">Connect</a>
+                    </div>
+                    <a href="mailto:info@lowgpa.online" class="footer-email">info@lowgpa.online</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/embassy-tracker.js"></script>
+</body>
+
+</html>
