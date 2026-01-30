@@ -335,7 +335,7 @@ function generateWeeklySummary(data, offset = 0) {
         html += '<h4 style="margin-bottom:1rem;color:var(--text-primary)">Daily Breakdown</h4>';
 
         sortedDates.forEach(dateKey => {
-            html += `< span class="summary-date" > ${dateKey}</span > `;
+            html += `<span class="summary-date">${dateKey}</span>`;
 
             weeklyUpdates[dateKey].updates.forEach(upd => {
                 let badge = '';
@@ -343,31 +343,31 @@ function generateWeeklySummary(data, offset = 0) {
 
                 // Format helper
                 const jDate = upd.joinDate ? new Date(upd.joinDate).toLocaleDateString() : 'Unknown';
-                const joinedInfo = `< span style = "color:var(--text-muted); font-size:0.85em; margin-left:4px;" > (Joined: ${jDate})</span > `;
+                const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
 
 
                 if (upd.type === 'gotSubmission') {
                     badge = '<span class="badge-update sub">Got Submission Email</span>';
-                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} received submission request.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received submission request.`;
                 } else if (upd.type === 'submitted') {
                     badge = '<span class="badge-update" style="background:#E0E7FF; color:#3730A3">Submitted</span>';
-                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} submitted their file.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} submitted their file.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
                     // Show content if available, else generic message
                     const corrText = upd.content || 'received a correction request';
-                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo}: ${corrText} `;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo}: ${corrText}`;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
-                    text = `< strong > ${upd.name || 'Anonymous'}</strong > ${joinedInfo} booked an appointment!`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} booked an appointment!`;
                 }
 
                 html += `
-        < div class="summary-item" >
+                    <div class="summary-item">
                         <div style="min-width:120px">${badge}</div>
                         <div style="color:var(--text-secondary)">${text}</div>
-                    </div >
-        `;
+                    </div>
+                `;
             });
             html += '<br>';
         });
