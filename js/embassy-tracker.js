@@ -295,20 +295,27 @@ function generateWeeklySummary(data, offset = 0) {
     let html = navHtml;
 
     // 1. Overall Stats for the Week
+    const totalUpdates = dailyStats.gotSubmission + dailyStats.submitted + dailyStats.correction + dailyStats.appointment;
+
     html += `
         <div class="summary-block">
-            <h4 style="margin-bottom:1rem;color:var(--text-primary)">Summary for this Period</h4>
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <div class="badge-update sub" style="font-size:0.9rem; padding:0.5rem 1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+                <h4 style="margin:0; color:var(--text-primary)">Summary for this Period</h4>
+                <div class="badge-update" style="background:var(--text-primary); color:var(--bg-body); font-size:0.9rem; border:1px solid var(--text-primary);">
+                    Total Activity: <strong>${totalUpdates}</strong>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem;">
+                <div class="badge-update sub" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
                     Submission Emails: <strong>${dailyStats.gotSubmission}</strong>
                 </div>
-                <div class="badge-update" style="background:#E0E7FF; color:#3730A3; font-size:0.9rem; padding:0.5rem 1rem;">
+                <div class="badge-update" style="background:#E0E7FF; color:#3730A3; font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
                     Files Submitted: <strong>${dailyStats.submitted}</strong>
                 </div>
-                <div class="badge-update corr" style="font-size:0.9rem; padding:0.5rem 1rem;">
+                <div class="badge-update corr" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
                     Corrections: <strong>${dailyStats.correction}</strong>
                 </div>
-                <div class="badge-update app" style="font-size:0.9rem; padding:0.5rem 1rem;">
+                <div class="badge-update app" style="font-size:0.9rem; padding:0.5rem 1rem; text-align:center;">
                     Appointments: <strong>${dailyStats.appointment}</strong>
                 </div>
             </div>
