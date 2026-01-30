@@ -243,7 +243,12 @@ function generateWeeklySummary(data, offset = 0) {
         // 2. If it's a correction, try to find ALL dates in the string
         if (type === 'correction') {
             const months = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
-            const regex = new RegExp(`(\\d{1,2}[-\\s](?:${months})[a-z]*(?:[-\\s]\\d{2,4})?)|((?:${months})[a-z]*[-\\s]\\d{1,2}(?:[-\\s],?\\s?\\d{2,4})?)|(\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{2,4})`, 'gi');
+            // Regex explanations:
+            // 1. D-M (e.g. 5-Jan, 12-Dec) or D M (5 Jan)
+            // 2. M-D (e.g. Jan-5, Dec 12)
+            // 3. Numeric (e.g. 1/5/26, 12.05.2026)
+            // Added \b boundaries and negative lookahead for year to avoid slicing "19-Jan 21" as "19-Jan 2021"
+            const regex = new RegExp(`\\b(?:(\\d{1,2}[-\\s](?:${months})[a-z]*(?:[-\\s]\\d{4}|[-\\s]\\d{2}(?![-A-Za-z]))?)|((?:${months})[a-z]*[-\\s]\\d{1,2}(?:[-\\s],?\\s?\\d{2,4})?)|(\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{2,4}))\\b`, 'gi');
 
             const matches = [...String(rawContent).matchAll(regex)];
 
@@ -253,6 +258,10 @@ function generateWeeklySummary(data, offset = 0) {
 
                 matches.forEach(match => {
                     let dateString = match[0];
+
+                    // Clean up punctuation if it crept in (unlikely with \b but good safety)
+                    dateString = dateString.replace(/[.,;]$/, '');
+
                     if (!/\d{4}/.test(dateString)) {
                         dateString += ` ${new Date().getFullYear()}`; // Default to 2026
                     }
