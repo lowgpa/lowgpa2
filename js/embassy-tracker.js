@@ -222,7 +222,7 @@ function generateWeeklySummary(data, offset = 0) {
     const dailyStats = { submitted: 0, correction: 0, appointment: 0, gotSubmission: 0 };
 
     // Helper to add update
-    const addUpdate = (dateStr, type, personName) => {
+    const addUpdate = (dateStr, type, personName, joinDate) => {
         if (!dateStr) return;
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return;
@@ -235,7 +235,7 @@ function generateWeeklySummary(data, offset = 0) {
                 weeklyUpdates[dateKey] = { updates: [] };
             }
 
-            weeklyUpdates[dateKey].updates.push({ type, name: personName });
+            weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate });
 
             // Stats logic - Aggregate stats for the WHOLE viewed week 
             dailyStats[type]++;
@@ -289,18 +289,23 @@ function generateWeeklySummary(data, offset = 0) {
                 let badge = '';
                 let text = '';
 
+                // Format helper
+                const jDate = upd.joinDate ? new Date(upd.joinDate).toLocaleDateString() : 'Unknown';
+                const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
+
+
                 if (upd.type === 'gotSubmission') {
                     badge = '<span class="badge-update sub">Got Submission Email</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> received submission request.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received submission request.`;
                 } else if (upd.type === 'submitted') {
                     badge = '<span class="badge-update" style="background:#E0E7FF; color:#3730A3">Submitted</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> submitted their file.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} submitted their file.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> received a correction request.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received a correction request.`;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> booked an appointment!`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} booked an appointment!`;
                 }
 
                 html += `
