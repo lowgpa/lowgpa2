@@ -232,33 +232,55 @@ function generateWeeklySummary(data, offset = 0) {
     const addUpdate = (rawContent, type, personName, joinDate) => {
         if (!rawContent) return;
 
-        // 1. Try strict date first (standard columns)
-        let date = new Date(rawContent);
+        let datesToProcess = [];
 
-        // 2. If invalid (e.g. Correction text), try to extract date
-        if (isNaN(date.getTime()) && type === 'correction') {
-            const dateMatch = String(rawContent).match(/(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/);
-            if (dateMatch) {
-                date = new Date(dateMatch[0]);
+        // 1. Try strict date first (standard columns or single date)
+        const strictDate = new Date(rawContent);
+        if (!isNaN(strictDate.getTime())) {
+            datesToProcess.push(strictDate);
+        }
+
+        // 2. If it's a correction, try to find ALL dates in the string
+        if (type === 'correction') {
+            const months = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
+            const regex = new RegExp(`(\\d{1,2}[-\\s](?:${months})[a-z]*(?:[-\\s]\\d{2,4})?)|((?:${months})[a-z]*[-\\s]\\d{1,2}(?:[-\\s],?\\s?\\d{2,4})?)|(\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{2,4})`, 'gi');
+
+            const matches = [...String(rawContent).matchAll(regex)];
+
+            if (matches.length > 0) {
+                // If regex found dates, use them. Reset previous strict match to avoid duplication/errors if strict match was weird.
+                datesToProcess = [];
+
+                matches.forEach(match => {
+                    let dateString = match[0];
+                    if (!/\d{4}/.test(dateString)) {
+                        dateString += ` ${new Date().getFullYear()}`; // Default to 2026
+                    }
+                    const d = new Date(dateString);
+                    if (!isNaN(d.getTime())) {
+                        datesToProcess.push(d);
+                    }
+                });
             }
         }
 
-        if (isNaN(date.getTime())) return;
+        // Process all found dates
+        datesToProcess.forEach(date => {
+            // Filter: Must be within target week
+            if (date >= targetMonday && date <= targetSunday) {
+                const dateKey = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-        // Filter: Must be within target week
-        if (date >= targetMonday && date <= targetSunday) {
-            const dateKey = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+                if (!weeklyUpdates[dateKey]) {
+                    weeklyUpdates[dateKey] = { updates: [] };
+                }
 
-            if (!weeklyUpdates[dateKey]) {
-                weeklyUpdates[dateKey] = { updates: [] };
+                // Pass original content for display
+                weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate, content: rawContent });
+
+                // Stats logic
+                dailyStats[type]++;
             }
-
-            // Pass original content for display
-            weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate, content: rawContent });
-
-            // Stats logic - Aggregate stats for the WHOLE viewed week 
-            dailyStats[type]++;
-        }
+        });
     };
 
     // Iterate Data
