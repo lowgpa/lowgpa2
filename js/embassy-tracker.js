@@ -43,13 +43,37 @@ async function loadCategory(categoryKey) {
     });
 
     // Show Loading
+    // Show Loading
     const tbody = document.getElementById('tracker-body');
     const loading = document.getElementById('loading-indicator');
-    const stats = document.getElementById('stats-badge');
+    const statsContainer = document.getElementById('overall-stats-container');
 
     tbody.innerHTML = '';
+
+    // 1. Skeleton Stats (Detailed with Loading Bar)
+    if (statsContainer) {
+        const skeletonCard = `
+            <div class="stat-card" style="border-color: transparent;">
+                <div class="skeleton" style="width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;"></div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="skeleton" style="height: 10px; width: 40%; border-radius: 4px;"></div>
+                    <div class="skeleton" style="height: 24px; width: 60%; border-radius: 4px;"></div>
+                    <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
+                    <div class="skeleton" style="height: 6px; width: 100%; border-radius: 99px; margin-top: 4px;"></div> <!-- Loading Bar Placeholder -->
+                </div>
+            </div>
+        `;
+
+        statsContainer.innerHTML = `
+            <div class="stats-summary-container">
+                ${skeletonCard}
+                ${skeletonCard}
+                ${skeletonCard}
+            </div>
+        `;
+    }
+
     loading.style.display = 'block';
-    stats.textContent = 'loading...';
 
     try {
         let data;
@@ -68,27 +92,102 @@ async function loadCategory(categoryKey) {
     } catch (error) {
         console.error("Error fetching data:", error);
         loading.innerHTML = `<span style="color:red">Error loading data. Please try again.</span>`;
-        stats.textContent = 'Error';
     }
 }
 
 // Render Logic
 function renderTable(data) {
     const tbody = document.getElementById('tracker-body');
-    const stats = document.getElementById('stats-badge');
+    const statsContainer = document.getElementById('overall-stats-container');
+
+    // Reset Container
+    if (statsContainer) statsContainer.innerHTML = '';
 
     // Update Count
     const count = Array.isArray(data) ? data.length : 0;
-    stats.textContent = `${count} Applicants`;
 
     if (count === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">No data found.</td></tr>`;
         return;
     }
 
+    // --- 1. Calculate Overall Stats ---
+    let totalsubmitted = 0;
+    let totalAppointments = 0;
+
+    // Pre-process for sorting and counting
+    data.forEach(item => {
+        if (item.submitted) totalsubmitted++;
+        if (item.appointment) totalAppointments++;
+    });
+
+    const subPercent = Math.round((totalsubmitted / count) * 100) || 0;
+    const appPercent = Math.round((totalAppointments / count) * 100) || 0;
+
+    // Render Stats Tile
+    if (statsContainer) {
+        // Render Stats Tile
+        if (statsContainer) {
+            // SGV Icons
+            const iconTotal = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+            const iconSub = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+            const iconApp = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+
+            statsContainer.innerHTML = `
+            <div class="stats-summary-container">
+                <div class="stat-card fade-in-up delay-1">
+                    <div class="stat-icon-wrapper" style="background: #EEF2FF; color: #4F46E5;">
+                        ${iconTotal}
+                    </div>
+                    <div class="stat-content">
+                        <h4>Total Applicants</h4>
+                        <div class="stat-value">${count}</div>
+                        <div class="stat-meta">Tracking active cases</div>
+                    </div>
+                </div>
+
+                <div class="stat-card fade-in-up delay-2">
+                    <div class="stat-icon-wrapper" style="background: #ECFDF5; color: #059669;">
+                        ${iconSub}
+                    </div>
+                    <div class="stat-content" style="width:100%">
+                        <h4>Submitted</h4>
+                        <div class="stat-value">${totalsubmitted}</div>
+                        <div class="stat-meta">${subPercent}% of total</div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width: ${subPercent}%; background: #059669;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card fade-in-up delay-3">
+                    <div class="stat-icon-wrapper" style="background: #FFF7ED; color: #EA580C;">
+                        ${iconApp}
+                    </div>
+                    <div class="stat-content" style="width:100%">
+                        <h4>Appointments</h4>
+                        <div class="stat-value">${totalAppointments}</div>
+                        <div class="stat-meta">${totalAppointments} out of ${count} total</div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width: ${appPercent}%; background: #EA580C;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }
+    }
+
+    // --- 2. Sort & Date Grouping Logic ---
     // Sort by Join Date (Oldest First)
-    // Assuming data API might not be perfectly sorted
     data.sort((a, b) => new Date(a.joinDate) - new Date(b.joinDate));
+
+    // Pre-calculate counts per join date
+    const dateCounts = {};
+    data.forEach(item => {
+        const jDate = item.joinDate ? new Date(item.joinDate).toDateString() : 'Unknown';
+        dateCounts[jDate] = (dateCounts[jDate] || 0) + 1;
+    });
 
     let lastJoinDate = '';
 
@@ -107,29 +206,57 @@ function renderTable(data) {
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         };
 
-        const currentJoinDate = formatDate(item.joinDate);
+        const currentJoinDateObj = item.joinDate ? new Date(item.joinDate) : null;
+        const currentJoinDateStr = currentJoinDateObj ? formatDate(item.joinDate) : 'Unknown Date';
+        const currentJoinDateKey = currentJoinDateObj ? currentJoinDateObj.toDateString() : 'Unknown';
 
-        // Date Header
-        if (currentJoinDate !== lastJoinDate) {
+        // Date Header with Count (Feature R)
+        if (currentJoinDateStr !== lastJoinDate) {
+            const dayCount = dateCounts[currentJoinDateKey] || 0;
             const headerRow = document.createElement('tr');
             headerRow.className = 'date-header';
             headerRow.innerHTML = `
-                <td colspan="6" style="background:var(--bg-body); font-weight:700; color:var(--text-secondary); padding:0.75rem 1rem; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light);">
-                    📅 Joined: <span style="color:var(--text-primary)">${currentJoinDate}</span>
+                <td colspan="6" style="background:var(--bg-body); font-weight:700; color:var(--text-secondary); padding:0.75rem 1rem; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">
+                    <span style="display:inline-flex; align-items:center; gap:6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        ${currentJoinDateStr}
+                    </span>
+                    <span class="date-header-count" style="margin-left:8px; font-weight:600; font-size: 0.75rem; background:#fff; border:1px solid var(--border-light); padding: 2px 8px; border-radius:12px; color:var(--text-muted); text-transform:none;">${dayCount} Joiners</span>
                 </td>
             `;
             tbody.appendChild(headerRow);
-            lastJoinDate = currentJoinDate;
+            lastJoinDate = currentJoinDateStr;
         }
 
-        const formatStatusDate = (dateString) => {
+        const formatStatusDate = (dateString, type) => {
             if (!dateString) return '<span class="status-badge no-date">-</span>';
-            return `<span class="status-badge has-date">${formatDate(dateString)}</span>`;
+            let content = `<span class="status-badge has-date">${formatDate(dateString)}</span>`;
+
+            // Wait Time Calculation (Feature Q)
+            if (type === 'appointment' && item.joinDate) {
+                const appDate = new Date(dateString);
+                const joinDate = new Date(item.joinDate);
+                if (!isNaN(appDate) && !isNaN(joinDate)) {
+                    // Difference in milliseconds
+                    const diffTime = Math.abs(appDate - joinDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    let badgeClass = 'wait-time-badge';
+                    if (diffDays > 60) badgeClass += ' long';
+                    else if (diffDays < 30) badgeClass += ' short';
+
+                    const clockIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; position:relative; top:-1px"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+
+                    content += `<span class="${badgeClass}" title="Days from joining to appointment">${clockIcon}${diffDays} days wait</span>`;
+                }
+            }
+            return content;
         };
 
         const formatCorrection = (text) => {
             if (!text) return '<span class="status-badge no-date">-</span>';
-            return `<span class="status-badge correction" title="${text}">${text}</span>`;
+            const display = text.length > 36 ? text.substring(0, 36) + '...' : text;
+            return `<span class="status-badge correction" title="${text}">${display}</span>`;
         };
 
         const row = document.createElement('tr');
@@ -140,7 +267,7 @@ function renderTable(data) {
             <td data-label="Got Submission" class="status-cell">${formatStatusDate(item.gotSubmission)}</td>
             <td data-label="Submitted" class="status-cell">${formatStatusDate(item.submitted)}</td>
             <td data-label="Correction" class="status-cell">${formatCorrection(item.correction)}</td>
-            <td data-label="Appointment" class="status-cell">${formatStatusDate(item.appointment)}</td>
+            <td data-label="Appointment" class="status-cell">${formatStatusDate(item.appointment, 'appointment')}</td>
         `;
 
         tbody.appendChild(row);

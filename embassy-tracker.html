@@ -15,7 +15,18 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .container {
-            max-width: 1400px !important;
+            width: 90% !important;
+            /* 90% width = 5% margin on left and right */
+            max-width: none !important;
+            /* Allow full fluid width on all screens */
+            margin: 0 auto !important;
+            padding: 0 !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem !important;
+            }
         }
 
         .tracker-controls {
@@ -25,10 +36,12 @@
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 2rem;
-            background: var(--bg-surface);
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-light);
+            padding: 0;
+            /* Align with content */
+            background: transparent;
+            /* Remove box look */
+            border: none;
+            box-shadow: none;
         }
 
         .category-tabs {
@@ -87,7 +100,8 @@
 
         .app-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 0.95rem;
             white-space: nowrap;
         }
@@ -95,23 +109,47 @@
         .app-table th {
             text-align: left;
             padding: 1rem;
-            background: var(--bg-body);
+            /* Reduced vertical padding slightly for better balance */
+            background: white;
+            /* Match container background */
             border-bottom: 2px solid var(--border-light);
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .table-container {
+            /* Unify Table Look with Stats & Controls */
+            background: var(--bg-surface);
+            padding: 2.5rem;
+            /* Increased Margin inside the container */
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            width: 100%;
+            overflow-x: auto;
         }
 
         .app-table td {
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             border-bottom: 1px solid var(--border-light);
             color: var(--text-primary);
+            transition: background 0.15s;
+        }
+
+        .app-table tr:last-child td {
+            border-bottom: none;
         }
 
         .app-table tr:hover td {
-            background-color: var(--bg-accent-light);
+            background-color: #F1F5F9;
+            /* Slate 100 */
         }
 
         .status-cell {
@@ -383,6 +421,237 @@
                 box-shadow: none;
             }
         }
+
+        /* New Stats Tile Styles */
+        /* Unified Container Styles */
+        .stats-summary-container,
+        .tracker-controls,
+        .table-container {
+            width: 100%;
+            margin-bottom: 2rem;
+            background: var(--bg-surface);
+            padding: 2rem 5% !important;
+            /* Fixed 5% internal margin/padding */
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tracker-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats-summary-container {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .stat-card {
+            background: #F8FAFC;
+            /* Slight contrast inside the white container */
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            /* Slightly smaller radius for inner items */
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            background: #FFFFFF;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon-wrapper {
+            transform: scale(1.05);
+        }
+
+        .stat-content h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-content .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-content .stat-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 900px) {
+            .stats-summary-container {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        /* Wait Time Badge */
+        .wait-time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #F3F4F6;
+            color: #4B5563;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .wait-time-badge.long {
+            background: #FEF3C7;
+            color: #92400E;
+            border-color: #FCD34D;
+        }
+
+        .wait-time-badge.short {
+            background: #ECFDF5;
+            color: #047857;
+            border-color: #6EE7B7;
+        }
+
+        /* Date Header Count */
+        .date-header-count {
+            display: inline-block;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        /* Skeleton Loading Animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .skeleton {
+            background: #f6f7f8;
+            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-repeat: no-repeat;
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear;
+            border-radius: 4px;
+            color: transparent !important;
+        }
+
+        .skeleton-text {
+            height: 1em;
+            width: 80%;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-card {
+            height: 100px;
+        }
+
+        .skeleton-row {
+            height: 60px;
+        }
+
+        /* Fade In Stagger */
+        @keyframes fadeInUpSmall {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUpSmall 0.4s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Stats Progress Bar */
+        .progress-bg {
+            width: 100%;
+            height: 6px;
+            background: #F1F5F9;
+            border-radius: 99px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            width: 0;
+            /* JS sets this, but animation handles visual */
+            animation: progressGrow 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes progressGrow {
+            from {
+                width: 0;
+            }
+        }
     </style>
 </head>
 
@@ -426,41 +695,52 @@
                         <button class="tab-btn" onclick="loadCategory('janFeb26')">Jan - Feb 2026</button>
                     </div>
 
-                    <div style="display:flex; gap: 0.5rem; align-items:center;">
-                        <button onclick="openSummaryModal()" class="btn-summary">📊 Weekly Summary</button>
-                        <div id="stats-badge" class="stats-badge">
-                            Loading...
-                        </div>
+                    <div>
+                        <button onclick="openSummaryModal()" class="btn-summary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="8" x2="8" y2="16"></line>
+                                <line x1="16" y1="8" x2="16" y2="16"></line>
+                            </svg>
+                            Weekly Summary
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Table -->
-                <div class="table-container fade-in">
-                    <table class="app-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Time</th>
-                                <th>Got Submission</th>
-                                <th>Submitted</th>
-                                <th>Correction</th>
-                                <th>Appointment</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tracker-body">
-                            <!-- Rows will be populated by JS -->
-                        </tbody>
-                    </table>
+            <!-- Stats Dashboard -->
+            <div id="overall-stats-container" class="fade-in"></div>
 
-                    <div id="loading-indicator" class="loading-state">
-                        <div class="loader-circle" style="margin: 0 auto 1rem; width: 30px; height: 30px;"></div>
-                        Fetching latest data...
-                    </div>
+            <!-- Table -->
+            <div class="table-container fade-in">
+                <table class="app-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Time</th>
+                            <th>Got Submission</th>
+                            <th>Submitted</th>
+                            <th>Correction</th>
+                            <th>Appointment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracker-body">
+                        <!-- Rows will be populated by JS -->
+                    </tbody>
+                </table>
+
+                <div id="loading-indicator" class="loading-state">
+                    <div class="loader-circle" style="margin: 0 auto 1rem; width: 30px; height: 30px;"></div>
+                    Fetching latest data...
                 </div>
+            </div>
 
-                <p class="text-center" style="margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
-                    <em>*Data is sourced from community spreadsheets. Times are in PKT.</em>
-                </p>
+            <p class="text-center" style="margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                <em>*Data is sourced from community spreadsheets. Times are in PKT.</em>
+            </p>
 
             </div>
         </section>

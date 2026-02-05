@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany Essentials - Blocked Accounts, Banking & eSIM | LowGPA</title>
+    <meta name="description"
+        content="The no-nonsense guide to Germany arrival essentials: Best blocked accounts, student bank accounts, and eSIM options for international students.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Specific Styles for Essentials Page */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .provider-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-primary);
+        }
+
+        .provider-card.featured {
+            border: 2px solid var(--accent-primary);
+            background: linear-gradient(to bottom, #F0FDFA, white);
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .provider-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 1.5rem 0;
+            flex-grow: 1;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .feature-list li.negative::before {
+            content: '✕';
+            color: #EF4444;
+        }
+
+        .price-tag {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-intro {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .comparison-table th {
+            background: var(--bg-surface);
+            font-weight: 600;
+        }
+
+        /* Anchor Nav */
+        .anchor-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .anchor-pill {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .anchor-pill:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: var(--bg-accent-light);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="de/index.html" class="nav-link">Germany</a>
+                <a href="community.html" class="nav-link">Connect</a>
+                <a href="resources.html" class="nav-link">Resources</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero liquid-bg">
+            <div class="container text-center animate-fade-up">
+                <div class="hero-badge">
+                    <span style="font-size: 1rem; margin-right: 0.5rem;">✨</span> Updated for Winter 2026/27
+                </div>
+                <h1>Arrival <span class="text-gradient">Essentials</span></h1>
+                <p>
+                    Listing the top trusted providers for Blocked Accounts, Banking, and Connectivity.
+                    No hidden affiliate biases, just what works best for students.
+                </p>
+                <div class="anchor-nav">
+                    <a href="#blocked-account" class="anchor-pill">💰 Blocked Account</a>
+                    <a href="#insurance" class="anchor-pill">🏥 Insurance</a>
+                    <a href="#banking" class="anchor-pill">🏦 Student Banking</a>
+                    <a href="#credit-cards" class="anchor-pill">💳 Credit Cards</a>
+                    <a href="#esim" class="anchor-pill">📶 eSIM & Data</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blocked Account Section -->
+        <section id="blocked-account" class="section">
+            <div class="container">
+                <div class="section-intro animate-fade-up delay-100">
+                    <h2>Blocked Account (Sperrkonto)</h2>
+                    <p>
+                        Mandatory for your visa. You need to block <strong>€11,904</strong> (as of 2025/26) to prove you
+                        can sustain yourself for a year.
+                        The money is yours; you get it back in monthly payouts (~€992) once you arrive.
+                    </p>
+                </div>
+
+                <div class="provider-grid animate-fade-up delay-200">
+                    <!-- Fintiba -->
+                    <div class="provider-card featured">
+                        <div class="recommended-badge">Top Pick for Speed</div>
+                        <div class="provider-header">
+                            <span class="provider-name">Fintiba</span>
+                            <span>🇩🇪</span>
+                        </div>
+                        <div class="price-tag">€89.00 <span style="font-size:0.9rem; font-weight:400">setup</span></div>
+                        <div class="price-desc">+ €4.90 monthly fee</div>
+                        <ul class="feature-list">
+                            <li><strong>Fastest setup</strong> (often in minutes)</li>
+                            <li>Integrated Health Insurance (Fintiba Plus)</li>
+                            <li>Fully English App & Support</li>
+                            <li>Accepted by all embassies</li>
+                        </ul>
+                        <a href="https://www.fintiba.com" target="_blank" class="btn btn-primary btn-sm">Visit
+                            Fintiba</a>
+                    </div>
+
+                    <!-- Coracle -->
+                    <div class="provider-card">
+                        <div class="recommended-badge" style="background:var(--accent-secondary)">Best Value</div>
+                        <div class="provider-header">
+                            <span class="provider-name">Coracle</span>
+                            <span>🇩🇪</span>
+                        </div>
+                        <div class="price-tag">€59.00 <span style="font-size:0.9rem; font-weight:400">setup</span></div>
+                        <div class="price-desc"><strong>Free</strong> buffer period</div>
+                        <ul class="feature-list">
+                            <li><strong>Cheapest</strong> setup fee for Prime package</li>
+                            <li>Free Travel Insurance included in Prime</li>
+                            <li>No monthly fees</li>
+                            <li>Great support for Indian students</li>
+                        </ul>
+                        <a href="https://www.coracle.de" target="_blank" class="btn btn-secondary btn-sm">Visit
+                            Coracle</a>
+                    </div>
+
+                    <!-- Expatrio -->
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-name">Expatrio</span>
+                            <span>🇩🇪</span>
+                        </div>
+                        <div class="price-tag">€49.00 <span style="font-size:0.9rem; font-weight:400">setup</span></div>
+                        <div class="price-desc">+ €5.00 monthly (often waived in packages)</div>
+                        <ul class="feature-list">
+                            <li>Value Package (Health + Blocked) reduces fees</li>
+                            <li>Techniker Krankenkasse (TK) partner</li>
+                            <li>Cashback offers often available</li>
+                        </ul>
+                        <a href="https://www.expatrio.com" target="_blank" class="btn btn-secondary btn-sm">Visit
+                            Expatrio</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Banking Section -->
+        <section id="banking" class="section" style="background: var(--bg-surface);">
+            <div class="container">
+                <div class="grid grid-2" style="align-items: center; gap: 4rem;">
+                    <div class="animate-fade-up">
+                        <h2>Student Banking</h2>
+                        <p>
+                            You need a German IBAN to receive your blocked account payouts, pay rent, and sign
+                            contracts.
+                            Traditional stick-in-the-mud banks like Sparkasse charge high fees. Go digital.
+                        </p>
+                        <div style="margin-top: 2rem;">
+                            <div class="provider-card"
+                                style="margin-bottom: 2rem; border-left: 4px solid var(--accent-primary);">
+                                <div class="provider-header" style="margin-bottom: 0.5rem;">
+                                    <span class="provider-name">N26</span>
+                                    <span class="badge">Digital Bank</span>
+                                </div>
+                                <p style="font-size: 0.95rem; margin-bottom: 1rem;">The gold standard for students. Free
+                                    standard account, German IBAN, physical or virtual card.</p>
+                                <ul class="feature-list" style="margin: 0 0 1rem 0;">
+                                    <li>Free ATM withdrawals (limited)</li>
+                                    <li>English App</li>
+                                    <li>No paperwork (Video ID verification)</li>
+                                </ul>
+                                <a href="https://n26.com" target="_blank" class="btn btn-text">Check N26 &rarr;</a>
+                            </div>
+
+                            <div class="provider-card" style="border-left: 4px solid var(--accent-secondary);">
+                                <div class="provider-header" style="margin-bottom: 0.5rem;">
+                                    <span class="provider-name">Vivid / Tomorrow</span>
+                                    <span class="badge">Sustainable</span>
+                                </div>
+                                <p style="font-size: 0.95rem; margin-bottom: 1rem;">Great alternatives if N26 rejects
+                                    your passport or region.</p>
+                                <a href="#" class="btn btn-text">Learn more &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-fade-up delay-100"
+                        style="background: var(--bg-body); padding: 2rem; border-radius: var(--radius-lg);">
+                        <h3>⚠️ The "Sparkasse" Trap</h3>
+                        <p style="font-size: 0.95rem; margin-bottom: 1rem;">
+                            Many students walk into a Sparkasse or Deutsche Bank branch because it looks "safe".
+                        </p>
+                        <ul class="feature-list">
+                            <li class="negative">Monthly maintenance fees (€5-€10)</li>
+                            <li class="negative">Paperwork heavy setup</li>
+                            <li class="negative">Often German-only support</li>
+                            <li class="negative">Card often not a Visa/Mastercard (Girocard only)</li>
+                        </ul>
+                        <p style="font-size: 0.9rem; font-style: italic; color: var(--text-muted);">
+                            *Only use traditional banks if you deal creatively with cash or need specific branch
+                            services.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credit Cards Section -->
+        <section id="credit-cards" class="section">
+            <div class="container">
+                <div class="section-intro animate-fade-up">
+                    <h2>Real Credit Cards</h2>
+                    <p>
+                        <strong>Stop.</strong> N26 and Vivid cards are <em>Debit Cards</em>. They draw money directly
+                        from your account.
+                        A "Real" Credit Card pays for you, and you pay it back later. You need this for <strong>building
+                            SCHUFA credit score</strong>, rental car deposits, and emergencies.
+                    </p>
+                </div>
+
+                <div class="provider-grid animate-fade-up delay-100">
+                    <!-- TF Bank -->
+                    <div class="provider-card featured">
+                        <div class="recommended-badge">Best Approval Rate</div>
+                        <div class="provider-header">
+                            <span class="provider-name">TF Bank</span>
+                            <span class="badge" style="background:#FCD34D; color:#92400E;">Gold</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">The easiest card to get for international
+                            students. High acceptance.</p>
+                        <div class="price-tag">€0.00 <span style="font-size:0.9rem; font-weight:400">Annual Fee</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li><strong>Travel Insurance:</strong> Included (Must pay 50% of trip with card)</li>
+                            <li><strong>Foreign Fees:</strong> 0% (Great for travel outside EU)</li>
+                            <li><strong>Interest Free:</strong> Up to 51 days on <em>purchases</em></li>
+                        </ul>
+                        <div
+                            style="background: #FFFBEB; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: #92400E; margin-bottom: 1rem;">
+                            <strong>⚠️ Warning:</strong> Cash withdrawals charge ~22.35% interest <em>immediately</em>.
+                            Do not use for ATM withdrawal.
+                        </div>
+                        <a href="https://tfbank.de" target="_blank" class="btn btn-primary btn-sm">Apply for TF
+                            Matrix</a>
+                    </div>
+
+                    <!-- Advanzia -->
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-name">Gebührenfrei</span>
+                            <span class="badge" style="background:#E5E7EB; color:#374151;">Gold</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">Solid backup. Interest rates slightly higher.
+                        </p>
+                        <div class="price-tag">€0.00 <span style="font-size:0.9rem; font-weight:400">Annual Fee</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li><strong>Advanzia Bank</strong> (Luxembourg)</li>
+                            <li>Free Travel Insurance</li>
+                            <li><strong>Foreign Fees:</strong> 0%</li>
+                            <li><strong>Interest:</strong> ~24.69% p.a.</li>
+                        </ul>
+                        <div
+                            style="background: #FFFBEB; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: #92400E; margin-bottom: 1rem;">
+                            <strong>⚠️ Warning:</strong> Returns and Cash withdrawals trigger immediate interest.
+                        </div>
+                        <a href="https://www.gebuehrenfrei.com" target="_blank" class="btn btn-secondary btn-sm">Apply
+                            for Advanzia</a>
+                    </div>
+
+                    <!-- Strategy Card -->
+                    <div class="provider-card" style="border-left: 4px solid #0D9488; background:#F0FDFA;">
+                        <div class="provider-header">
+                            <span class="provider-name" style="color:#0D9488">💡 Smart Strategy</span>
+                        </div>
+                        <p style="font-size:0.95rem; color:#0F766E; margin-bottom:1rem;">
+                            How to use these cards without paying a cent in interest:
+                        </p>
+                        <ul class="feature-list">
+                            <li style="color:#0F766E; display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span style="font-weight:bold;">1.</span> Use card for flights/hotels (to get
+                                insurance).
+                            </li>
+                            <li style="color:#0F766E; display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span style="font-weight:bold;">2.</span> Use card for grocery shopping.
+                            </li>
+                            <li style="color:#0F766E; display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span style="font-weight:bold;">3.</span> <strong>Crucial:</strong> When you get the
+                                bill on the 20th, transfer the <strong>FULL</strong> amount immediately.
+                            </li>
+                            <li style="color:#0F766E; display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span style="font-weight:bold;">4.</span> Never withdraw cash from ATM with these.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- eSIM Section -->
+        <section id="esim" class="section">
+            <div class="container">
+                <div class="section-intro animate-fade-up">
+                    <h2>Stay Connected (eSIM)</h2>
+                    <p>
+                        Don't pay exorbitant roaming charges. Get a data plan the moment you land.
+                        Prepaid SIMs in Germany require physical ID verification (PostIdent), which can take days. eSIMs
+                        work instantly.
+                    </p>
+                </div>
+
+                <div class="grid grid-3 animate-fade-up delay-100">
+                    <!-- Roamless (NEW) -->
+                    <div class="provider-card featured">
+                        <div class="recommended-badge" style="background:#3B82F6">Flexible Choice</div>
+                        <div class="provider-header">
+                            <span class="provider-name">Roamless</span>
+                            <span class="badge">Pay-As-You-Go</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">Single eSIM for 200+ countries. Money never
+                            expires.</p>
+                        <div class="price-tag">~$2.45 <span style="font-size:0.9rem; font-weight:400">/ GB (DE)</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li><strong>No expiry:</strong> Balance lasts forever</li>
+                            <li><strong>One eSIM:</strong> No installing new ones for travel</li>
+                            <li>Free in-app calls (VoIP)</li>
+                        </ul>
+                        <a href="https://roamless.com" target="_blank" class="btn btn-primary btn-sm">Get Roamless</a>
+                    </div>
+
+                    <!-- Fraenk -->
+                    <div class="provider-card">
+                        <div class="recommended-badge">Long Term Best</div>
+                        <div class="provider-header">
+                            <span class="provider-name">Fraenk</span>
+                            <span class="badge">Telekom Network</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">The best cheap monthly contract for huge data.
+                            Monthly cancellable.</p>
+                        <div class="price-tag">€10.00 <span style="font-size:0.9rem; font-weight:400">/ 10GB+</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li>Real German Phone Number (+49)</li>
+                            <li>Directly on Telekom network (Best coverage)</li>
+                            <li>Pay via Paypal SEPA</li>
+                        </ul>
+                        <a href="https://fraenk.de" target="_blank" class="btn btn-secondary btn-sm">Get Fraenk</a>
+                    </div>
+
+                    <!-- Airalo -->
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-name">Airalo</span>
+                            <span class="badge">Short Term</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:1rem;">Good for quick trips but data expires.</p>
+                        <div class="price-tag">$4.50 <span style="font-size:0.9rem; font-weight:400">/ 1GB</span></div>
+                        <ul class="feature-list">
+                            <li>Instant activation via app</li>
+                            <li>Cheap testing packs</li>
+                            <li>Data only (no phone number)</li>
+                        </ul>
+                        <a href="https://www.airalo.com" target="_blank" class="btn btn-secondary btn-sm">Get Airalo</a>
+                    </div>
+                </div>
+
+                <div class="text-center" style="margin-top: 3rem;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        <strong>Pro Tip:</strong> Use Airalo/Holafly for the first 2-3 days, then switch to a cheaper
+                        local provider like Fraenk or Aldi Talk once settled.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Button -->
+        <section class="section" style="padding-bottom: 6rem;">
+            <div class="container text-center">
+                <h2>Got everything?</h2>
+                <div class="flex items-center" style="justify-content: center; margin-top: 2rem;">
+                    <a href="index.html" class="btn btn-secondary">Back to Home</a>
+                    <a href="de/index.html" class="btn btn-primary">Read Full German Guide</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="logo" style="font-size: 1.2rem;">LowGPA to Germany</div>
+                    <p class="copyright">© 2026 LowGPA to Germany. All Rights Reserved.</p>
+                    <p class="built-with">Built with ❤️ in Pakistan 🇵🇰</p>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-links">
+                        <a href="about.html">About</a>
+                        <a href="disclaimer.html">Disclaimer</a>
+                        <a href="community.html">Connect</a>
+                    </div>
+                    <a href="mailto:info@lowgpa.online" class="footer-email">info@lowgpa.online</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
