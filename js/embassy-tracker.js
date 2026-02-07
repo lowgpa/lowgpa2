@@ -196,12 +196,21 @@ function renderTable(data) {
         // Helper to format dates safely
         const formatDate = (dateString, isTime = false) => {
             if (!dateString) return '<span class="no-date">-</span>';
+
+            // Special handling for joinTime to avoid timezone conversion
+            if (isTime && typeof dateString === 'string' && dateString.includes('T')) {
+                const timePart = dateString.split('T')[1];
+                if (timePart) {
+                    return timePart.substring(0, 5); // Returns HH:mm in 24h format
+                }
+            }
+
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString; // If valid string but not date
 
             if (isTime) {
-                // If year is 1899, it's just a time value from Google Sheets
-                return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                // Determine 24-hour format fallback or just time string
+                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
             }
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         };
