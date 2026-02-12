@@ -112,16 +112,16 @@ function renderTable(data) {
     }
 
     // --- 1. Calculate Overall Stats ---
-    let totalsubmitted = 0;
+    let totalGotSubmission = 0;
     let totalAppointments = 0;
 
     // Pre-process for sorting and counting
     data.forEach(item => {
-        if (item.submitted) totalsubmitted++;
+        if (item.gotSubmission) totalGotSubmission++;
         if (item.appointment) totalAppointments++;
     });
 
-    const subPercent = Math.round((totalsubmitted / count) * 100) || 0;
+    const subPercent = Math.round((totalGotSubmission / count) * 100) || 0;
     const appPercent = Math.round((totalAppointments / count) * 100) || 0;
 
     // Render Stats Tile
@@ -151,8 +151,8 @@ function renderTable(data) {
                         ${iconSub}
                     </div>
                     <div class="stat-content" style="width:100%">
-                        <h4>Submitted</h4>
-                        <div class="stat-value">${totalsubmitted}</div>
+                        <h4>Got Submission</h4>
+                        <div class="stat-value">${totalGotSubmission}</div>
                         <div class="stat-meta">${subPercent}% of total</div>
                         <div class="progress-bg">
                             <div class="progress-fill" style="width: ${subPercent}%; background: #059669;"></div>
