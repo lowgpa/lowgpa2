@@ -125,62 +125,80 @@ function renderTable(data) {
     const appPercent = Math.round((totalAppointments / count) * 100) || 0;
 
     // Render Stats Tile
+    // Render Stats Tile
     if (statsContainer) {
-        // Render Stats Tile
-        if (statsContainer) {
-            // SGV Icons
-            const iconTotal = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
-            const iconSub = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
-            const iconApp = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+        // SGV Icons
+        const iconTotal = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+        const iconSub = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+        const iconApp = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
 
-            statsContainer.innerHTML = `
-            <div class="stats-summary-container">
-                <div class="stat-card fade-in-up delay-1">
-                    <div class="stat-icon-wrapper" style="background: #EEF2FF; color: #4F46E5;">
-                        ${iconTotal}
-                    </div>
-                    <div class="stat-content">
-                        <h4>Total Applicants</h4>
-                        <div class="stat-value">${count}</div>
-                        <div class="stat-meta">Tracking active cases</div>
-                    </div>
+        statsContainer.innerHTML = `
+        <div class="stats-summary-container">
+            <div class="stat-card fade-in-up delay-1">
+                <div class="stat-icon-wrapper" style="background: #EEF2FF; color: #4F46E5;">
+                    ${iconTotal}
                 </div>
-
-                <div class="stat-card fade-in-up delay-2">
-                    <div class="stat-icon-wrapper" style="background: #ECFDF5; color: #059669;">
-                        ${iconSub}
-                    </div>
-                    <div class="stat-content" style="width:100%">
-                        <h4>Got Submission</h4>
-                        <div class="stat-value">${totalGotSubmission}</div>
-                        <div class="stat-meta">${subPercent}% of total</div>
-                        <div class="progress-bg">
-                            <div class="progress-fill" style="width: ${subPercent}%; background: #059669;"></div>
-                        </div>
-                    </div>
+                <div class="stat-content">
+                    <h4>Total Applicants</h4>
+                    <div class="stat-value">${count}</div>
+                    <div class="stat-meta">Tracking active cases</div>
                 </div>
+            </div>
 
-                <div class="stat-card fade-in-up delay-3">
-                    <div class="stat-icon-wrapper" style="background: #FFF7ED; color: #EA580C;">
-                        ${iconApp}
-                    </div>
-                    <div class="stat-content" style="width:100%">
-                        <h4>Appointments</h4>
-                        <div class="stat-value">${totalAppointments}</div>
-                        <div class="stat-meta">${totalAppointments} out of ${count} total</div>
-                        <div class="progress-bg">
-                            <div class="progress-fill" style="width: ${appPercent}%; background: #EA580C;"></div>
-                        </div>
+            <div class="stat-card fade-in-up delay-2">
+                <div class="stat-icon-wrapper" style="background: #ECFDF5; color: #059669;">
+                    ${iconSub}
+                </div>
+                <div class="stat-content" style="width:100%">
+                    <h4>Got Submission</h4>
+                    <div class="stat-value">${totalGotSubmission}</div>
+                    <div class="stat-meta">${subPercent}% of total</div>
+                    <div class="progress-bg">
+                        <div class="progress-fill" style="width: ${subPercent}%; background: #059669;"></div>
                     </div>
                 </div>
             </div>
-        `;
-        }
+
+            <div class="stat-card fade-in-up delay-3">
+                <div class="stat-icon-wrapper" style="background: #FFF7ED; color: #EA580C;">
+                    ${iconApp}
+                </div>
+                <div class="stat-content" style="width:100%">
+                    <h4>Appointments</h4>
+                    <div class="stat-value">${totalAppointments}</div>
+                    <div class="stat-meta">${totalAppointments} out of ${count} total</div>
+                    <div class="progress-bg">
+                        <div class="progress-fill" style="width: ${appPercent}%; background: #EA580C;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     }
 
-    // --- 2. Sort & Date Grouping Logic ---
+
+
+    // --- 3. Sort & Date Grouping Logic ---
     // Sort by Join Date (Oldest First)
-    data.sort((a, b) => new Date(a.joinDate) - new Date(b.joinDate));
+    // Sort by Join Date (Oldest First), then by Join Time
+    data.sort((a, b) => {
+        const dateA = new Date(a.joinDate);
+        const dateB = new Date(b.joinDate);
+        const diff = dateA - dateB;
+        if (diff !== 0) return diff;
+
+        // Secondary sort by time
+        const getTime = (t) => {
+            if (!t) return '';
+            // If ISO string with T, extract time part
+            if (typeof t === 'string' && t.includes('T')) {
+                return t.split('T')[1];
+            }
+            return t; // Fallback
+        };
+
+        return getTime(a.joinTime).localeCompare(getTime(b.joinTime));
+    });
 
     // Pre-calculate counts per join date
     const dateCounts = {};
@@ -232,7 +250,7 @@ function renderTable(data) {
                     </span>
                     <span class="date-header-count" style="margin-left:8px; font-weight:600; font-size: 0.75rem; background:#fff; border:1px solid var(--border-light); padding: 2px 8px; border-radius:12px; color:var(--text-muted); text-transform:none;">${dayCount} Joiners</span>
                 </td>
-            `;
+                `;
             tbody.appendChild(headerRow);
             lastJoinDate = currentJoinDateStr;
         }
@@ -271,13 +289,13 @@ function renderTable(data) {
         const row = document.createElement('tr');
 
         row.innerHTML = `
-            <td data-label="Full Name" style="font-weight:600; padding-left:1.5rem;">${item.fullName || 'Anonymous'}</td>
+                <td data-label="Full Name" style="font-weight:600; padding-left:1.5rem;">${item.fullName || 'Anonymous'}</td>
             <td data-label="Time">${formatDate(item.joinTime, true)}</td>
             <td data-label="Got Submission" class="status-cell">${formatStatusDate(item.gotSubmission)}</td>
             <td data-label="Submitted" class="status-cell">${formatStatusDate(item.submitted)}</td>
             <td data-label="Correction" class="status-cell">${formatCorrection(item.correction)}</td>
             <td data-label="Appointment" class="status-cell">${formatStatusDate(item.appointment, 'appointment')}</td>
-        `;
+            `;
 
         tbody.appendChild(row);
     });
@@ -329,27 +347,22 @@ function updateSummaryView() {
 
 function generateWeeklySummary(data, offset = 0) {
     const content = document.getElementById('summary-content');
-    const today = new Date(); // Use system time (which is set to Jan 30 2026 by metadata)
+    const today = new Date();
 
-    // Calculate start of the target week (Monday)
-    // 1. Get current week's Monday
-    const currentDay = today.getDay(); // 0-6
+    const currentDay = today.getDay();
     const diffToMonday = today.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
     const currentWeekMonday = new Date(today);
     currentWeekMonday.setDate(diffToMonday);
     currentWeekMonday.setHours(0, 0, 0, 0);
 
-    // 2. Apply offset (weeks)
     const targetMonday = new Date(currentWeekMonday);
     targetMonday.setDate(targetMonday.getDate() + (offset * 7));
 
-    // 3. Target Sunday (End of week)
     const targetSunday = new Date(targetMonday);
     targetSunday.setDate(targetMonday.getDate() + 6);
     targetSunday.setHours(23, 59, 59, 999);
 
-    // UI for Navigation
-    const dateRangeStr = `${targetMonday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${targetSunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    const dateRangeStr = `${targetMonday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${targetSunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} `;
 
     let navHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; background:var(--bg-body); padding:0.5rem; border-radius:8px; border:1px solid var(--border-light);">
@@ -359,47 +372,30 @@ function generateWeeklySummary(data, offset = 0) {
         </div>
     `;
 
-    // Group updates by date
-    // Structure: { "2026-01-30": { submitted: [], gotSub: [], appt: [], corr: [] } }
     const weeklyUpdates = {};
     const dailyStats = { submitted: 0, correction: 0, appointment: 0, gotSubmission: 0 };
 
-    // Helper to add update
     const addUpdate = (rawContent, type, personName, joinDate) => {
         if (!rawContent) return;
 
         let datesToProcess = [];
-
-        // 1. Try strict date first (standard columns or single date)
         const strictDate = new Date(rawContent);
         if (!isNaN(strictDate.getTime())) {
             datesToProcess.push(strictDate);
         }
 
-        // 2. If it's a correction, try to find ALL dates in the string
         if (type === 'correction') {
             const months = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
-            // Regex explanations:
-            // 1. D-M (e.g. 5-Jan, 12-Dec) or D M (5 Jan)
-            // 2. M-D (e.g. Jan-5, Dec 12)
-            // 3. Numeric (e.g. 1/5/26, 12.05.2026)
-            // Added \b boundaries and negative lookahead for year to avoid slicing "19-Jan 21" as "19-Jan 2021"
             const regex = new RegExp(`\\b(?:(\\d{1,2}[-\\s](?:${months})[a-z]*(?:[-\\s]\\d{4}|[-\\s]\\d{2}(?![-A-Za-z]))?)|((?:${months})[a-z]*[-\\s]\\d{1,2}(?:[-\\s],?\\s?\\d{2,4})?)|(\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{2,4}))\\b`, 'gi');
-
             const matches = [...String(rawContent).matchAll(regex)];
 
             if (matches.length > 0) {
-                // If regex found dates, use them. Reset previous strict match to avoid duplication/errors if strict match was weird.
                 datesToProcess = [];
-
                 matches.forEach(match => {
                     let dateString = match[0];
-
-                    // Clean up punctuation if it crept in (unlikely with \b but good safety)
                     dateString = dateString.replace(/[.,;]$/, '');
-
                     if (!/\d{4}/.test(dateString)) {
-                        dateString += ` ${new Date().getFullYear()}`; // Default to 2026
+                        dateString += ` ${new Date().getFullYear()} `;
                     }
                     const d = new Date(dateString);
                     if (!isNaN(d.getTime())) {
@@ -409,28 +405,19 @@ function generateWeeklySummary(data, offset = 0) {
             }
         }
 
-        // Process all found dates
         datesToProcess.forEach(date => {
-            // Filter: Must be within target week
             if (date >= targetMonday && date <= targetSunday) {
                 const dateKey = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
                 if (!weeklyUpdates[dateKey]) {
                     weeklyUpdates[dateKey] = { updates: [] };
                 }
-
-                // Pass original content for display
                 weeklyUpdates[dateKey].updates.push({ type, name: personName, joinDate, content: rawContent });
-
-                // Stats logic
                 dailyStats[type]++;
             }
         });
     };
 
-    // Iterate Data
     data.forEach(item => {
-        // We track updates only
         addUpdate(item.gotSubmission, 'gotSubmission', item.fullName, item.joinDate);
         addUpdate(item.submitted, 'submitted', item.fullName, item.joinDate);
         addUpdate(item.correction, 'correction', item.fullName, item.joinDate);
@@ -438,73 +425,50 @@ function generateWeeklySummary(data, offset = 0) {
     });
 
     let html = navHtml;
-
-    // 1. Overall Stats for the Week
     const totalUpdates = dailyStats.gotSubmission + dailyStats.submitted + dailyStats.correction + dailyStats.appointment;
 
     html += `
         <div class="summary-block">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
                 <h4 style="margin:0; color:var(--text-primary)">Summary for this Period</h4>
-                <div class="stat-total">
-                    Total Activity: ${totalUpdates}
-                </div>
+                <div class="stat-total">Total Activity: ${totalUpdates}</div>
             </div>
             <div class="stats-grid">
-                <div class="stat-item sub badge-update">
-                    Submission Emails
-                    <strong>${dailyStats.gotSubmission}</strong>
-                </div>
-                <div class="stat-item badge-update" style="background:#E0E7FF; color:#3730A3;">
-                    Files Submitted
-                    <strong>${dailyStats.submitted}</strong>
-                </div>
-                <div class="stat-item corr badge-update">
-                    Corrections
-                    <strong>${dailyStats.correction}</strong>
-                </div>
-                <div class="stat-item app badge-update">
-                    Appointments
-                    <strong>${dailyStats.appointment}</strong>
-                </div>
+                <div class="stat-item sub badge-update">Submission Emails <strong>${dailyStats.gotSubmission}</strong></div>
+                <div class="stat-item badge-update" style="background:#E0E7FF; color:#3730A3;">Files Submitted <strong>${dailyStats.submitted}</strong></div>
+                <div class="stat-item corr badge-update">Corrections <strong>${dailyStats.correction}</strong></div>
+                <div class="stat-item app badge-update">Appointments <strong>${dailyStats.appointment}</strong></div>
             </div>
-        </div >
-        `;
+        </div>
+    `;
 
-    // 2. Daily Breakdown Loop
-    const sortedDates = Object.keys(weeklyUpdates).sort((a, b) => new Date(b) - new Date(a)); // Newest first
+    const sortedDates = Object.keys(weeklyUpdates).sort((a, b) => new Date(b) - new Date(a));
 
     if (sortedDates.length === 0) {
         html += '<p class="text-center" style="color:var(--text-muted); padding:2rem;">No updates found for this week.</p>';
     } else {
         html += '<h4 style="margin-bottom:1rem;color:var(--text-primary)">Daily Breakdown</h4>';
-
         sortedDates.forEach(dateKey => {
             html += `<span class="summary-date">${dateKey}</span>`;
-
             weeklyUpdates[dateKey].updates.forEach(upd => {
                 let badge = '';
                 let text = '';
-
-                // Format helper
                 const jDate = upd.joinDate ? new Date(upd.joinDate).toLocaleDateString() : 'Unknown';
                 const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
 
-
                 if (upd.type === 'gotSubmission') {
                     badge = '<span class="badge-update sub">Got Submission Email</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} received submission request.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} received submission request.`;
                 } else if (upd.type === 'submitted') {
                     badge = '<span class="badge-update" style="background:#E0E7FF; color:#3730A3">Submitted</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} submitted their file.`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} submitted their file.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
-                    // Show content if available, else generic message
                     const corrText = upd.content || 'received a correction request';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo}: ${corrText}`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo}: ${corrText}`;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong> ${joinedInfo} booked an appointment!`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} booked an appointment!`;
                 }
 
                 html += `
@@ -517,6 +481,7 @@ function generateWeeklySummary(data, offset = 0) {
             html += '<br>';
         });
     }
+
 
     content.innerHTML = html;
 }
