@@ -196,31 +196,34 @@
                 /* Hide header on mobile */
             }
 
-            .app-table tr {
-                margin-bottom: 1.5rem;
-                background: #fff;
-                border: 1px solid var(--border-light);
-                border-radius: 16px;
-                padding: 1.25rem;
-                position: relative;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            /* Increased Specificity for Mobile */
+            body .app-table tr {
+                margin-bottom: 1.5rem !important;
+                background: #fff !important;
+                border: 1px solid var(--border-light) !important;
+                border-radius: 16px !important;
+                padding: 1.25rem !important;
+                position: relative !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+                display: block !important;
             }
 
-            .app-table td {
-                padding: 0.75rem 0;
-                border-bottom: 1px solid #f1f5f9;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                text-align: right;
+            body .app-table td {
+                padding: 0.75rem 0 !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                text-align: right !important;
+                width: 100% !important;
             }
 
-            .app-table td:last-child {
-                border-bottom: none;
-                padding-bottom: 0;
+            body .app-table td:last-child {
+                border-bottom: none !important;
+                padding-bottom: 0 !important;
             }
 
-            .app-table td::before {
+            body .app-table td::before {
                 content: attr(data-label);
                 float: left;
                 font-weight: 600;
@@ -230,63 +233,63 @@
             }
 
             /* Name Header */
-            .app-table td:nth-child(2) {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0.25rem;
-                padding-top: 0;
-                font-weight: 700;
-                color: var(--text-primary);
-                font-size: 1.25rem;
-                display: block;
-                text-align: left;
-                position: relative;
-                z-index: 1;
+            body .app-table td:nth-child(2) {
+                border-bottom: none !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 0.25rem !important;
+                padding-top: 0 !important;
+                font-weight: 700 !important;
+                color: var(--text-primary) !important;
+                font-size: 1.25rem !important;
+                display: block !important;
+                text-align: left !important;
+                position: relative !important;
+                z-index: 1 !important;
             }
 
-            .app-table td:nth-child(2)::before {
-                display: none;
+            body .app-table td:nth-child(2)::before {
+                display: none !important;
             }
 
             /* Time Subtitle */
-            .app-table td:nth-child(3) {
-                border-bottom: 1px solid var(--border-light);
-                margin-bottom: 1rem;
-                padding-top: 0;
-                padding-bottom: 1rem;
-                font-size: 0.85rem;
-                color: var(--text-muted);
-                display: block;
-                text-align: left;
-                font-weight: 500;
+            body .app-table td:nth-child(3) {
+                border-bottom: 1px solid var(--border-light) !important;
+                margin-bottom: 1rem !important;
+                padding-top: 0 !important;
+                padding-bottom: 1rem !important;
+                font-size: 0.85rem !important;
+                color: var(--text-muted) !important;
+                display: block !important;
+                text-align: left !important;
+                font-weight: 500 !important;
             }
 
-            .app-table td:nth-child(3)::before {
-                content: "Joined at ";
-                font-weight: 400;
+            body .app-table td:nth-child(3)::before {
+                content: "Joined at " !important;
+                font-weight: 400 !important;
             }
 
             /* Counter Watermark */
-            .app-table td:first-child {
-                position: absolute;
-                top: 0.75rem;
-                right: 1.25rem;
-                border: none;
-                width: auto;
-                padding: 0;
-                font-size: 3.5rem;
-                font-weight: 900;
-                color: #F1F5F9;
-                opacity: 1;
-                pointer-events: none;
-                justify-content: flex-end;
-                z-index: 0;
-                line-height: 1;
-                font-family: 'Inter', sans-serif;
+            body .app-table td:first-child {
+                position: absolute !important;
+                top: 0.75rem !important;
+                right: 1.25rem !important;
+                border: none !important;
+                width: auto !important;
+                padding: 0 !important;
+                font-size: 3.5rem !important;
+                font-weight: 900 !important;
+                color: #F1F5F9 !important;
+                opacity: 1 !important;
+                pointer-events: none !important;
+                justify-content: flex-end !important;
+                z-index: 0 !important;
+                line-height: 1 !important;
+                font-family: 'Inter', sans-serif !important;
             }
 
-            .app-table td:first-child::before {
-                display: none;
+            body .app-table td:first-child::before {
+                display: none !important;
             }
         }
 
