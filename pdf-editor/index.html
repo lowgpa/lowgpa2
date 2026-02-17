@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Editor - Sejda Style</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PDF Libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7/download.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Header / Toolbar -->
+    <header class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="ph ph-file-pdf"></i></div>
+            <span class="logo-text">PDF Editor</span>
+        </div>
+
+        <div class="toolbar" id="mainToolbar">
+            <button class="tool-btn active" data-tool="cursor" title="Select">
+                <i class="ph ph-cursor"></i>
+            </button>
+            <div class="separator"></div>
+            <button class="tool-btn" data-tool="text" title="Add Text">
+                <i class="ph ph-text-t"></i>
+                <span>Text</span>
+            </button>
+            <button class="tool-btn" data-tool="image" title="Add Image">
+                <i class="ph ph-image"></i>
+                <span>Image</span>
+            </button>
+            <button class="tool-btn" data-tool="draw" title="Draw">
+                <i class="ph ph-pencil-simple"></i>
+                <span>Draw</span>
+            </button>
+            <button class="tool-btn" data-tool="sign" title="Sign">
+                <i class="ph ph-signature"></i>
+                <span>Sign</span>
+            </button>
+            <div class="separator"></div>
+            <button class="tool-btn" data-tool="whiteout" title="Whiteout">
+                <i class="ph ph-eraser"></i>
+                <span>Whiteout</span>
+            </button>
+            <!--
+            <button class="tool-btn" data-tool="annotate" title="Annotate">
+                <i class="ph ph-highlighter"></i>
+                <span>Annotate</span>
+            </button>
+             <button class="tool-btn" data-tool="shapes" title="Shapes">
+                <i class="ph ph-shapes"></i>
+                <span>Shapes</span>
+            </button>
+            -->
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-secondary" id="undoBtn" disabled title="Undo">
+                <i class="ph ph-arrow-u-up-left"></i>
+            </button>
+            <button class="btn btn-primary" id="saveBtn">
+                Applying changes...
+            </button>
+        </div>
+    </header>
+
+    <!-- Sub-Toolbar (Contextual) -->
+    <div class="sub-toolbar" id="subToolbar" style="display: none;">
+        <!-- Text Options -->
+        <div class="tool-options" id="textOptions">
+            <select id="fontFamily">
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times Roman">Times Roman</option>
+                <option value="Courier">Courier</option>
+            </select>
+            <input type="number" id="fontSize" value="12" min="8" max="72" title="Font Size">
+            <input type="color" id="fontColor" value="#000000" title="Text Color">
+            <button class="icon-btn" id="boldBtn" title="Bold"><i class="ph ph-text-b"></i></button>
+            <button class="icon-btn" id="italicBtn" title="Italic"><i class="ph ph-text-italic"></i></button>
+            <button class="icon-btn delete-btn" title="Delete Element"><i class="ph ph-trash"></i></button>
+        </div>
+        <!-- Draw Options -->
+        <div class="tool-options" id="drawOptions" style="display: none;">
+            <input type="color" id="brushColor" value="#000000" title="Brush Color">
+            <input type="range" id="brushSize" min="1" max="20" value="2" title="Brush Size">
+            <span id="brushSizeVal">2px</span>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+
+        <!-- Upload State -->
+        <div class="upload-container" id="uploadContainer">
+            <div class="upload-box">
+                <i class="ph ph-cloud-arrow-up"></i>
+                <h2>Upload PDF file</h2>
+                <p>Drag and drop or click to upload</p>
+                <input type="file" id="fileInput" accept="application/pdf" hidden>
+                <button class="btn btn-large" onclick="document.getElementById('fileInput').click()">
+                    Upload PDF file
+                </button>
+            </div>
+            <p class="upload-note">Files stay private. Automatically deleted after 2 hours. Free service for documents
+                up to 200 pages or 50 MB and 3 tasks per hour.</p>
+        </div>
+
+        <!-- Editor State -->
+        <div class="editor-container" id="editorContainer" style="display: none;">
+            <div class="pdf-viewer" id="pdfViewer">
+                <!-- Pages will be injected here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Overlay Helper for things like Signatures -->
+    <div class="modal-overlay" id="signatureModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create Signature</h3>
+                <button class="close-btn" onclick="toggleSignatureModal(false)"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" data-tab="draw">Draw</button>
+                    <button class="tab" data-tab="type">Type</button>
+                    <button class="tab" data-tab="upload">Upload</button>
+                </div>
+                <div class="tab-content" id="sigDrawConf">
+                    <canvas id="signaturePad" width="400" height="200"></canvas>
+                    <button class="btn btn-text" onclick="clearSignature()">Start Over</button>
+                </div>
+                <!-- Other tabs TBD -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveSignature()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
