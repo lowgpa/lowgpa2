@@ -1,7 +1,5 @@
 :root {
     --primary: #6c5ce7;
-    /* Sejda-ish Green/Blue is usually #6ba131 or #007bff, let's go with a nice modern indigo or sticking to a professional blue */
-    /* Sejda actual colors: Green #86b952, Dark #3a4750 */
     --sejda-green: #67b95a;
     --sejda-dark: #373b40;
     --bg-body: #f5f6f7;
@@ -28,7 +26,7 @@ body {
     overflow: hidden;
 }
 
-/* Header */
+/* Header & Toolbar - Same as before */
 .app-header {
     height: 60px;
     background: var(--bg-surface);
@@ -39,7 +37,6 @@ body {
     padding: 0 1rem;
     position: relative;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .logo-area {
@@ -55,7 +52,6 @@ body {
     font-size: 1.5rem;
 }
 
-/* Toolbar */
 .toolbar {
     display: flex;
     align-items: center;
@@ -78,11 +74,6 @@ body {
     gap: 2px;
 }
 
-.tool-btn i {
-    font-size: 1.2rem;
-    color: #555;
-}
-
 .tool-btn:hover {
     background: var(--hover-bg);
     color: var(--text-main);
@@ -90,11 +81,6 @@ body {
 
 .tool-btn.active {
     background: #e8f5e9;
-    /* Light green tint */
-    color: var(--sejda-green);
-}
-
-.tool-btn.active i {
     color: var(--sejda-green);
 }
 
@@ -113,14 +99,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Center options */
     padding: 0 1rem;
     position: absolute;
     top: 60px;
     left: 0;
     right: 0;
     z-index: 9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tool-options {
@@ -139,10 +123,10 @@ body {
     padding: 2rem;
     position: relative;
     margin-top: 0;
-    /* Adjust if subtoolbar logic changes */
+    margin-bottom: 2rem;
 }
 
-/* Upload State */
+/* Upload */
 .upload-container {
     display: flex;
     flex-direction: column;
@@ -160,6 +144,7 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     border: 2px dashed var(--border);
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .upload-box:hover {
@@ -173,104 +158,90 @@ body {
     margin-bottom: 1.5rem;
 }
 
-.upload-box h2 {
-    margin-bottom: 1rem;
-    color: var(--sejda-dark);
-}
-
-.upload-note {
-    margin-top: 2rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    max-width: 600px;
-}
-
-/* PDF Viewer / Editor */
+/* Editor */
 .editor-container {
     width: 100%;
     max-width: 1000px;
-    /* Or responsive */
     display: flex;
     flex-direction: column;
     gap: 2rem;
     padding-bottom: 100px;
 }
 
+/* Page Layers */
 .pdf-page-container {
     position: relative;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-    /* Center pages */
+    margin: 0 auto 2rem auto;
     background: white;
+    user-select: none;
+    /* Prevent selection of PDF text image */
 }
 
-.pdf-page-container canvas {
+/* Layer 1: PDF Render */
+.pdf-canvas {
     display: block;
     max-width: 100%;
-    height: auto;
+    pointer-events: none;
+    /* Let clicks pass through to overlays */
 }
 
-/* Overlays */
-.text-overlay {
+/* Layer 2: Drawing Canvas */
+.draw-layer {
     position: absolute;
-    cursor: text;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    pointer-events: none;
+    /* Enable pointer events only when drawing tool is active via JS */
+}
+
+/* Layer 3: Text Object Container */
+.text-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    /* Let text items catch events, but container pass through */
+}
+
+/* Individual Text Items */
+.text-item {
+    position: absolute;
+    cursor: move;
     border: 1px dashed transparent;
-    padding: 2px;
+    padding: 4px;
     font-family: sans-serif;
     white-space: pre-wrap;
     line-height: 1.2;
     outline: none;
     min-width: 20px;
-    min-height: 1em;
+    background: transparent;
+    pointer-events: auto;
+    /* Catch events */
+    z-index: 20;
 }
 
-.text-overlay:hover,
-.text-overlay:focus {
+.text-item:focus,
+.text-item.selected {
     border-color: var(--sejda-green);
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
 }
 
-.image-overlay {
-    position: absolute;
-    cursor: move;
-    border: 1px dashed transparent;
-}
-
-.image-overlay.selected {
-    border: 2px solid var(--sejda-green);
-}
-
-.image-overlay img {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-/* Buttons */
+/* Helper Buttons */
 .btn {
     padding: 0.75rem 1.5rem;
-    border-radius: 20px;
+    border-radius: 6px;
     font-weight: 500;
     cursor: pointer;
     border: none;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.95rem;
     transition: all 0.2s;
-}
-
-.btn-large {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    background: var(--sejda-green);
-    color: white;
-    border-radius: 8px;
-    /* Square-ish buttons like Sejda */
-}
-
-.btn-large:hover {
-    background: #56a048;
 }
 
 .btn-primary {
@@ -282,18 +253,7 @@ body {
     background: #56a048;
 }
 
-.btn-secondary {
-    background: white;
-    color: var(--text-main);
-    border: 1px solid var(--border);
-}
-
-.btn-secondary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Modal */
+/* Modals */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -328,10 +288,17 @@ body {
     cursor: pointer;
 }
 
+.modal-footer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
 #signaturePad {
     border: 1px solid var(--border);
-    margin-bottom: 1rem;
-    background: #f9f9f9;
-    border-radius: 8px;
+    width: 100%;
+    height: 200px;
+    background: #fff;
     touch-action: none;
 }

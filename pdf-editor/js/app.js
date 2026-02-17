@@ -6,9 +6,17 @@ const state = {
     scale: 1.5,
     totalPages: 0,
     activeTool: 'cursor', // cursor, text, image, draw, sign, whiteout
-    pages: [], // { pageIndex, rotation, div, canvas }
-    annotations: [], // All added elements
-    currentPdfBytes: null
+    pages: [], // { pageIndex, rotation, container, drawCanvas, textLayer }
+    currentPdfBytes: null,
+    isDrawing: false,
+    lastDrawPos: { x: 0, y: 0 },
+    brushColor: '#000000',
+    brushSize: 2,
+    fontColor: '#000000',
+    fontSize: 16,
+    fontFamily: 'Helvetica',
+    dragItem: null,
+    dragOffset: { x: 0, y: 0 }
 };
 
 // DOM Elements
@@ -19,59 +27,58 @@ const elements = {
     pdfViewer: document.getElementById('pdfViewer'),
     toolbar: document.getElementById('mainToolbar'),
     subToolbar: document.getElementById('subToolbar'),
-    toolOptions: {
-        text: document.getElementById('textOptions'),
-        draw: document.getElementById('drawOptions')
-    },
-    saveBtn: document.getElementById('saveBtn')
+    saveBtn: document.getElementById('saveBtn'),
+    settings: {
+        fontSize: document.getElementById('fontSize'),
+        fontColor: document.getElementById('fontColor'),
+        fontFamily: document.getElementById('fontFamily'),
+        brushColor: document.getElementById('brushColor'),
+        brushSize: document.getElementById('brushSize')
+    }
 };
 
-// Initialize
+// --- Initialization ---
+
 function init() {
     setupEventListeners();
     setupTools();
 
-    // Check for drag & drop
-    const dropZone = document.querySelector('.workspace');
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.style.background = '#f0f9ff';
-    });
-    dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropZone.style.background = '';
-    });
+    // Drag & Drop
+    const dropZone = document.body;
+    dropZone.addEventListener('dragover', (e) => e.preventDefault());
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        dropZone.style.background = '';
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
+        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
     });
-
-    // Check URL params for debug
-    // loadPdf('path/to/demo.pdf');
 }
 
 function setupEventListeners() {
     elements.fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
     });
 
     elements.saveBtn.addEventListener('click', savePdf);
+
+    // Settings Listeners
+    elements.settings.brushColor.addEventListener('input', (e) => state.brushColor = e.target.value);
+    elements.settings.brushSize.addEventListener('input', (e) => state.brushSize = parseInt(e.target.value));
+    elements.settings.fontColor.addEventListener('input', (e) => state.fontColor = e.target.value);
+    elements.settings.fontSize.addEventListener('input', (e) => state.fontSize = parseInt(e.target.value));
+
+    // Global Mouse Up for dragging
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('mousemove', handleDrag);
 }
 
 function setupTools() {
     const btns = elements.toolbar.querySelectorAll('.tool-btn');
     btns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Deactivate all
+            // Visual toggle
             btns.forEach(b => b.classList.remove('active'));
-            // Activate click
             btn.classList.add('active');
 
+            // Logic switch
             const tool = btn.dataset.tool;
             switchTool(tool);
         });
@@ -81,59 +88,56 @@ function setupTools() {
 function switchTool(tool) {
     state.activeTool = tool;
 
-    // Show/Hide Subtoolbar
+    // UI Updates
     elements.subToolbar.style.display = 'none';
-    Object.values(elements.toolOptions).forEach(el => el.style.display = 'none');
+    document.getElementById('textOptions').style.display = 'none';
+    document.getElementById('drawOptions').style.display = 'none';
+
+    // Cursor & Layers Updates
+    const drawLayers = document.querySelectorAll('.draw-layer');
+    const textLayers = document.querySelectorAll('.text-layer');
+
+    drawLayers.forEach(el => el.style.pointerEvents = 'none');
+    textLayers.forEach(el => el.style.pointerEvents = 'none');
+    document.body.style.cursor = 'default';
 
     if (tool === 'text') {
         elements.subToolbar.style.display = 'flex';
-        elements.toolOptions.text.style.display = 'flex';
+        document.getElementById('textOptions').style.display = 'flex';
         document.body.style.cursor = 'text';
+        textLayers.forEach(el => el.style.pointerEvents = 'auto'); // Allow clicking to add text
     } else if (tool === 'draw') {
         elements.subToolbar.style.display = 'flex';
-        elements.toolOptions.draw.style.display = 'flex';
+        document.getElementById('drawOptions').style.display = 'flex';
         document.body.style.cursor = 'crosshair';
-        startDrawingMode();
+        drawLayers.forEach(el => el.style.pointerEvents = 'auto'); // Capture drawing events
+    } else if (tool === 'cursor') {
+        textLayers.forEach(el => el.style.pointerEvents = 'auto'); // Allow selecting text
     } else if (tool === 'sign') {
         document.getElementById('signatureModal').style.display = 'flex';
-        // But keep active tool as cursor until signature is ready to place
-        switchTool('cursor');
-    } else {
-        document.body.style.cursor = 'default';
-        stopDrawingMode();
     }
 }
 
+// --- PDF Loading ---
+
 async function handleFile(file) {
-    if (file.type !== 'application/pdf') {
-        alert('Please upload a PDF file.');
-        return;
-    }
+    if (file.type !== 'application/pdf') return alert('Please upload a PDF.');
 
     state.file = file;
-    const arrayBuffer = await file.arrayBuffer();
-    state.currentPdfBytes = arrayBuffer;
+    state.currentPdfBytes = await file.arrayBuffer();
 
-    // Switch UI
     elements.uploadContainer.style.display = 'none';
     elements.editorContainer.style.display = 'flex';
-    elements.saveBtn.textContent = 'Apply changes & Download';
+    elements.saveBtn.textContent = 'Save & Download';
 
-    loadPdf(arrayBuffer);
+    loadPdf(state.currentPdfBytes);
 }
 
 async function loadPdf(data) {
-    try {
-        const loadingTask = pdfjsLib.getDocument(data);
-        state.pdfDoc = await loadingTask.promise;
-        state.totalPages = state.pdfDoc.numPages;
-
-        console.log('PDF Loaded', state.totalPages);
-        renderAllPages();
-    } catch (err) {
-        console.error('Error loading PDF:', err);
-        alert('Error parsing PDF. Is it valid?');
-    }
+    const loadingTask = pdfjsLib.getDocument(data);
+    state.pdfDoc = await loadingTask.promise;
+    state.totalPages = state.pdfDoc.numPages;
+    renderAllPages();
 }
 
 async function renderAllPages() {
@@ -149,169 +153,275 @@ async function renderPage(pageNum) {
     const page = await state.pdfDoc.getPage(pageNum);
     const viewport = page.getViewport({ scale: state.scale });
 
-    // Container
-    const pageContainer = document.createElement('div');
-    pageContainer.className = 'pdf-page-container';
-    pageContainer.style.width = `${viewport.width}px`;
-    pageContainer.style.height = `${viewport.height}px`;
-    pageContainer.dataset.pageNumber = pageNum;
+    // 1. Container
+    const container = document.createElement('div');
+    container.className = 'pdf-page-container';
+    container.style.width = `${viewport.width}px`;
+    container.style.height = `${viewport.height}px`;
+    container.dataset.pageNumber = pageNum;
 
-    // Canvas
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+    // 2. PDF Canvas
+    const pdfCanvas = document.createElement('canvas');
+    pdfCanvas.className = 'pdf-canvas';
+    pdfCanvas.width = viewport.width;
+    pdfCanvas.height = viewport.height;
 
-    pageContainer.appendChild(canvas);
-    elements.pdfViewer.appendChild(pageContainer);
+    // 3. Draw Layer (Canvas)
+    const drawCanvas = document.createElement('canvas');
+    drawCanvas.className = 'draw-layer';
+    drawCanvas.width = viewport.width;
+    drawCanvas.height = viewport.height;
 
-    // Overlay Layer (for drawing/text)
-    const overlay = document.createElement('div');
-    overlay.className = 'page-overlay';
-    overlay.style.position = 'absolute';
-    overlay.style.top = 0;
-    overlay.style.left = 0;
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.zIndex = 1;
-    pageContainer.appendChild(overlay);
+    // 4. Text Layer (Div)
+    const textLayer = document.createElement('div');
+    textLayer.className = 'text-layer';
+
+    // Append
+    container.appendChild(pdfCanvas);
+    container.appendChild(drawCanvas);
+    container.appendChild(textLayer);
+    elements.pdfViewer.appendChild(container);
 
     // Render PDF
-    const renderContext = {
-        canvasContext: context,
-        viewport: viewport
-    };
-    await page.render(renderContext).promise;
+    await page.render({ canvasContext: pdfCanvas.getContext('2d'), viewport: viewport }).promise;
 
-    // Track
+    // Attach Events
+    setupDrawingEvents(drawCanvas);
+    setupTextEvents(textLayer, pageNum);
+
+    // Store refs
     state.pages.push({
-        num: pageNum,
-        container: pageContainer,
-        overlay: overlay,
-        viewport: viewport
-    });
-
-    // Add interactions
-    overlay.addEventListener('click', (e) => handlePageClick(e, pageNum, overlay));
-}
-
-function handlePageClick(e, pageNum, overlay) {
-    if (state.activeTool === 'text') {
-        addTextAnnotation(e.offsetX, e.offsetY, overlay, pageNum);
-    }
-}
-
-function addTextAnnotation(x, y, overlay, pageNum) {
-    const textDiv = document.createElement('div');
-    textDiv.contentEditable = true;
-    textDiv.className = 'text-overlay';
-    textDiv.style.left = `${x}px`;
-    textDiv.style.top = `${y}px`;
-    textDiv.style.fontSize = `${document.getElementById('fontSize').value}px`;
-    textDiv.style.color = document.getElementById('fontColor').value;
-    textDiv.style.fontFamily = document.getElementById('fontFamily').value;
-
-    textDiv.textContent = 'Type here...';
-
-    // Focus and select all
-    overlay.appendChild(textDiv);
-    textDiv.focus();
-
-    // Drag/Move logic to be added
-
-    // Save annotation to state
-    state.annotations.push({
-        type: 'text',
-        page: pageNum,
-        x: x,
-        y: y,
-        ref: textDiv
+        pageIndex: pageNum - 1,
+        container,
+        drawCanvas,
+        textLayer,
+        viewport
     });
 }
 
-function startDrawingMode() {
-    // Add canvas layer to all pages for drawing
-    // Complex - requires tracking paths
+// --- Text Tool ---
+
+function setupTextEvents(textLayer, pageNum) {
+    textLayer.addEventListener('click', (e) => {
+        if (state.activeTool !== 'text' || e.target !== textLayer) return;
+
+        // Add text at click position
+        const x = e.offsetX;
+        const y = e.offsetY;
+        createTextField(x, y, textLayer);
+    });
 }
 
-function stopDrawingMode() {
+function createTextField(x, y, container, content = 'Type here') {
+    const el = document.createElement('div');
+    el.contentEditable = true;
+    el.className = 'text-item';
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.style.color = state.fontColor;
+    el.style.fontSize = `${state.fontSize}px`;
+    el.style.fontFamily = state.fontFamily;
+    el.innerText = content;
 
+    // Drag Start
+    el.addEventListener('mousedown', (e) => {
+        if (state.activeTool === 'text' || state.activeTool === 'cursor') {
+            state.dragItem = el;
+            state.dragOffset = {
+                x: e.clientX - el.offsetLeft,
+                y: e.clientY - el.offsetTop
+            };
+        }
+    });
+
+    // Formatting Focus
+    el.addEventListener('focus', () => {
+        // Update tool options to match this element's style
+        // (Simplified for now)
+    });
+
+    container.appendChild(el);
+    setTimeout(() => el.focus(), 0);
 }
 
-// --- Signature Logic ---
-const canvas = document.getElementById("signaturePad");
-if (canvas) {
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
+function handleDrag(e) {
+    if (!state.dragItem) return;
 
-    canvas.addEventListener("mousedown", (e) => {
-        drawing = true;
+    const x = e.clientX - state.dragOffset.x;
+    const y = e.clientY - state.dragOffset.y;
+
+    state.dragItem.style.left = `${x}px`;
+    state.dragItem.style.top = `${y}px`;
+}
+
+function endDrag() {
+    state.dragItem = null;
+}
+
+// --- Drawing Tool ---
+
+function setupDrawingEvents(canvas) {
+    const ctx = canvas.getContext('2d');
+
+    canvas.addEventListener('mousedown', (e) => {
+        if (state.activeTool !== 'draw') return;
+        state.isDrawing = true;
+        state.lastDrawPos = { x: e.offsetX, y: e.offsetY };
+
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = state.brushColor;
+        ctx.lineWidth = state.brushSize;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!state.isDrawing || state.activeTool !== 'draw') return;
+
         ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-    });
-    canvas.addEventListener("mousemove", (e) => {
-        if (!drawing) return;
+        ctx.moveTo(state.lastDrawPos.x, state.lastDrawPos.y);
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
+
+        state.lastDrawPos = { x: e.offsetX, y: e.offsetY };
     });
-    canvas.addEventListener("mouseup", () => drawing = false);
+
+    canvas.addEventListener('mouseup', () => state.isDrawing = false);
+    canvas.addEventListener('mouseout', () => state.isDrawing = false);
+}
+
+// --- Signature ---
+
+const sigCanvas = document.getElementById("signaturePad");
+if (sigCanvas) {
+    const ctx = sigCanvas.getContext("2d");
+    let sigDrawing = false;
+
+    sigCanvas.addEventListener("mousedown", (e) => { sigDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+    sigCanvas.addEventListener("mousemove", (e) => {
+        if (!sigDrawing) return;
+        ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke();
+    });
+    window.addEventListener("mouseup", () => sigDrawing = false);
 
     window.clearSignature = () => ctx.clearRect(0, 0, 400, 200);
+    window.toggleSignatureModal = (show) => document.getElementById('signatureModal').style.display = show ? 'flex' : 'none';
+
     window.saveSignature = () => {
-        // Convert to image and switch to Place Image mode
-        const dataUrl = canvas.toDataURL();
-        switchTool('image', dataUrl); // We'd need to handle this internal image
+        // Create an Image element from canvas
+        const dataUrl = sigCanvas.toDataURL();
+
+        // Add to center of currently visible page (simplified: first page for now)
+        // Ideally we switch to "stamp" tool mode
+        alert('Signature image created. Click anywhere to place it.');
+        state.activeTool = 'stamp';
+        state.stampImage = dataUrl;
         document.getElementById('signatureModal').style.display = 'none';
-        alert("Signature saved! Click on document to place.");
-    };
-    window.toggleSignatureModal = (show) => {
-        document.getElementById('signatureModal').style.display = show ? 'flex' : 'none';
+
+        // Enable click on text layers to place stamp
+        document.querySelectorAll('.text-layer').forEach(el => {
+            el.style.pointerEvents = 'auto';
+            el.onclick = (e) => {
+                if (state.activeTool === 'stamp') {
+                    const img = document.createElement('img');
+                    img.src = state.stampImage;
+                    img.className = 'text-item'; // Reuse drag logic
+                    img.style.position = 'absolute';
+                    img.style.left = `${e.offsetX}px`;
+                    img.style.top = `${e.offsetY}px`;
+                    img.style.width = '150px';
+
+                    // Drag logic
+                    img.addEventListener('mousedown', (ev) => {
+                        state.dragItem = img;
+                        state.dragOffset = { x: ev.clientX - img.offsetLeft, y: ev.clientY - img.offsetTop };
+                    });
+
+                    e.currentTarget.appendChild(img);
+                    state.activeTool = 'cursor'; // Reset
+                    el.onclick = null; // Remove stamp listener
+                }
+            }
+        });
     };
 }
 
 
-// --- Export Logic ---
+// --- Export ---
+
 async function savePdf() {
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
-    // Determine which PDF to modify (original vs already modified)
-    // For now, reload from original bytes to be safe
+    // Load original PDF
     const pdfDoc = await PDFDocument.load(state.currentPdfBytes);
-
-    // Embed fonts
-    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
     const pages = pdfDoc.getPages();
 
-    // Process Annotations
-    for (const ann of state.annotations) {
-        if (ann.type === 'text') {
-            const page = pages[ann.page - 1]; // 0-indexed
-            const { width, height } = page.getSize();
+    // It's crucial to map annotations back to *each page*
+    state.pages.forEach(async (pageData, index) => {
+        const pdflibPage = pages[index];
+        const { width, height } = pdflibPage.getSize();
 
-            // Convert viewport coordinates to PDF coordinates
-            // PDF coords: Y starts from bottom
-            // HTML coords: Y starts from top
-            // Need to account for scale
+        // 1. Draw Text Annotations
+        const textItems = pageData.textLayer.querySelectorAll('.text-item');
+        textItems.forEach(async (item) => {
+            // Coordinate Math
+            // Browser: (x, y) from top-left.
+            // PDF: (x, y) from bottom-left. Scale factor involved.
 
-            const viewport = state.pages[ann.page - 1].viewport;
-            const pdfX = (ann.ref.offsetLeft / state.scale);
-            const pdfY = height - (ann.ref.offsetTop / state.scale) - (parseInt(ann.ref.style.fontSize) / state.scale);
-            // NOTE: Font size alignment in PDFLib is baseline-based, HTML is top-based. Approximate.
+            // Get visual props
+            const x = parseInt(item.style.left);
+            const y = parseInt(item.style.top);
+            const fontSize = parseInt(item.style.fontSize);
+            const text = item.innerText;
+            // Check if it's an image (signature) or text
+            if (item.tagName === 'IMG') {
+                // Embed Image
+                const imgBytes = await fetch(item.src).then(res => res.arrayBuffer());
+                const pdfImage = await pdfDoc.embedPng(imgBytes); // Assuming PNG
 
-            page.drawText(ann.ref.innerText, {
-                x: pdfX,
-                y: pdfY,
-                size: parseInt(ann.ref.style.fontSize),
-                font: helveticaFont,
-                color: rgb(0, 0, 0), // convert hex to rgb later
+                const imgWidth = parseInt(item.style.width) || 150;
+                const imgHeight = (imgWidth / pdfImage.width) * pdfImage.height;
+
+                pdflibPage.drawImage(pdfImage, {
+                    x: x / state.scale,
+                    y: height - (y / state.scale) - (imgHeight / state.scale), // approx
+                    width: imgWidth / state.scale,
+                    height: imgHeight / state.scale
+                });
+            } else {
+                // Embed Text
+                const font = await pdfDoc.embedFont(StandardFonts.Helvetica); // Default for now
+                // Color conversion hex -> rgb (simplified)
+
+                pdflibPage.drawText(text, {
+                    x: x / state.scale,
+                    y: height - (y / state.scale) - (fontSize / state.scale), // Adjust for baseline
+                    size: fontSize / state.scale,
+                    font: font,
+                    color: rgb(0, 0, 0) // Todo: parse hex color
+                });
+            }
+        });
+
+        // 2. Overlay Drawing Canvas
+        // We can convert the drawing canvas to a PNG and draw it on top
+        const canvas = pageData.drawCanvas;
+        // Check if canvas is empty? (Simplification: just draw it)
+        const canvasDataUrl = canvas.toDataURL('image/png');
+        if (canvasDataUrl !== 'data:,') { // Not empty
+            const drawingBytes = await fetch(canvasDataUrl).then(res => res.arrayBuffer());
+            const drawingImage = await pdfDoc.embedPng(drawingBytes);
+
+            pdflibPage.drawImage(drawingImage, {
+                x: 0,
+                y: 0,
+                width: width,
+                height: height
             });
         }
-    }
+    });
 
     const pdfBytes = await pdfDoc.save();
-    download(pdfBytes, "edited_document.pdf", "application/pdf");
+    download(pdfBytes, "edited.pdf", "application/pdf");
 }
 
-// Start
 init();
