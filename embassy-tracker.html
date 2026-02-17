@@ -208,6 +208,37 @@
                 display: block !important;
             }
 
+            /* FIX: Reset styles for Date Header rows so they don't look like cards */
+            body .app-table tr.date-header {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 0.5rem !important;
+                margin-top: 1rem !important;
+            }
+
+            body .app-table tr.date-header td {
+                background: transparent !important;
+                border: none !important;
+                padding: 0.5rem !important;
+                text-align: center !important;
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+                color: var(--text-muted) !important;
+                font-weight: 600 !important;
+            }
+
+            /* Hide the watermark and other card-specific elements for date header if they exist */
+            body .app-table tr.date-header td:first-child {
+                position: static !important;
+                font-size: 1rem !important;
+                width: auto !important;
+                opacity: 1 !important;
+                color: var(--text-muted) !important;
+            }
+
             body .app-table td {
                 padding: 0.75rem 0 !important;
                 border-bottom: 1px solid #f1f5f9 !important;
@@ -269,8 +300,8 @@
                 font-weight: 400 !important;
             }
 
-            /* Counter Watermark */
-            body .app-table td:first-child {
+            /* Counter Watermark - Only apply to FIRST child of NORMAL rows (not date header) */
+            body .app-table tr:not(.date-header) td:first-child {
                 position: absolute !important;
                 top: 0.75rem !important;
                 right: 1.25rem !important;
