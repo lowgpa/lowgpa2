@@ -244,13 +244,38 @@ function renderTable(data) {
             const dayCount = dateCounts[currentJoinDateKey] || 0;
             const headerRow = document.createElement('tr');
             headerRow.className = 'date-header';
+
+            let dateDisplayHtml = '';
+            if (currentJoinDateObj && !isNaN(currentJoinDateObj.getTime())) {
+                const shortMonth = currentJoinDateObj.toLocaleDateString('en-US', { month: 'short' });
+                const dayNum = currentJoinDateObj.getDate();
+                const yearNum = currentJoinDateObj.getFullYear();
+                const fullDayName = currentJoinDateObj.toLocaleDateString('en-US', { weekday: 'long' });
+
+                dateDisplayHtml = `
+                    <div style="display:flex; align-items:center; gap:1.25rem;">
+                        <div class="calendar-badge" style="transform: scale(0.95); transform-origin: left center; margin-right: -5px;">
+                            <div class="calendar-badge-month">${shortMonth}</div>
+                            <div class="calendar-badge-day">${dayNum}</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none; letter-spacing:normal;">${fullDayName}, ${yearNum}</span>
+                            <span class="date-header-count" style="margin-left:0; align-self:flex-start; background:#F1F5F9; border:1px solid #E2E8F0; color:var(--text-secondary); padding: 2px 8px; border-radius:12px; font-weight:600; font-size: 0.75rem; text-transform:none;">${dayCount} Applicant${dayCount !== 1 ? 's' : ''} Joined</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                dateDisplayHtml = `
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none;">Unknown Date</span>
+                        <span class="date-header-count" style="margin-left:0; background:#F1F5F9; border:1px solid #E2E8F0; color:var(--text-secondary); padding: 2px 8px; border-radius:12px; font-weight:600; font-size: 0.75rem; text-transform:none;">${dayCount} Applicant${dayCount !== 1 ? 's' : ''}</span>
+                    </div>
+                `;
+            }
+
             headerRow.innerHTML = `
-                <td colspan="7" style="background:var(--bg-body); font-weight:700; color:var(--text-secondary); padding:0.75rem 1rem; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">
-                    <span style="display:inline-flex; align-items:center; gap:6px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        ${currentJoinDateStr}
-                    </span>
-                    <span class="date-header-count" style="margin-left:8px; font-weight:600; font-size: 0.75rem; background:#fff; border:1px solid var(--border-light); padding: 2px 8px; border-radius:12px; color:var(--text-muted); text-transform:none;">${dayCount} Joiners</span>
+                <td colspan="6" style="background:#F8FAFC; padding:1rem 1.5rem; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light);">
+                    ${dateDisplayHtml}
                 </td>
                 `;
             tbody.appendChild(headerRow);
