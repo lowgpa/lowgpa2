@@ -282,7 +282,7 @@ function renderTable(data) {
                             <div class="calendar-badge-day">${dayNum}</div>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:2px;">
-                            <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none; letter-spacing:normal;">${fullDayName}, ${shortMonth} ${dayNum}, ${yearNum}</span>
+                            <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none; letter-spacing:normal;">${fullDayName}, ${yearNum}</span>
                             <span class="date-header-count" style="margin-left:0; align-self:flex-start; background:#F1F5F9; border:1px solid #E2E8F0; color:var(--text-secondary); padding: 2px 8px; border-radius:12px; font-weight:600; font-size: 0.75rem; text-transform:none;">${dayCount} Applicant${dayCount !== 1 ? 's' : ''} Joined</span>
                         </div>
                     </div>
