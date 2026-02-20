@@ -239,6 +239,11 @@
         /* Responsive Mobile View - Card Layout */
         @media (max-width: 768px) {
 
+            .app-table {
+                min-width: 0 !important;
+                white-space: normal !important;
+            }
+
             .app-table,
             .app-table tbody,
             .app-table tr,
@@ -303,6 +308,9 @@
                 align-items: center !important;
                 text-align: right !important;
                 width: 100% !important;
+                flex-wrap: wrap !important;
+                gap: 0.5rem !important;
+                word-break: break-word !important;
             }
 
             body .app-table td:last-child {
@@ -795,6 +803,19 @@
             color: var(--text-muted);
             font-weight: 500;
             margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+
+            .stats-summary-container,
+            .tracker-controls,
+            .table-container {
+                padding: 1rem 1.25rem !important;
+            }
+
+            .table-container {
+                overflow-x: hidden !important;
+            }
         }
 
         /* Skeleton Loading Animation */
