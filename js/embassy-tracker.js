@@ -435,17 +435,20 @@ function generateWeeklySummary(data, offset = 0) {
                 <div class="stat-total" style="background:var(--accent-primary); box-shadow:0 2px 4px rgba(0,0,0,0.1);">Total Activity: ${totalUpdates}</div>
             </div>
             <div class="stats-grid">
-                <div class="stat-item sub badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
-                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Submission Emails</span>
-                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.gotSubmission}</strong>
+                <div class="stat-item sub badge-update" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:12px; background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #BFDBFE; align-items:center; text-align:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:#1E40AF; font-weight:700;">Submissions</span>
+                    <strong style="font-size:2rem; margin-top:0.25rem; color:#1E3A8A; line-height:1;">${dailyStats.gotSubmission}</strong>
                 </div>
-                <div class="stat-item corr badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
-                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Corrections</span>
-                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.correction}</strong>
+                <div class="stat-item corr badge-update" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:12px; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 1px solid #FCD34D; align-items:center; text-align:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:#92400E; font-weight:700;">Corrections</span>
+                    <strong style="font-size:2rem; margin-top:0.25rem; color:#78350F; line-height:1;">${dailyStats.correction}</strong>
                 </div>
-                <div class="stat-item app badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
-                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Appointments</span>
-                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.appointment}</strong>
+                <div class="stat-item app badge-update" style="display:flex; flex-direction:column; padding:1.25rem; border-radius:12px; background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #A7F3D0; align-items:center; text-align:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:#065F46; font-weight:700;">Appointments</span>
+                    <strong style="font-size:2rem; margin-top:0.25rem; color:#064E3B; line-height:1;">${dailyStats.appointment}</strong>
                 </div>
             </div>
         </div>
@@ -456,9 +459,27 @@ function generateWeeklySummary(data, offset = 0) {
     if (sortedDates.length === 0) {
         html += '<p class="text-center" style="color:var(--text-muted); padding:2rem;">No updates found for this week.</p>';
     } else {
-        html += '<h4 style="margin-bottom:1rem;color:var(--text-primary)">Daily Breakdown</h4>';
+        html += '<h4 style="margin-bottom:1rem; margin-top:2.5rem; color:var(--text-primary); font-size:1.25rem;">Daily Breakdown</h4>';
         sortedDates.forEach(dateKey => {
-            html += `<span class="summary-date">${dateKey}</span>`;
+            const dateObj = new Date(dateKey);
+            const shortMonth = dateObj.toLocaleDateString('en-US', { month: 'short' });
+            const dayNum = dateObj.getDate();
+            const dateTitle = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const dayUpdatesCount = weeklyUpdates[dateKey].updates.length;
+
+            html += `
+            <div class="daily-header-flex">
+                <div class="calendar-badge">
+                    <div class="calendar-badge-month">${shortMonth}</div>
+                    <div class="calendar-badge-day">${dayNum}</div>
+                </div>
+                <div>
+                    <h5 class="daily-date-title">${dateTitle}</h5>
+                    <span class="daily-total-badge" style="display:inline-block; margin-top:0.25rem;">${dayUpdatesCount} Update${dayUpdatesCount !== 1 ? 's' : ''}</span>
+                </div>
+            </div>
+            `;
+
             weeklyUpdates[dateKey].updates.forEach(upd => {
                 let badge = '';
                 let text = '';
@@ -466,7 +487,7 @@ function generateWeeklySummary(data, offset = 0) {
                 const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
 
                 if (upd.type === 'gotSubmission') {
-                    badge = '<span class="badge-update sub">Submission Email</span>';
+                    badge = '<span class="badge-update sub">Submission</span>';
                     text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} received a submission request.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
@@ -478,13 +499,12 @@ function generateWeeklySummary(data, offset = 0) {
                 }
 
                 html += `
-                    <div class="summary-item">
-                        <div style="min-width:130px; display:flex; justify-content:center;">${badge}</div>
+                    <div class="summary-item" style="position:relative; margin-left:10px;">
+                        <div style="min-width:110px; display:flex; justify-content:flex-start;">${badge}</div>
                         <div style="color:var(--text-secondary); line-height:1.4;">${text}</div>
                     </div>
                 `;
             });
-            html += '<br>';
         });
     }
 

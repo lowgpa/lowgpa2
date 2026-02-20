@@ -337,15 +337,16 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s;
-            backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .modal-overlay.active {
@@ -353,32 +354,105 @@
             pointer-events: all;
         }
 
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
         .modal-content {
-            background: var(--bg-surface);
+            background: rgba(255, 255, 255, 0.95);
             width: 95%;
             max-width: 1000px;
             max-height: 90vh;
             border-radius: var(--radius-lg);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid var(--border-light);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-light);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--bg-body);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 2rem;
             overflow-y: auto;
         }
+
+        /* Calendar Badge CSS */
+        .calendar-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            background: white;
+            width: 50px;
+            flex-shrink: 0;
+        }
+
+        .calendar-badge-month {
+            background: var(--accent-primary);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+            padding: 2px 0;
+            letter-spacing: 0.05em;
+        }
+
+        .calendar-badge-day {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            padding: 4px 0 6px 0;
+            line-height: 1;
+        }
+
+        .daily-header-flex {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .daily-date-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .daily-total-badge {
+            background: #F1F5F9;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
 
         .summary-block {
             margin-bottom: 2rem;
@@ -411,13 +485,13 @@
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-light);
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .summary-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border-color: var(--accent-primary);
         }
 
