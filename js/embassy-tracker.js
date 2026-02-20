@@ -51,19 +51,19 @@ async function loadCategory(categoryKey) {
     tbody.innerHTML = '';
 
     // 1. Skeleton Stats (Detailed with Loading Bar)
-    if (statsContainer) {
-        const skeletonCard = `
-            <div class="stat-card" style="border-color: transparent;">
-                <div class="skeleton" style="width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;"></div>
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                    <div class="skeleton" style="height: 10px; width: 40%; border-radius: 4px;"></div>
-                    <div class="skeleton" style="height: 24px; width: 60%; border-radius: 4px;"></div>
-                    <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
-                    <div class="skeleton" style="height: 6px; width: 100%; border-radius: 99px; margin-top: 4px;"></div> <!-- Loading Bar Placeholder -->
-                </div>
+    const skeletonCard = `
+        <div class="stat-card" style="border-color: transparent;">
+            <div class="skeleton" style="width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div class="skeleton" style="height: 10px; width: 40%; border-radius: 4px;"></div>
+                <div class="skeleton" style="height: 24px; width: 60%; border-radius: 4px;"></div>
+                <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
+                <div class="skeleton" style="height: 6px; width: 100%; border-radius: 99px; margin-top: 4px;"></div>
             </div>
-        `;
+        </div>
+    `;
 
+    if (statsContainer) {
         statsContainer.innerHTML = `
             <div class="stats-summary-container">
                 ${skeletonCard}
@@ -73,7 +73,29 @@ async function loadCategory(categoryKey) {
         `;
     }
 
-    loading.style.display = 'block';
+    // Skeleton Table Rows
+    const skeletonRow = `
+        <tr>
+            <td style="text-align: center;"><div class="skeleton" style="height: 15px; width: 20px; border-radius: 4px; display:inline-block;"></div></td>
+            <td><div class="skeleton" style="height: 15px; width: 120px; border-radius: 4px;"></div></td>
+            <td><div class="skeleton" style="height: 15px; width: 60px; border-radius: 4px;"></div></td>
+            <td><div class="skeleton" style="height: 24px; width: 90px; border-radius: 99px;"></div></td>
+            <td><div class="skeleton" style="height: 24px; width: 90px; border-radius: 99px;"></div></td>
+            <td><div class="skeleton" style="height: 24px; width: 90px; border-radius: 99px;"></div></td>
+        </tr>
+    `;
+
+    tbody.innerHTML = `
+        <tr class="date-header">
+            <td colspan="6" style="background:#F8FAFC; padding:1rem 1.5rem; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light);">
+                <div class="skeleton" style="height: 48px; width: 200px; border-radius: 8px;"></div>
+            </td>
+        </tr>
+        ${skeletonRow.repeat(5)}
+    `;
+
+    // Hide standard loading text Since we use Skeleton
+    loading.style.display = 'none';
 
     try {
         let data;
@@ -86,8 +108,9 @@ async function loadCategory(categoryKey) {
             dataCache[categoryKey] = data;
         }
 
+        // Once data is returned, we need to clear the skeleton before rendering
+        tbody.innerHTML = '';
         renderTable(data);
-        loading.style.display = 'none';
 
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -259,7 +282,7 @@ function renderTable(data) {
                             <div class="calendar-badge-day">${dayNum}</div>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:2px;">
-                            <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none; letter-spacing:normal;">${fullDayName}, ${yearNum}</span>
+                            <span style="font-size:1.05rem; font-weight:700; color:var(--text-primary); text-transform:none; letter-spacing:normal;">${fullDayName}, ${shortMonth} ${dayNum}, ${yearNum}</span>
                             <span class="date-header-count" style="margin-left:0; align-self:flex-start; background:#F1F5F9; border:1px solid #E2E8F0; color:var(--text-secondary); padding: 2px 8px; border-radius:12px; font-weight:600; font-size: 0.75rem; text-transform:none;">${dayCount} Applicant${dayCount !== 1 ? 's' : ''} Joined</span>
                         </div>
                     </div>
@@ -284,7 +307,11 @@ function renderTable(data) {
 
         const formatStatusDate = (dateString, type) => {
             if (!dateString) return '<span class="status-badge no-date">-</span>';
-            let content = `<span class="status-badge has-date">${formatDate(dateString)}</span>`;
+
+            let badgeClass = 'status-badge has-date';
+            if (type === 'appointment') badgeClass = 'status-badge appointment';
+
+            let content = `<span class="${badgeClass}">${formatDate(dateString)}</span>`;
 
             // Wait Time Calculation (Feature Q)
             if (type === 'appointment' && item.joinDate) {
@@ -295,13 +322,13 @@ function renderTable(data) {
                     const diffTime = Math.abs(appDate - joinDate);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                    let badgeClass = 'wait-time-badge';
-                    if (diffDays > 60) badgeClass += ' long';
-                    else if (diffDays < 30) badgeClass += ' short';
+                    let clockClass = 'wait-time-badge';
+                    if (diffDays > 60) clockClass += ' long';
+                    else if (diffDays < 30) clockClass += ' short';
 
                     const clockIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; position:relative; top:-1px"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
 
-                    content += `<span class="${badgeClass}" title="Days from joining to appointment">${clockIcon}${diffDays} days wait</span>`;
+                    content += `<div class="${clockClass}" style="margin-top:4px; display:inline-flex; align-items:center;" title="Days from joining to appointment">${clockIcon}${diffDays} days</div>`;
                 }
             }
             return content;
@@ -313,15 +340,27 @@ function renderTable(data) {
             return `<span class="status-badge correction" title="${text}">${display}</span>`;
         };
 
+        const isNew = currentJoinDateObj && (new Date() - currentJoinDateObj) < (24 * 60 * 60 * 1000); // 24 hours
+        const newBadge = isNew ? `<div style="width:8px; height:8px; background:var(--accent-primary); border-radius:50%; display:inline-block; margin-left:6px; animation: pulse 2s infinite;" title="Brand New!"></div>` : '';
+
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td style="text-align: center; color: var(--text-muted); font-weight: 500; font-size: 0.85rem;">${rowNumber++}</td>
-            <td data-label="Full Name" style="font-weight:600; padding-left:1.5rem;">${item.fullName || 'Anonymous'}</td>
-            <td data-label="Time">${formatDate(item.joinTime, true)}</td>
-            <td data-label="Got Submission" class="status-cell">${formatStatusDate(item.gotSubmission)}</td>
+            <td data-label="Full Name">
+                <div style="font-weight:600; padding-left:1.5rem; position:relative; display:flex; align-items:center;">
+                    ${item.fullName || 'Anonymous'}
+                    ${newBadge}
+                </div>
+            </td>
+            <td data-label="Time" style="color:var(--text-secondary); font-variant-numeric:tabular-nums;">${formatDate(item.joinTime, true)}</td>
+            <td data-label="Got Submission" class="status-cell">${formatStatusDate(item.gotSubmission, 'submission')}</td>
             <td data-label="Correction" class="status-cell">${formatCorrection(item.correction)}</td>
-            <td data-label="Appointment" class="status-cell">${formatStatusDate(item.appointment, 'appointment')}</td>
+            <td data-label="Appointment" class="status-cell">
+                <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                    ${formatStatusDate(item.appointment, 'appointment')}
+                </div>
+            </td>
             `;
 
         tbody.appendChild(row);
