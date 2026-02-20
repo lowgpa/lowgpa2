@@ -403,23 +403,32 @@
 
         .summary-item {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             margin-bottom: 0.75rem;
             font-size: 0.95rem;
-            padding: 0.75rem;
-            background: var(--bg-body);
-            border-radius: 6px;
+            padding: 1rem;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border-light);
             align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-color: var(--accent-primary);
         }
 
         .badge-update {
             font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
             font-weight: 700;
             height: fit-content;
             white-space: nowrap;
+            letter-spacing: 0.02em;
         }
 
         .badge-update.sub {
@@ -439,7 +448,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-top: 0.5rem;
         }
@@ -816,7 +825,6 @@
                             <th>Name</th>
                             <th>Time</th>
                             <th>Got Submission</th>
-                            <th>Submitted</th>
                             <th>Correction</th>
                             <th>Appointment</th>
                         </tr>

@@ -295,7 +295,6 @@ function renderTable(data) {
             <td data-label="Full Name" style="font-weight:600; padding-left:1.5rem;">${item.fullName || 'Anonymous'}</td>
             <td data-label="Time">${formatDate(item.joinTime, true)}</td>
             <td data-label="Got Submission" class="status-cell">${formatStatusDate(item.gotSubmission)}</td>
-            <td data-label="Submitted" class="status-cell">${formatStatusDate(item.submitted)}</td>
             <td data-label="Correction" class="status-cell">${formatCorrection(item.correction)}</td>
             <td data-label="Appointment" class="status-cell">${formatStatusDate(item.appointment, 'appointment')}</td>
             `;
@@ -376,7 +375,7 @@ function generateWeeklySummary(data, offset = 0) {
     `;
 
     const weeklyUpdates = {};
-    const dailyStats = { submitted: 0, correction: 0, appointment: 0, gotSubmission: 0 };
+    const dailyStats = { correction: 0, appointment: 0, gotSubmission: 0 };
 
     const addUpdate = (rawContent, type, personName, joinDate) => {
         if (!rawContent) return;
@@ -422,25 +421,32 @@ function generateWeeklySummary(data, offset = 0) {
 
     data.forEach(item => {
         addUpdate(item.gotSubmission, 'gotSubmission', item.fullName, item.joinDate);
-        addUpdate(item.submitted, 'submitted', item.fullName, item.joinDate);
         addUpdate(item.correction, 'correction', item.fullName, item.joinDate);
         addUpdate(item.appointment, 'appointment', item.fullName, item.joinDate);
     });
 
     let html = navHtml;
-    const totalUpdates = dailyStats.gotSubmission + dailyStats.submitted + dailyStats.correction + dailyStats.appointment;
+    const totalUpdates = dailyStats.gotSubmission + dailyStats.correction + dailyStats.appointment;
 
     html += `
-        <div class="summary-block">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-                <h4 style="margin:0; color:var(--text-primary)">Summary for this Period</h4>
-                <div class="stat-total">Total Activity: ${totalUpdates}</div>
+        <div class="summary-block" style="background:#F8FAFC; border:1px solid #E2E8F0; padding:1.5rem; border-radius:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                <h4 style="margin:0; color:var(--text-primary); font-size:1.1rem;">Summary for this Period</h4>
+                <div class="stat-total" style="background:var(--accent-primary); box-shadow:0 2px 4px rgba(0,0,0,0.1);">Total Activity: ${totalUpdates}</div>
             </div>
             <div class="stats-grid">
-                <div class="stat-item sub badge-update">Submission Emails <strong>${dailyStats.gotSubmission}</strong></div>
-                <div class="stat-item badge-update" style="background:#E0E7FF; color:#3730A3;">Files Submitted <strong>${dailyStats.submitted}</strong></div>
-                <div class="stat-item corr badge-update">Corrections <strong>${dailyStats.correction}</strong></div>
-                <div class="stat-item app badge-update">Appointments <strong>${dailyStats.appointment}</strong></div>
+                <div class="stat-item sub badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Submission Emails</span>
+                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.gotSubmission}</strong>
+                </div>
+                <div class="stat-item corr badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Corrections</span>
+                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.correction}</strong>
+                </div>
+                <div class="stat-item app badge-update" style="display:flex; flex-direction:column; padding:1rem; border-radius:8px;">
+                    <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.8;">Appointments</span>
+                    <strong style="font-size:1.5rem; margin-top:0.25rem;">${dailyStats.appointment}</strong>
+                </div>
             </div>
         </div>
     `;
@@ -460,24 +466,21 @@ function generateWeeklySummary(data, offset = 0) {
                 const joinedInfo = `<span style="color:var(--text-muted); font-size:0.85em; margin-left:4px;">(Joined: ${jDate})</span>`;
 
                 if (upd.type === 'gotSubmission') {
-                    badge = '<span class="badge-update sub">Got Submission Email</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} received submission request.`;
-                } else if (upd.type === 'submitted') {
-                    badge = '<span class="badge-update" style="background:#E0E7FF; color:#3730A3">Submitted</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} submitted their file.`;
+                    badge = '<span class="badge-update sub">Submission Email</span>';
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} received a submission request.`;
                 } else if (upd.type === 'correction') {
                     badge = '<span class="badge-update corr">Correction</span>';
                     const corrText = upd.content || 'received a correction request';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo}: ${corrText}`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo}: <span style="color:var(--text-primary); font-weight:500;">${corrText}</span>`;
                 } else if (upd.type === 'appointment') {
                     badge = '<span class="badge-update app">Appointment</span>';
-                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} booked an appointment!`;
+                    text = `<strong>${upd.name || 'Anonymous'}</strong>${joinedInfo} booked an appointment! 🎉`;
                 }
 
                 html += `
                     <div class="summary-item">
-                        <div style="min-width:120px">${badge}</div>
-                        <div style="color:var(--text-secondary)">${text}</div>
+                        <div style="min-width:130px; display:flex; justify-content:center;">${badge}</div>
+                        <div style="color:var(--text-secondary); line-height:1.4;">${text}</div>
                     </div>
                 `;
             });
