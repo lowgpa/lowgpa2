@@ -157,24 +157,24 @@ function renderTable(data) {
 
         statsContainer.innerHTML = `
         <div class="stats-summary-container">
-            <div class="stat-card fade-in-up delay-1">
+            <div class="stat-card shadow-indigo fade-in-up delay-1">
                 <div class="stat-icon-wrapper" style="background: #EEF2FF; color: #4F46E5;">
                     ${iconTotal}
                 </div>
                 <div class="stat-content">
                     <h4>Total Applicants</h4>
-                    <div class="stat-value">${count}</div>
+                    <div class="stat-value count-up" data-target="${count}">0</div>
                     <div class="stat-meta">Tracking active cases</div>
                 </div>
             </div>
 
-            <div class="stat-card fade-in-up delay-2">
+            <div class="stat-card shadow-green fade-in-up delay-2">
                 <div class="stat-icon-wrapper" style="background: #ECFDF5; color: #059669;">
                     ${iconSub}
                 </div>
                 <div class="stat-content" style="width:100%">
                     <h4>Got Submission</h4>
-                    <div class="stat-value">${totalGotSubmission}</div>
+                    <div class="stat-value count-up" data-target="${totalGotSubmission}">0</div>
                     <div class="stat-meta">${subPercent}% of total</div>
                     <div class="progress-bg">
                         <div class="progress-fill" style="width: ${subPercent}%; background: #059669;"></div>
@@ -182,13 +182,13 @@ function renderTable(data) {
                 </div>
             </div>
 
-            <div class="stat-card fade-in-up delay-3">
+            <div class="stat-card shadow-amber fade-in-up delay-3">
                 <div class="stat-icon-wrapper" style="background: #FFF7ED; color: #EA580C;">
                     ${iconApp}
                 </div>
                 <div class="stat-content" style="width:100%">
                     <h4>Appointments</h4>
-                    <div class="stat-value">${totalAppointments}</div>
+                    <div class="stat-value count-up" data-target="${totalAppointments}">0</div>
                     <div class="stat-meta">${totalAppointments} out of ${count} total</div>
                     <div class="progress-bg">
                         <div class="progress-fill" style="width: ${appPercent}%; background: #EA580C;"></div>
@@ -364,6 +364,34 @@ function renderTable(data) {
             `;
 
         tbody.appendChild(row);
+    });
+
+    // Run count-up animation for stat numbers
+    runCountUpAnimation(1500);
+}
+
+// Function to animate numbers counting up
+function runCountUpAnimation(duration = 1500) {
+    const counters = document.querySelectorAll('.count-up');
+
+    counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const startTime = performance.now();
+
+        const updateCounter = (currentTime) => {
+            const elapsedTime = currentTime - startTime;
+            if (elapsedTime < duration) {
+                // Easing function (easeOutExpo)
+                const progress = 1 - Math.pow(2, -10 * elapsedTime / duration);
+                const currentVal = Math.floor(progress * target);
+                counter.innerText = currentVal;
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.innerText = target;
+            }
+        };
+
+        requestAnimationFrame(updateCounter);
     });
 }
 
