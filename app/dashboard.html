@@ -13,6 +13,30 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .skeleton {
+            animation: pulse-skeleton 1.5s infinite ease-in-out;
+            color: transparent !important;
+            background-color: var(--border) !important;
+            border-radius: var(--radius-sm);
+            width: fit-content;
+            min-width: 100px;
+        }
+
+        @keyframes pulse-skeleton {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+    </style>
 </head>
 
 <body class="app-body">
@@ -45,7 +69,7 @@
         <main class="main-content">
 
             <header class="topbar">
-                <h2 id="welcome-message">Dashboard</h2>
+                <h2 id="welcome-message" class="skeleton">Loading Profile...</h2>
                 <div style="font-size: 0.9rem; color: var(--text-secondary);">Phase 1 Preview</div>
             </header>
 
@@ -58,19 +82,19 @@
                 <div class="data-grid">
                     <div class="data-item">
                         <label>Full Name</label>
-                        <p id="profile-name">-</p>
+                        <p id="profile-name" class="skeleton">Fetching...</p>
                     </div>
                     <div class="data-item">
                         <label>Username</label>
-                        <p id="profile-username">-</p>
+                        <p id="profile-username" class="skeleton">Fetching...</p>
                     </div>
                     <div class="data-item">
                         <label>Email</label>
-                        <p id="profile-email">-</p>
+                        <p id="profile-email" class="skeleton">Fetching...</p>
                     </div>
                     <div class="data-item">
                         <label>Account Role</label>
-                        <p id="profile-role" style="text-transform: capitalize;">-</p>
+                        <p id="profile-role" class="skeleton" style="text-transform: capitalize;">Fetching...</p>
                     </div>
                 </div>
             </section>

@@ -27,21 +27,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 3. Populate DOM Elements
+    const nameEl = document.getElementById('profile-name');
+    const usernameEl = document.getElementById('profile-username');
+    const roleEl = document.getElementById('profile-role');
+    const topWelcomeEl = document.getElementById('welcome-message');
+
+    // Remove loading states
+    nameEl.classList.remove('skeleton');
+    usernameEl.classList.remove('skeleton');
+    roleEl.classList.remove('skeleton');
+
     // Use fallbacks in case it's an old Phase 0 user who didn't supply metadata
+    // Or if the SQL Trigger hasn't been updated to capture metadata yet!
     const displayName = profile?.full_name || 'Anonymous User';
-    const displayUsername = profile?.username || 'Not set';
+    const displayUsername = profile?.username || 'Not set (Run SQL Script!)';
     const displayRole = profile?.role || 'user';
 
     // Topbar & Sidebar
-    document.getElementById('welcome-message').textContent = `Welcome, ${displayName.split(' ')[0]}!`;
+    topWelcomeEl.textContent = `Welcome, ${displayName.split(' ')[0]}!`;
     document.getElementById('nav-fullname').textContent = displayName;
     document.getElementById('nav-role').textContent = displayRole;
 
     // Content Grid
-    document.getElementById('profile-name').textContent = displayName;
-    document.getElementById('profile-username').textContent = `@${displayUsername}`;
+    nameEl.textContent = displayName;
+    usernameEl.textContent = `@${displayUsername}`;
     document.getElementById('profile-email').textContent = user.email;
-    document.getElementById('profile-role').textContent = displayRole;
+    roleEl.textContent = displayRole;
+
+    // Inject a warning if data is missing
+    if (!profile?.username) {
+        let warningDiv = document.createElement('div');
+        warningDiv.style = "background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid #ef4444;";
+        warningDiv.innerHTML = "<strong>Missing Data:</strong> It looks like your Username and Name weren't saved during signup. You need to run the Phase 1 & 2 SQL Scripts in your Supabase Dashboard so your database knows how to capture the metadata.";
+        document.querySelector('.data-grid').parentElement.appendChild(warningDiv);
+    }
 
     // 4. Handle Logout
     logoutBtn.addEventListener('click', async () => {
