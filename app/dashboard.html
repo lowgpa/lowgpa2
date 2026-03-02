@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SaaS Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="app-body">
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">StudySaaS.</div>
+
+            <ul class="nav-links">
+                <li><a href="#" class="active">Overview</a></li>
+                <li><a href="#">Applications</a></li>
+                <li><a href="#">Documents</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+
+            <div class="user-profile-sm">
+                <p id="nav-fullname">Loading...</p>
+                <span id="nav-role">user</span>
+                <button id="logout-btn" class="logout-btn">Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2 id="welcome-message">Dashboard</h2>
+                <div style="font-size: 0.9rem; color: var(--text-secondary);">Phase 1 Preview</div>
+            </header>
+
+            <section class="content-card">
+                <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Your Profile Information</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">
+                    This data is secured by Supabase Row Level Security. Only you can access your profile.
+                </p>
+
+                <div class="data-grid">
+                    <div class="data-item">
+                        <label>Full Name</label>
+                        <p id="profile-name">-</p>
+                    </div>
+                    <div class="data-item">
+                        <label>Username</label>
+                        <p id="profile-username">-</p>
+                    </div>
+                    <div class="data-item">
+                        <label>Email</label>
+                        <p id="profile-email">-</p>
+                    </div>
+                    <div class="data-item">
+                        <label>Account Role</label>
+                        <p id="profile-role" style="text-transform: capitalize;">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-card"
+                style="background: transparent; border: 1px dashed var(--border-focus); box-shadow: none;">
+                <h3 style="margin-top: 0; color: var(--text-secondary);">Next Steps</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0;">
+                    Your authentication matrix is fully functional. The next phase will involve adding application
+                    timelines and document stores.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app-dashboard.js"></script>
+</body>
+
+</html>

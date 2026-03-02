@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Platform - Auth</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <!-- LOGIN VIEW -->
+        <div id="view-login">
+            <div class="auth-header">
+                <h1>Welcome back</h1>
+                <p>Enter your email to receive a magic link</p>
+            </div>
+
+            <form id="form-login">
+                <div class="form-group">
+                    <label for="login-email">Email address</label>
+                    <input type="email" id="login-email" required placeholder="name@example.com">
+                </div>
+                <button type="submit" id="btn-login" class="primary-btn">Log In with Magic Link</button>
+            </form>
+
+            <div class="auth-toggle">
+                Don't have an account? <a id="toggle-to-signup">Sign up</a>
+            </div>
+        </div>
+
+        <!-- SIGNUP VIEW -->
+        <div id="view-signup" class="hidden">
+            <div class="auth-header">
+                <h1>Create an account</h1>
+                <p>Start your journey to Germany today</p>
+            </div>
+
+            <form id="form-signup">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" required placeholder="johndoe123" pattern="[a-zA-Z0-9_]+"
+                        title="Only letters, numbers, and underscores allowed">
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email address</label>
+                    <input type="email" id="signup-email" required placeholder="name@example.com">
+                </div>
+                <button type="submit" id="btn-signup" class="primary-btn">Create Account</button>
+            </form>
+
+            <div class="auth-toggle">
+                Already have an account? <a id="toggle-to-login">Log in</a>
+            </div>
+        </div>
+
+        <!-- STATUS MESSAGE -->
+        <div id="status-message" class="message hidden"></div>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>
