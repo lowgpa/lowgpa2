@@ -11,47 +11,13 @@
     <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/style.css"> <!-- Main site styles for header -->
-    <link rel="stylesheet" href="css/style.css"> <!-- App specific styles overriding conflicts -->
+    <link rel="stylesheet" href="css/style.css"> <!-- Dedicated Auth CSS -->
 
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        .auth-wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 80px);
-            /* Account for header */
-            padding: 2rem;
-            width: 100%;
-        }
-
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-            display: block;
-            height: 100%;
-        }
-
-        /* Reset from app style.css because of the header */
-    </style>
 </head>
 
 <body>
-
-    <header class="site-header glass">
-        <div class="container nav-container"
-            style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="../index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
-            <nav class="nav-links">
-                <a href="../index.html" class="nav-link">Back to Main Site</a>
-            </nav>
-        </div>
-    </header>
-
     <div class="auth-wrapper">
         <div class="auth-container">
 
@@ -64,12 +30,12 @@
 
                 <form id="form-login">
                     <div class="form-group">
-                        <label for="login-email">Email address</label>
-                        <input type="email" id="login-email" required placeholder="name@example.com">
+                        <input type="text" id="login-identifier" required placeholder=" ">
+                        <label for="login-identifier">Email or Username</label>
                     </div>
                     <div class="form-group">
+                        <input type="password" id="login-password" required placeholder=" ">
                         <label for="login-password">Password</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
                     </div>
                     <button type="submit" id="btn-login" class="primary-btn">Log In</button>
                 </form>
@@ -88,22 +54,21 @@
 
                 <form id="form-signup">
                     <div class="form-group">
+                        <input type="text" id="signup-name" required placeholder=" ">
                         <label for="signup-name">Full Name</label>
-                        <input type="text" id="signup-name" required placeholder="John Doe">
                     </div>
                     <div class="form-group">
+                        <input type="text" id="signup-username" required placeholder=" " pattern="[a-zA-Z0-9_]+"
+                            title="Only letters, numbers, and underscores allowed">
                         <label for="signup-username">Username</label>
-                        <input type="text" id="signup-username" required placeholder="johndoe123"
-                            pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
                     </div>
                     <div class="form-group">
+                        <input type="email" id="signup-email" required placeholder=" ">
                         <label for="signup-email">Email address</label>
-                        <input type="email" id="signup-email" required placeholder="name@example.com">
                     </div>
                     <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <input type="password" id="signup-password" minlength="6" required
-                            placeholder="Min. 6 characters">
+                        <input type="password" id="signup-password" minlength="6" required placeholder=" ">
+                        <label for="signup-password">Password (Min. 6 chars)</label>
                     </div>
                     <button type="submit" id="btn-signup" class="primary-btn">Create Account</button>
                 </form>
