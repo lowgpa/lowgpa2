@@ -519,6 +519,7 @@ button.secondary-btn.danger:hover {
   width: 100%;
   text-align: left;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .dropdown-item:hover {

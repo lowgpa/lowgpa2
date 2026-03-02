@@ -41,6 +41,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     nameEl.classList.remove('skeleton');
     usernameEl.classList.remove('skeleton');
     roleEl.classList.remove('skeleton');
+    topWelcomeEl.classList.remove('skeleton');
+
+    const emailEl = document.getElementById('profile-email');
+    if (emailEl) emailEl.classList.remove('skeleton');
+
+    const navFullnameEl = document.getElementById('nav-fullname');
+    if (navFullnameEl) navFullnameEl.classList.remove('skeleton');
+
+    const navRoleEl = document.getElementById('nav-role');
+    if (navRoleEl) navRoleEl.classList.remove('skeleton');
 
     // Use fallbacks in case it's an old Phase 0 user who didn't supply metadata
     // Or if the SQL Trigger hasn't been updated to capture metadata yet!
