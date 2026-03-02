@@ -54,23 +54,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('profile-email').textContent = user.email;
     roleEl.textContent = displayRole;
 
-    // Inject a warning if data is missing, and print the raw output
-    if (!profile?.username || profileError) {
-        let warningDiv = document.createElement('div');
-        warningDiv.style = "background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-top: 2rem; border: 1px solid #ef4444; word-break: break-all;";
+    // 4. Reveal Dashboard with a smooth transition
+    setTimeout(() => {
+        const loader = document.getElementById('fullscreen-loader');
+        const content = document.getElementById('dashboard-content');
 
-        // Let's dump everything so you can tell me what it says!
-        let debugText = `
-        <strong>Diagnostic Data (Please copy-paste this to me!):</strong><br><br>
-        <b>profileError:</b> ${JSON.stringify(profileError, null, 2)}<br><br>
-        <b>profile data:</b> ${JSON.stringify(profile, null, 2)}<br><br>
-        <b>Raw User Metadata:</b> ${JSON.stringify(user.user_metadata, null, 2)}<br><br>
-        <b>Session ID:</b> ${user.id}
-        `;
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            setTimeout(() => loader.remove(), 500); // Remove from DOM after transition
+        }
 
-        warningDiv.innerHTML = debugText;
-        document.querySelector('.data-grid').parentElement.appendChild(warningDiv);
-    }
+        if (content) {
+            content.style.opacity = '1';
+        }
+    }, 600); // 600ms artificial delay to let the animation feel premium
+
 
     // 4. Handle Logout
     logoutBtn.addEventListener('click', async () => {
