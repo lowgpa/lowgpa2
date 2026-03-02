@@ -54,11 +54,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('profile-email').textContent = user.email;
     roleEl.textContent = displayRole;
 
-    // Inject a warning if data is missing
-    if (!profile?.username) {
+    // Inject a warning if data is missing, and print the raw output
+    if (!profile?.username || profileError) {
         let warningDiv = document.createElement('div');
-        warningDiv.style = "background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid #ef4444;";
-        warningDiv.innerHTML = "<strong>Missing Data:</strong> It looks like your Username and Name weren't saved during signup. You need to run the Phase 1 & 2 SQL Scripts in your Supabase Dashboard so your database knows how to capture the metadata.";
+        warningDiv.style = "background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-top: 2rem; border: 1px solid #ef4444; word-break: break-all;";
+
+        // Let's dump everything so you can tell me what it says!
+        let debugText = `
+        <strong>Diagnostic Data (Please copy-paste this to me!):</strong><br><br>
+        <b>profileError:</b> ${JSON.stringify(profileError, null, 2)}<br><br>
+        <b>profile data:</b> ${JSON.stringify(profile, null, 2)}<br><br>
+        <b>Raw User Metadata:</b> ${JSON.stringify(user.user_metadata, null, 2)}<br><br>
+        <b>Session ID:</b> ${user.id}
+        `;
+
+        warningDiv.innerHTML = debugText;
         document.querySelector('.data-grid').parentElement.appendChild(warningDiv);
     }
 
