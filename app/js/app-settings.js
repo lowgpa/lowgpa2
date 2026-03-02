@@ -20,10 +20,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Make page visible smoothly now that session is verified
     document.body.style.visibility = 'visible';
+    const preloader = document.getElementById('brand-preloader');
+    const content = document.getElementById('dashboard-content');
+
+    if (preloader) {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
+    }
+
     setTimeout(() => {
-        const content = document.getElementById('dashboard-content');
         if (content) content.style.opacity = '1';
-    }, 50);
+    }, 100);
 
     // 2. Fetch basic profile info for dropdown/header
     let { data: profile, error: profileError } = await supabaseClient
