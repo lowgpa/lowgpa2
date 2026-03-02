@@ -333,12 +333,24 @@ button.primary-btn:disabled {
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  /* Add spacing below header */
+  position: relative;
+  z-index: 500;
+  /* Ensure header context stays above cards */
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .topbar-left h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .topbar-right {
@@ -387,6 +399,8 @@ button.primary-btn:disabled {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
   color: white;
   border: 2px solid var(--surface-border);
   overflow: hidden;
@@ -436,7 +450,7 @@ button.primary-btn:disabled {
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 100;
+  z-index: 999;
 }
 
 .dropdown-menu.active {
@@ -494,11 +508,12 @@ button.primary-btn:disabled {
   backdrop-filter: blur(20px);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+  min-height: 100px;
 }
 
 .metric-card:hover {
@@ -509,18 +524,20 @@ button.primary-btn:disabled {
 
 .metric-info h4 {
   margin: 0 0 0.5rem 0;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .metric-info h2 {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1;
 }
 
 .metric-icon {
