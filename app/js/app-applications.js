@@ -75,25 +75,74 @@ document.addEventListener('DOMContentLoaded', async () => {
     const gridEl = document.getElementById('applications-grid');
     const countEl = document.getElementById('tracker-count');
 
+    const modalTitle = modal.querySelector('h3');
+    const deleteAppBtn = document.getElementById('delete-app-btn');
+
     // Make sure Modal is hidden organically on load
     modal.classList.add('hidden');
 
     // Modal Toggles
-    const openModal = () => modal.classList.remove('hidden');
+    const openModal = () => {
+        document.getElementById('app-id').value = '';
+        modalTitle.textContent = 'Add New Application';
+        submitBtn.textContent = 'Add Application';
+        if (deleteAppBtn) deleteAppBtn.classList.add('hidden');
+        modal.classList.remove('hidden');
+    };
+
+    const openEditModal = (app) => {
+        document.getElementById('app-id').value = app.id;
+        document.getElementById('app-uni').value = app.university_name;
+        document.getElementById('app-program').value = app.program_name;
+        document.getElementById('app-degree').value = app.degree_level;
+        document.getElementById('app-status').value = app.status;
+        document.getElementById('app-deadline').value = app.deadline || '';
+        document.getElementById('app-url').value = app.url || '';
+        document.getElementById('app-notes').value = app.notes || '';
+
+        modalTitle.textContent = 'Edit Application Overview';
+        submitBtn.textContent = 'Save Changes';
+        if (deleteAppBtn) deleteAppBtn.classList.remove('hidden');
+        modal.classList.remove('hidden');
+    };
+
     const closeModal = () => {
         modal.classList.add('hidden');
         addAppForm.reset();
+        document.getElementById('app-id').value = '';
     };
 
     addAppBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
     cancelModalBtn.addEventListener('click', closeModal);
 
-    // 3. Form Submission (INSERT deeply to Supabase)
+    if (deleteAppBtn) {
+        deleteAppBtn.addEventListener('click', async () => {
+            const appId = document.getElementById('app-id').value;
+            if (!appId) return;
+
+            if (confirm('Are you sure you want to delete this application tracking data? This cannot be undone.')) {
+                deleteAppBtn.textContent = 'Deleting...';
+                const { error } = await supabaseClient.from('applications').delete().eq('id', appId);
+                if (error) {
+                    alert("Error deleting application: " + error.message);
+                    deleteAppBtn.textContent = 'Delete';
+                } else {
+                    closeModal();
+                    fetchApplications();
+                    deleteAppBtn.textContent = 'Delete';
+                }
+            }
+        });
+    }
+
+    // 3. Form Submission (INSERT or UPDATE to Supabase)
     addAppForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
         submitBtn.textContent = 'Saving...';
+
+        const appId = document.getElementById('app-id').value;
 
         const payload = {
             user_id: user.id, // CRITICAL: Link data to logged-in user
@@ -106,12 +155,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             notes: document.getElementById('app-notes').value || null
         };
 
-        const { error } = await supabaseClient.from('applications').insert([payload]);
+        let result;
+        if (appId) {
+            // Update existing
+            result = await supabaseClient.from('applications').update(payload).eq('id', appId);
+        } else {
+            // Insert new
+            result = await supabaseClient.from('applications').insert([payload]);
+        }
 
-        if (error) {
-            alert("Error saving application: " + error.message);
+        if (result.error) {
+            alert("Error saving application: " + result.error.message);
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Add Application';
+            submitBtn.textContent = appId ? 'Save Changes' : 'Add Application';
         } else {
             closeModal();
             fetchApplications(); // Reload UI
@@ -181,10 +237,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
 
                 <div class="app-card-actions">
-                    <button class="primary-btn" style="flex: 1; padding: 0.5rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;"><i data-lucide="eye" style="width:16px;height:16px;"></i> View Details</button>
+                    <button class="primary-btn view-details-btn" data-id="${app.id}" style="flex: 1; padding: 0.5rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;"><i data-lucide="eye" style="width:16px;height:16px;"></i> View Details</button>
                     ${urlButtonHtml}
                 </div>
             `;
+
+            // Attach event listener to dynamically created button
+            const viewBtn = card.querySelector('.view-details-btn');
+            if (viewBtn) {
+                viewBtn.addEventListener('click', () => {
+                    openEditModal(app);
+                });
+            }
             gridEl.appendChild(card);
         });
 

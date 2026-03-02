@@ -230,9 +230,13 @@
                     <textarea id="app-notes" rows="3" placeholder="Add notes about this application..."></textarea>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="secondary-btn" id="cancel-modal-btn">Cancel</button>
-                    <button type="submit" class="primary-btn" id="submit-app-btn">Add Application</button>
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button type="button" class="secondary-btn danger hidden" id="delete-app-btn"
+                        style="color: var(--error); border-color: rgba(239, 68, 68, 0.3);">Delete</button>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="secondary-btn" id="cancel-modal-btn">Cancel</button>
+                        <button type="submit" class="primary-btn" id="submit-app-btn">Add Application</button>
+                    </div>
                 </div>
             </form>
         </div>
