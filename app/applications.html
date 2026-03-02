@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications - LowGPA to Germany</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
+    <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
+
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .skeleton {
+            animation: pulse-skeleton 1.5s infinite ease-in-out;
+            color: transparent !important;
+            background-color: var(--border) !important;
+            border-radius: var(--radius-sm);
+            width: fit-content;
+            min-width: 100px;
+        }
+
+        @keyframes pulse-skeleton {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+
+<body class="app-body">
+
+    <!-- Fullscreen Loading Overlay -->
+    <div id="fullscreen-loader"
+        style="position: fixed; inset: 0; background: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease;">
+        <div
+            style="width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.5rem;">
+        </div>
+        <h3 style="color: var(--text-primary); margin: 0 0 0.5rem 0; font-size: 1.5rem;">Securing your data...</h3>
+        <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">Fetching encrypted profile securely</p>
+    </div>
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <div class="dashboard-layout" id="dashboard-content" style="opacity: 0; transition: opacity 0.6s ease;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo" style="margin-bottom: 2rem;">
+                <a href="../index.html"
+                    style="font-weight: 800; font-size: 1.5rem; color: var(--primary); letter-spacing: -0.05em; text-decoration: none;">LowGPA<span
+                        style="color:var(--text-primary)">.</span></a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="#" class="active"><i data-lucide="folder-open"></i> Applications</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Documents</a></li>
+                <li><a href="#"><i data-lucide="settings"></i> Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h2 id="welcome-message" class="skeleton">Loading Profile...</h2>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="header-icon" title="Notifications">
+                        <i data-lucide="bell"></i>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-menu-container">
+                        <div class="profile-trigger" id="profile-trigger">
+                            <div class="avatar-circle">
+                                <span id="avatar-initials" class="skeleton">...</span>
+                            </div>
+                            <div class="profile-info">
+                                <span id="nav-fullname" class="profile-name-sm skeleton">Fetching</span>
+                                <span id="nav-role" class="profile-role-sm skeleton">user</span>
+                            </div>
+                            <i data-lucide="chevron-down"
+                                style="width: 16px; height: 16px; color: var(--text-secondary);"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="profile-dropdown">
+                            <a href="#" class="dropdown-item">
+                                <i data-lucide="user"></i> My Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i data-lucide="settings"></i> Account Settings
+                            </a>
+                            <button id="logout-btn" class="dropdown-item danger">
+                                <i data-lucide="log-out"></i> Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Application Tracker Content -->
+            <div class="tracker-header">
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem; color: var(--text-primary);">Application Tracker</h1>
+                    <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0;" id="tracker-count">0 applications
+                        tracked</p>
+                </div>
+                <button class="primary-btn" id="add-app-btn" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i> Add Application
+                </button>
+            </div>
+
+            <!-- Stage Pipeline -->
+            <section class="content-card" style="margin-bottom: 2rem;">
+                <h4 style="margin: 0 0 1.5rem 0; font-size: 0.95rem; color: var(--text-primary);">Application Stages
+                </h4>
+
+                <div class="pipeline-container">
+                    <span class="status-pill status-default">Researching</span>
+                    <span class="status-pill status-preparing">Preparing</span>
+                    <span class="status-pill status-applied">Applied</span>
+                    <span class="status-pill status-interview">Interview</span>
+                    <span class="status-pill status-decision">Decision</span>
+                    <span class="status-pill status-accepted">Accepted</span>
+                    <span class="status-pill status-rejected">Rejected</span>
+                    <span class="status-pill status-enrolled">Enrolled</span>
+                </div>
+            </section>
+
+            <!-- Applications Grid -->
+            <div id="applications-grid" class="applications-grid">
+                <!-- Cards will be injected here by JS -->
+                <div class="empty-state" id="empty-state"
+                    style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary); border: 1px dashed var(--surface-border); border-radius: var(--radius-md);">
+                    <i data-lucide="folder-open"
+                        style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>You aren't tracking any applications yet.</p>
+                    <button class="primary-btn" onclick="document.getElementById('add-app-btn').click();"
+                        style="margin-top: 1rem;">Track First Application</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Add Application Modal -->
+    <div id="app-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-primary);">Add New Application</h3>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Track a new university
+                        application.</p>
+                </div>
+                <button class="close-modal" id="close-modal-btn"><i data-lucide="x"></i></button>
+            </div>
+
+            <form id="add-app-form" class="modal-body">
+                <div class="input-group">
+                    <label>University Name *</label>
+                    <input type="text" id="app-uni" required placeholder="e.g., Harvard University">
+                </div>
+
+                <div class="input-group">
+                    <label>Program Name *</label>
+                    <input type="text" id="app-program" required placeholder="e.g., Master of Computer Science">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="input-group">
+                        <label>Degree Level</label>
+                        <select id="app-degree">
+                            <option value="Bachelor">Bachelor</option>
+                            <option value="Master" selected>Master</option>
+                            <option value="PhD">PhD</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Status</label>
+                        <select id="app-status">
+                            <option value="Researching">Researching</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Decision">Decision</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Enrolled">Enrolled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Application Deadline</label>
+                    <input type="date" id="app-deadline">
+                </div>
+
+                <div class="input-group">
+                    <label>Application URL (optional)</label>
+                    <input type="url" id="app-url" placeholder="https://">
+                </div>
+
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="app-notes" rows="3" placeholder="Add notes about this application..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" id="cancel-modal-btn">Cancel</button>
+                    <button type="submit" class="primary-btn" id="submit-app-btn">Add Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app-applications.js"></script>
+</body>
+
+</html>
