@@ -94,8 +94,24 @@
                 </div>
 
                 <div class="topbar-right">
-                    <div class="header-icon" title="Notifications">
-                        <i data-lucide="bell"></i>
+                    <!-- Notification Bell & Dropdown -->
+                    <div class="notification-container" style="position: relative;">
+                        <div class="header-icon" title="Notifications" id="notification-trigger">
+                            <i data-lucide="bell"></i>
+                            <span class="notification-badge hidden" id="notification-badge"></span>
+                        </div>
+
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <button class="mark-all-read hidden" id="mark-all-read">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notification-list">
+                                <!-- Notifications dynamically injected here -->
+                                <div class="notification-empty">No new notifications</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Profile Dropdown -->
@@ -198,6 +214,7 @@
     </div>
 
     <script src="js/supabase-config.js"></script>
+    <script src="js/app-notifications.js"></script>
     <script src="js/app-dashboard.js"></script>
 </body>
 
