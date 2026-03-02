@@ -1,6 +1,6 @@
 // app-notifications.js - Handles fetching and rendering the notification dropdown
 
-document.addEventListener('DOMContentLoaded', () => {
+(function initNotifications() {
     const trigger = document.getElementById('notification-trigger');
     const dropdown = document.getElementById('notification-dropdown');
     const badge = document.getElementById('notification-badge');
@@ -148,4 +148,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     fetchNotifications();
-});
+})();
