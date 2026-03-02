@@ -4,62 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS Platform - Auth</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Log In - LowGPA to Germany</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
+    <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css"> <!-- Main site styles for header -->
+    <link rel="stylesheet" href="css/style.css"> <!-- App specific styles overriding conflicts -->
+
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Isolate auth container from the inherited container styles if needed */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            /* Account for header */
+            padding: 2rem;
+            width: 100%;
+        }
+
+        body {
+            display: block;
+            align-items: unset;
+            justify-content: unset;
+        }
+
+        /* Reset from app style.css because of the header */
+    </style>
 </head>
 
 <body>
 
-    <div class="auth-container">
-
-        <!-- LOGIN VIEW -->
-        <div id="view-login">
-            <div class="auth-header">
-                <h1>Welcome back</h1>
-                <p>Enter your email to receive a magic link</p>
-            </div>
-
-            <form id="form-login">
-                <div class="form-group">
-                    <label for="login-email">Email address</label>
-                    <input type="email" id="login-email" required placeholder="name@example.com">
-                </div>
-                <button type="submit" id="btn-login" class="primary-btn">Log In with Magic Link</button>
-            </form>
-
-            <div class="auth-toggle">
-                Don't have an account? <a id="toggle-to-signup">Sign up</a>
-            </div>
+    <header class="site-header glass">
+        <div class="container nav-container"
+            style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo">LowGPA<span style="color:var(--text-primary)"> to Germany</span></a>
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link">Back to Main Site</a>
+            </nav>
         </div>
+    </header>
 
-        <!-- SIGNUP VIEW -->
-        <div id="view-signup" class="hidden">
-            <div class="auth-header">
-                <h1>Create an account</h1>
-                <p>Start your journey to Germany today</p>
+    <div class="auth-wrapper">
+        <div class="auth-container">
+
+            <!-- LOGIN VIEW -->
+            <div id="view-login">
+                <div class="auth-header">
+                    <h1>Welcome back</h1>
+                    <p>Enter your email and password to log in</p>
+                </div>
+
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="login-email">Email address</label>
+                        <input type="email" id="login-email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" id="btn-login" class="primary-btn">Log In</button>
+                </form>
+
+                <div class="auth-toggle">
+                    Don't have an account? <a id="toggle-to-signup">Sign up</a>
+                </div>
             </div>
 
-            <form id="form-signup">
-                <div class="form-group">
-                    <label for="signup-name">Full Name</label>
-                    <input type="text" id="signup-name" required placeholder="John Doe">
+            <!-- SIGNUP VIEW -->
+            <div id="view-signup" class="hidden">
+                <div class="auth-header">
+                    <h1>Create an account</h1>
+                    <p>Start your journey to Germany today</p>
                 </div>
-                <div class="form-group">
-                    <label for="signup-username">Username</label>
-                    <input type="text" id="signup-username" required placeholder="johndoe123" pattern="[a-zA-Z0-9_]+"
-                        title="Only letters, numbers, and underscores allowed">
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email address</label>
-                    <input type="email" id="signup-email" required placeholder="name@example.com">
-                </div>
-                <button type="submit" id="btn-signup" class="primary-btn">Create Account</button>
-            </form>
 
-            <div class="auth-toggle">
-                Already have an account? <a id="toggle-to-login">Log in</a>
+                <form id="form-signup">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" required placeholder="johndoe123"
+                            pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email address</label>
+                        <input type="email" id="signup-email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" minlength="6" required
+                            placeholder="Min. 6 characters">
+                    </div>
+                    <button type="submit" id="btn-signup" class="primary-btn">Create Account</button>
+                </form>
+
+                <div class="auth-toggle">
+                    Already have an account? <a id="toggle-to-login">Log in</a>
+                </div>
             </div>
         </div>
 
