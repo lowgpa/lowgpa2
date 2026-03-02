@@ -18,20 +18,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const user = session.user;
 
-    // Make page visible smoothly now that session is verified
+    // Make page visible (but still covered by preloader) now that session is verified
     document.body.style.visibility = 'visible';
-    const preloader = document.getElementById('brand-preloader');
-    const content = document.getElementById('dashboard-content');
-
-    if (preloader) {
-        preloader.style.opacity = '0';
-        preloader.style.visibility = 'hidden';
-        setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
-    }
-
-    setTimeout(() => {
-        if (content) content.style.opacity = '1';
-    }, 100);
 
     // 2. Fetch basic profile info for dropdown/header
     let { data: profile, error: profileError } = await supabaseClient
@@ -92,6 +80,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    // --- DATA LOADED: REVEAL PAGE ---
+    const preloader = document.getElementById('brand-preloader');
+    const content = document.getElementById('dashboard-content');
+
+    if (preloader) {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
+    }
+
+    setTimeout(() => {
+        if (content) content.style.opacity = '1';
+    }, 100);
 
     // --- POPULATE FORM & HANDLE UPDATE ---
 

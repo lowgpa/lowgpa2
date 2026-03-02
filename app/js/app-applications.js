@@ -14,20 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const user = session.user;
 
-    // Make page visible smoothly now that session is verified
+    // Make page visible (but still covered by preloader) now that session is verified
     document.body.style.visibility = 'visible';
-    const preloader = document.getElementById('brand-preloader');
-    const content = document.getElementById('dashboard-content');
-
-    if (preloader) {
-        preloader.style.opacity = '0';
-        preloader.style.visibility = 'hidden';
-        setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
-    }
-
-    setTimeout(() => {
-        if (content) content.style.opacity = '1';
-    }, 100);
 
     // Populate Sidebar Profile securely
     const { data: profile } = await supabaseClient.from('profiles').select('username, full_name, role').eq('id', user.id).single();
@@ -254,6 +242,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             gridEl.appendChild(card);
         });
+
+        // --- DATA LOADED: REVEAL PAGE ---
+        const preloader = document.getElementById('brand-preloader');
+        const content = document.getElementById('dashboard-content');
+
+        if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
+        }
+
+        setTimeout(() => {
+            if (content) content.style.opacity = '1';
+        }, 100);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     };
