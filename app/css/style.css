@@ -458,6 +458,8 @@ button.secondary-btn.danger:hover {
 .profile-info {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .profile-name-sm {
