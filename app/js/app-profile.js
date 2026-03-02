@@ -18,6 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const user = session.user;
 
+    // Make page visible smoothly now that session is verified
+    document.body.style.visibility = 'visible';
+    setTimeout(() => {
+        const content = document.getElementById('dashboard-content');
+        if (content) content.style.opacity = '1';
+    }, 50);
+
     // 2. Fetch basic profile info for dropdown/header
     let { data: profile, error: profileError } = await supabaseClient
         .from('profiles')
@@ -145,22 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (studyProfile.target_intake) document.getElementById('pref-intake').value = studyProfile.target_intake;
     if (studyProfile.desired_field) document.getElementById('pref-field').value = studyProfile.desired_field;
     if (studyProfile.preferred_medium) document.getElementById('pref-medium').value = studyProfile.preferred_medium;
-
-    // Remove loading overlay smoothly once data is mapped
-    setTimeout(() => {
-        const loader = document.getElementById('fullscreen-loader');
-        const content = document.getElementById('dashboard-content');
-
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(() => loader.remove(), 500);
-        }
-
-        if (content) {
-            content.style.opacity = '1';
-        }
-    }, 400);
 
     // Handle Form Submit
     const profileForm = document.getElementById('profile-form');

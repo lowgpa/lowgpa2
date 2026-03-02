@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const user = session.user;
 
+    // Make page visible smoothly now that session is verified
+    document.body.style.visibility = 'visible';
+    setTimeout(() => {
+        const content = document.getElementById('dashboard-content');
+        if (content) content.style.opacity = '1';
+    }, 50);
+
     // 2. Fetch extended profile from profiles table
     // (username and full_name are populated by our trigger during signup)
     const { data: profile, error: profileError } = await supabaseClient
@@ -99,24 +106,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     usernameEl.textContent = `@${displayUsername}`;
     document.getElementById('profile-email').textContent = user.email;
     roleEl.textContent = displayRole;
-
-    // 4. Reveal Dashboard with a smooth transition
-    setTimeout(() => {
-        const loader = document.getElementById('fullscreen-loader');
-        const content = document.getElementById('dashboard-content');
-
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(() => loader.remove(), 500); // Remove from DOM after transition
-        }
-
-        if (content) {
-            content.style.opacity = '1';
-        }
-    }, 600); // 600ms artificial delay to let the animation feel premium
-
-
     // 4. Handle Logout
     logoutBtn.addEventListener('click', async () => {
         logoutBtn.disabled = true;

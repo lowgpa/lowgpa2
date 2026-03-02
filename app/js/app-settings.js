@@ -18,6 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const user = session.user;
 
+    // Make page visible smoothly now that session is verified
+    document.body.style.visibility = 'visible';
+    setTimeout(() => {
+        const content = document.getElementById('dashboard-content');
+        if (content) content.style.opacity = '1';
+    }, 50);
+
     // 2. Fetch basic profile info for dropdown/header
     let { data: profile, error: profileError } = await supabaseClient
         .from('profiles')
@@ -77,22 +84,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-
-    // Remove loading overlay smoothly once header data is mapped
-    setTimeout(() => {
-        const loader = document.getElementById('fullscreen-loader');
-        const content = document.getElementById('dashboard-content');
-
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(() => loader.remove(), 500);
-        }
-
-        if (content) {
-            content.style.opacity = '1';
-        }
-    }, 400);
 
     // --- POPULATE FORM & HANDLE UPDATE ---
 

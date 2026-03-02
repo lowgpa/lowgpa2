@@ -14,17 +14,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const user = session.user;
 
-    // Remove Fullscreen Loader smoothly
+    // Make page visible smoothly now that session is verified
+    document.body.style.visibility = 'visible';
     setTimeout(() => {
-        const loader = document.getElementById('fullscreen-loader');
         const content = document.getElementById('dashboard-content');
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(() => loader.remove(), 500);
-        }
         if (content) content.style.opacity = '1';
-    }, 600);
+    }, 50);
 
     // Populate Sidebar Profile securely
     const { data: profile } = await supabaseClient.from('profiles').select('username, full_name, role').eq('id', user.id).single();
