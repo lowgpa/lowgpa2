@@ -11,6 +11,8 @@
     <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
 
     <link rel="stylesheet" href="css/style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -69,26 +71,86 @@
             </div>
 
             <ul class="nav-links">
-                <li><a href="#" class="active">Overview</a></li>
-                <li><a href="#">Applications</a></li>
-                <li><a href="#">Documents</a></li>
-                <li><a href="#">Settings</a></li>
+                <li><a href="#" class="active"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="#"><i data-lucide="folder-open"></i> Applications</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Documents</a></li>
+                <li><a href="#"><i data-lucide="settings"></i> Settings</a></li>
             </ul>
-
-            <div class="user-profile-sm">
-                <p id="nav-fullname">Loading...</p>
-                <span id="nav-role">user</span>
-                <button id="logout-btn" class="logout-btn">Log Out</button>
-            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
 
             <header class="topbar">
-                <h2 id="welcome-message" class="skeleton">Loading Profile...</h2>
-                <div style="font-size: 0.9rem; color: var(--text-secondary);">Phase 1 Preview</div>
+                <div class="topbar-left">
+                    <h2 id="welcome-message" class="skeleton">Loading Profile...</h2>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="header-icon" title="Notifications">
+                        <i data-lucide="bell"></i>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-menu-container">
+                        <div class="profile-trigger" id="profile-trigger">
+                            <div class="avatar-circle">
+                                <span id="avatar-initials" class="skeleton">...</span>
+                            </div>
+                            <div class="profile-info">
+                                <span id="nav-fullname" class="profile-name-sm skeleton">Fetching</span>
+                                <span id="nav-role" class="profile-role-sm skeleton">user</span>
+                            </div>
+                            <i data-lucide="chevron-down"
+                                style="width: 16px; height: 16px; color: var(--text-secondary);"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="profile-dropdown">
+                            <a href="#" class="dropdown-item">
+                                <i data-lucide="user"></i> My Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i data-lucide="settings"></i> Account Settings
+                            </a>
+                            <button id="logout-btn" class="dropdown-item danger">
+                                <i data-lucide="log-out"></i> Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </header>
+
+            <!-- Metrics Row -->
+            <section class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h4>Active Applications</h4>
+                        <h2>1</h2>
+                    </div>
+                    <div class="metric-icon">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h4>Documents Uploaded</h4>
+                        <h2>4</h2>
+                    </div>
+                    <div class="metric-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                        <i data-lucide="file-check-2"></i>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h4>Action Items</h4>
+                        <h2>0</h2>
+                    </div>
+                    <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                </div>
+            </section>
 
             <section class="content-card">
                 <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Your Profile Information</h3>

@@ -1,6 +1,11 @@
 // app-dashboard.js - Handles protected dashboard logic
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize SVG Icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
     const logoutBtn = document.getElementById('logout-btn');
 
     // 1. Validate session on load
@@ -47,6 +52,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     topWelcomeEl.textContent = `Welcome, ${displayName.split(' ')[0]}!`;
     document.getElementById('nav-fullname').textContent = displayName;
     document.getElementById('nav-role').textContent = displayRole;
+
+    // Generate Avatar Initials
+    const initials = displayName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
+
+    const avatarInitialsEl = document.getElementById('avatar-initials');
+    if (avatarInitialsEl) {
+        avatarInitialsEl.textContent = initials;
+        avatarInitialsEl.classList.remove('skeleton');
+    }
+
+    // Profile Dropdown Logic
+    const profileTrigger = document.getElementById('profile-trigger');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    if (profileTrigger && profileDropdown) {
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileTrigger.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+    }
 
     // Content Grid
     nameEl.textContent = displayName;
