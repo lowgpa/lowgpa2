@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Applied': 'status-applied',
             'Interview': 'status-interview',
             'Decision': 'status-decision',
+            'Decision Pending': 'status-decision',
             'Accepted': 'status-accepted',
             'Rejected': 'status-rejected',
             'Enrolled': 'status-enrolled'
