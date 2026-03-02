@@ -3,13 +3,13 @@
 :root {
   --primary: #0D9488;
   --primary-hover: #0F766E;
-  --bg-gradient-1: #0f172a;
-  --bg-gradient-2: #1e1b4b;
-  --surface-glass: rgba(255, 255, 255, 0.03);
-  --surface-glass-hover: rgba(255, 255, 255, 0.05);
-  --surface-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --bg-gradient-1: #F1F5F9;
+  --bg-gradient-2: #F8FAFC;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass-hover: rgba(255, 255, 255, 0.9);
+  --surface-border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
   --error: #ef4444;
   --error-bg: rgba(239, 68, 68, 0.1);
   --success: #10b981;
@@ -40,8 +40,8 @@ body::before {
   right: 0;
   bottom: 0;
   left: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 0% 100%, rgba(79, 70, 229, 0.15) 0%, transparent 50%);
+  background: radial-gradient(circle at 50% 0%, rgba(13, 148, 136, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(14, 165, 233, 0.08) 0%, transparent 50%);
   z-index: -1;
   animation: pulse 10s ease-in-out infinite alternate;
 }
@@ -74,12 +74,12 @@ body::before {
   background: var(--surface-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--surface-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: 3rem;
   width: 100%;
   max-width: 440px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: floatUp 0.6s ease-out forwards;
 }
@@ -105,10 +105,7 @@ body::before {
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(to right, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 .auth-header p {
@@ -141,7 +138,7 @@ select,
 textarea {
   width: 100%;
   padding: 1rem 1.25rem;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -161,8 +158,9 @@ textarea {
   resize: vertical;
 }
 
-input::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+input::placeholder,
+textarea::placeholder {
+  color: rgba(15, 23, 42, 0.4);
 }
 
 input:focus,
@@ -170,7 +168,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(0, 0, 0, 0.4);
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
 }
 
@@ -231,8 +229,9 @@ button.secondary-btn {
 }
 
 button.secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.05);
+  /* Darker hover for light mode */
+  border-color: rgba(15, 23, 42, 0.2);
 }
 
 button.secondary-btn.danger:hover {
@@ -300,7 +299,7 @@ button.secondary-btn.danger:hover {
 .message.error {
   background: var(--error-bg);
   border: 1px solid var(--error);
-  color: #f87171;
+  color: var(--error);
 }
 
 /* --- Dashboard Specific Resets for later --- */
@@ -479,12 +478,12 @@ button.secondary-btn.danger:hover {
   top: calc(100% + 10px);
   right: 0;
   min-width: 220px;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-sm);
   padding: 0.5rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -604,7 +603,7 @@ button.secondary-btn.danger:hover {
 }
 
 .data-item {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.05);
   padding: 1.25rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--surface-border);
@@ -612,7 +611,7 @@ button.secondary-btn.danger:hover {
 }
 
 .data-item:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .data-item label {
@@ -792,7 +791,7 @@ button.secondary-btn.danger:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.8);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -850,7 +849,7 @@ button.secondary-btn.danger:hover {
 }
 
 .close-modal:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.1);
   color: var(--text-primary);
 }
 
