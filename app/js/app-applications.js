@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const displayName = profile.full_name || 'Anonymous User';
         document.getElementById('nav-fullname').textContent = displayName;
         document.getElementById('nav-role').textContent = profile.role || 'user';
-        document.getElementById('welcome-message').textContent = `Track Applications`;
 
         const avatarEl = document.getElementById('avatar-initials');
         if (avatarEl) {
