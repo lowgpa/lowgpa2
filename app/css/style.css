@@ -668,48 +668,48 @@ button.secondary-btn.danger:hover {
 /* Specific Pill Colors */
 .status-default {
   background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
+  color: #475569;
 }
 
 .status-researching {
-  background: rgba(100, 116, 139, 0.2);
-  color: #cbd5e1;
+  background: rgba(100, 116, 139, 0.1);
+  color: #475569;
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .status-preparing {
   background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  color: #2563eb;
 }
 
 .status-applied {
   background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
+  color: #9333ea;
 }
 
 .status-interview {
   background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
+  color: #d97706;
 }
 
 .status-decision {
   background: rgba(249, 115, 22, 0.15);
-  color: #fb923c;
+  color: #ea580c;
 }
 
 .status-accepted {
   background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  color: #059669;
 }
 
 .status-rejected {
   background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  color: #dc2626;
 }
 
 .status-enrolled {
   background: rgba(20, 184, 166, 0.15);
-  color: #2dd4bf;
+  color: #0d9488;
 }
 
 /* Applications Grid */
