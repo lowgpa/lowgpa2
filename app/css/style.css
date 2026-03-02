@@ -216,6 +216,31 @@ button.primary-btn:disabled {
   box-shadow: none;
 }
 
+/* Secondary Button */
+button.secondary-btn {
+  padding: 1rem 1.5rem;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+button.secondary-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+}
+
 /* View Toggles */
 .auth-toggle {
   text-align: center;
