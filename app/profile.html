@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - LowGPA to Germany</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
+    <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
+
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .skeleton {
+            animation: pulse-skeleton 1.5s infinite ease-in-out;
+            color: transparent !important;
+            background-color: var(--border) !important;
+            border-radius: var(--radius-sm);
+            width: fit-content;
+            min-width: 100px;
+        }
+
+        @keyframes pulse-skeleton {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .profile-form-section {
+            padding: 1.5rem 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-form-section h4 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 0.5rem;
+            display: none;
+            /* Hide headings since tabs explain the content now */
+        }
+
+        /* Profile Tabs */
+        .tabs-nav {
+            display: flex;
+            gap: 1.5rem;
+            border-bottom: 2px solid var(--surface-border);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari */
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 0.75rem 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            margin-bottom: -2px;
+            /* Pull down to overlap border */
+            outline: none;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: slideInTab 0.3s ease-out forwards;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes slideInTab {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="app-body">
+
+    <!-- Fullscreen Loading Overlay -->
+    <div id="fullscreen-loader"
+        style="position: fixed; inset: 0; background: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease;">
+        <div
+            style="width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.5rem;">
+        </div>
+        <h3 style="color: var(--text-primary); margin: 0 0 0.5rem 0; font-size: 1.5rem;">Securing your data...</h3>
+        <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">Fetching encrypted profile securely</p>
+    </div>
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <div class="dashboard-layout" id="dashboard-content" style="opacity: 0; transition: opacity 0.6s ease;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo" style="margin-bottom: 2rem;">
+                <a href="../index.html"
+                    style="display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.5rem; color: var(--primary); letter-spacing: -0.05em; text-decoration: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"
+                        style="width: 28px; height: 28px;">
+                        <rect x="10" y="55" width="25" height="45" rx="4" fill="#000000" />
+                        <rect x="37.5" y="35" width="25" height="65" rx="4" fill="#DD0000" />
+                        <rect x="65" y="15" width="25" height="85" rx="4" fill="#FFCE00" />
+                    </svg>
+                    LowGPA<span style="color:var(--text-primary)">.</span>
+                </a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="applications.html"><i data-lucide="folder-open"></i> Applications</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Documents</a></li>
+                <li><a href="profile.html" class="active"><i data-lucide="user"></i> Profile</a></li>
+                <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h2 style="margin: 0; font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">My Profile
+                    </h2>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Notification Bell & Dropdown -->
+                    <div class="notification-container" style="position: relative;">
+                        <div class="header-icon" title="Notifications" id="notification-trigger">
+                            <i data-lucide="bell"></i>
+                            <span class="notification-badge hidden" id="notification-badge"></span>
+                        </div>
+
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <button class="mark-all-read hidden" id="mark-all-read">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notification-list">
+                                <!-- Notifications dynamically injected here -->
+                                <div class="notification-empty">No new notifications</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-menu-container">
+                        <div class="profile-trigger" id="profile-trigger">
+                            <div class="avatar-circle">
+                                <span id="avatar-initials" class="skeleton">...</span>
+                            </div>
+                            <div class="profile-info">
+                                <span id="nav-fullname" class="profile-name-sm skeleton">Fetching</span>
+                                <span id="nav-role" class="profile-role-sm skeleton">user</span>
+                            </div>
+                            <i data-lucide="chevron-down"
+                                style="width: 16px; height: 16px; color: var(--text-secondary);"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="profile-dropdown">
+                            <a href="profile.html" class="dropdown-item">
+                                <i data-lucide="user"></i> My Profile
+                            </a>
+                            <a href="settings.html" class="dropdown-item">
+                                <i data-lucide="settings"></i> Account Settings
+                            </a>
+                            <button id="logout-btn" class="dropdown-item danger">
+                                <i data-lucide="log-out"></i> Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="tracker-header" style="margin-bottom: 2rem;">
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem; color: var(--text-primary); margin-bottom: 0.25rem;">Study
+                        Profile</h1>
+                    <p style="color: var(--text-secondary); margin: 0;">Manage your personal details, academic
+                        background, and study preferences.</p>
+                </div>
+            </div>
+
+            <!-- Profile Tabs Navigation -->
+            <div class="tabs-nav">
+                <button type="button" class="tab-btn active" data-target="tab-personal">Personal Details</button>
+                <button type="button" class="tab-btn" data-target="tab-academic">Academic Background</button>
+                <button type="button" class="tab-btn" data-target="tab-experience">Experience & Skills</button>
+                <button type="button" class="tab-btn" data-target="tab-preferences">Study Preferences</button>
+            </div>
+
+            <!-- Profile Form -->
+            <form id="profile-form" novalidate>
+
+                <!-- Personal Details Tab -->
+                <div class="tab-pane active" id="tab-personal">
+                    <section class="content-card profile-form-section">
+                        <h4>Personal Details</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label>Profile Picture</label>
+                                <input type="file" id="profile-picture" accept=".png, .jpg, .jpeg">
+                                <small
+                                    style="display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--text-secondary);">Max
+                                    size: 50KB (.png, .jpg only)</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth (Optional)</label>
+                                <input type="date" id="profile-dob">
+                            </div>
+                            <div class="form-group">
+                                <label>Nationality *</label>
+                                <input type="text" id="profile-nationality" placeholder="e.g., Pakistani" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number (WhatsApp preferred) *</label>
+                                <input type="tel" id="profile-phone" placeholder="+92 3001234567" required>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Academic Background Tab -->
+                <div class="tab-pane" id="tab-academic">
+                    <section class="content-card profile-form-section">
+                        <h4>Academic Background</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label>Bachelors University *</label>
+                                <input type="text" id="acad-uni" placeholder="e.g., NUST" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Degree Type *</label>
+                                <select id="acad-degree" required>
+                                    <option value="">Select Degree Type</option>
+                                    <option value="Secondary School">Secondary School</option>
+                                    <option value="Higher Secondary">Higher Secondary</option>
+                                    <option value="Associate Degree">Associate Degree</option>
+                                    <option value="Diploma">Diploma</option>
+                                    <option value="Bachelor's">Bachelor's</option>
+                                    <option value="Master's">Master's</option>
+                                    <option value="PhD">PhD</option>
+                                    <option value="MBA">MBA</option>
+                                    <option value="Postdoc">Postdoc</option>
+                                    <option value="Ausbildung">Ausbildung</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Graduation Year *</label>
+                                <input type="number" id="acad-year" placeholder="e.g., 2023" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Native GPA / Percentage *</label>
+                                <input type="number" step="0.01" id="acad-native-gpa" placeholder="e.g., 3.5 or 80.5"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>German Grade Equivalent <a href="../tools.html" target="_blank"
+                                        style="color: var(--primary); font-size: 0.85rem; float: right; text-decoration: none;">Calculate
+                                        here</a></label>
+                                <input type="number" step="0.1" id="acad-german-grade" placeholder="e.g., 1.7">
+                            </div>
+                        </div>
+
+                        <h5 style="margin: 2rem 0 1rem 0; font-size: 1rem; color: var(--text-primary);">Language
+                            Proficiency
+                        </h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label>English Proficiency</label>
+                                <select id="lang-english">
+                                    <option value="">Select Level/Test</option>
+                                    <option value="IELTS">IELTS</option>
+                                    <option value="TOEFL">TOEFL</option>
+                                    <option value="PTE">PTE</option>
+                                    <option value="Medium of Instruction">Medium of Instruction (MOI)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>English Score / Band</label>
+                                <input type="text" id="lang-english-score" placeholder="e.g., 7.5">
+                            </div>
+                            <div class="form-group">
+                                <label>German Proficiency</label>
+                                <select id="lang-german">
+                                    <option value="None">None</option>
+                                    <option value="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C1">C1</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Standardized Tests (GRE/GMAT) - Optional</label>
+                                <input type="text" id="acad-tests" placeholder="e.g., GRE 320">
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Experience & Extracurriculars Tab -->
+                <div class="tab-pane" id="tab-experience">
+                    <section class="content-card profile-form-section">
+                        <h4>Experience & Extracurriculars</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label>Total Work Experience (Years)</label>
+                                <input type="number" step="0.5" id="exp-years" placeholder="e.g., 2.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Current/Last Role & Company</label>
+                                <input type="text" id="exp-role" placeholder="e.g., Software Engineer at Google">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label>Research / Publications (Optional)</label>
+                            <textarea id="exp-research" rows="3"
+                                placeholder="Briefly describe any published papers, patents, or ongoing research..."></textarea>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Study Preferences Tab -->
+                <div class="tab-pane" id="tab-preferences">
+                    <section class="content-card profile-form-section">
+                        <h4>Study Preferences</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label>Target Degree</label>
+                                <select id="pref-target-degree">
+                                    <option value="">Select Target Degree</option>
+                                    <option value="Bachelor's">Bachelor's</option>
+                                    <option value="Master's">Master's</option>
+                                    <option value="PhD">PhD</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Intake</label>
+                                <select id="pref-intake">
+                                    <option value="">Select Intake</option>
+                                    <option value="Winter 2024">Winter 2024</option>
+                                    <option value="Summer 2025">Summer 2025</option>
+                                    <option value="Winter 2025">Winter 2025</option>
+                                    <option value="Summer 2026">Summer 2026</option>
+                                    <option value="Winter 2026">Winter 2026</option>
+                                    <option value="Summer 2027">Summer 2027</option>
+                                    <option value="Winter 2027">Winter 2027</option>
+                                    <option value="Summer 2028">Summer 2028</option>
+                                    <option value="Winter 2028">Winter 2028</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Desired Field of Study</label>
+                                <input type="text" id="pref-field" placeholder="e.g., Computer Science, Data Science">
+                            </div>
+                            <div class="form-group">
+                                <label>Preferred Medium of Instruction</label>
+                                <select id="pref-medium">
+                                    <option value="English">English only</option>
+                                    <option value="German">German only</option>
+                                    <option value="Bilingual">Bilingual (English & German)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Global Save Action -->
+                <div style="display: flex; justify-content: flex-end; padding-top: 1rem;">
+                    <button type="submit" class="primary-btn" style="width: auto; padding: 0.75rem 2.5rem;">
+                        Save Profile Settings
+                    </button>
+                </div>
+
+            </form>
+
+        </main>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app-notifications.js"></script>
+    <script src="js/app-profile.js"></script>
+</body>
+
+</html>

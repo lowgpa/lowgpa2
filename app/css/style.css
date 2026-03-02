@@ -134,6 +134,9 @@ input[type="email"],
 input[type="password"],
 input[type="date"],
 input[type="url"],
+input[type="number"],
+input[type="tel"],
+input[type="file"],
 select,
 textarea {
   width: 100%;

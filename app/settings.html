@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - LowGPA to Germany</title>
+    <title>Settings - LowGPA to Germany</title>
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
     <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
@@ -78,11 +78,11 @@
             </div>
 
             <ul class="nav-links">
-                <li><a href="#" class="active"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Overview</a></li>
                 <li><a href="applications.html"><i data-lucide="folder-open"></i> Applications</a></li>
                 <li><a href="#"><i data-lucide="file-text"></i> Documents</a></li>
                 <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
-                <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+                <li><a href="settings.html" class="active"><i data-lucide="settings"></i> Settings</a></li>
             </ul>
         </aside>
 
@@ -91,7 +91,8 @@
 
             <header class="topbar">
                 <div class="topbar-left">
-                    <h2 id="welcome-message" class="skeleton">Loading Profile...</h2>
+                    <h2 style="margin: 0; font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">Settings
+                    </h2>
                 </div>
 
                 <div class="topbar-right">
@@ -145,78 +146,44 @@
                 </div>
             </header>
 
-            <!-- Metrics Row -->
-            <section class="metrics-row">
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <h4>Active Applications</h4>
-                        <h2>1</h2>
-                    </div>
-                    <div class="metric-icon">
-                        <i data-lucide="briefcase"></i>
-                    </div>
+            <div class="tracker-header" style="margin-bottom: 2rem;">
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem; color: var(--text-primary); margin-bottom: 0.25rem;">Account
+                        Settings</h1>
+                    <p style="color: var(--text-secondary); margin: 0;">Manage your account security and authentication.
+                    </p>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <h4>Documents Uploaded</h4>
-                        <h2>4</h2>
-                    </div>
-                    <div class="metric-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                        <i data-lucide="file-check-2"></i>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <h4>Action Items</h4>
-                        <h2>0</h2>
-                    </div>
-                    <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                        <i data-lucide="check-circle"></i>
-                    </div>
-                </div>
-            </section>
+            </div>
 
-            <section class="content-card">
-                <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Your Profile Information</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">
-                    This data is securely encrypted. Only you can access your profile.
-                </p>
-
-                <div class="data-grid">
-                    <div class="data-item">
-                        <label>Full Name</label>
-                        <p id="profile-name" class="skeleton">Fetching...</p>
+            <!-- Settings Form -->
+            <section class="content-card" style="margin-bottom: 2rem; padding: 1.5rem 2rem; max-width: 600px;">
+                <h4
+                    style="margin: 0 0 1.5rem 0; font-size: 1.1rem; color: var(--text-primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                    Security & Password</h4>
+                <form id="settings-password-form">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>Current Password</label>
+                        <input type="password" id="current-password" required placeholder="Enter current password">
                     </div>
-                    <div class="data-item">
-                        <label>Username</label>
-                        <p id="profile-username" class="skeleton">Fetching...</p>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>New Password</label>
+                        <input type="password" id="new-password" required placeholder="Enter new password">
                     </div>
-                    <div class="data-item">
-                        <label>Email</label>
-                        <p id="profile-email" class="skeleton">Fetching...</p>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirm-password" required placeholder="Confirm new password">
                     </div>
-                    <div class="data-item">
-                        <label>Account Role</label>
-                        <p id="profile-role" class="skeleton" style="text-transform: capitalize;">Fetching...</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-card"
-                style="background: transparent; border: 1px dashed var(--border-focus); box-shadow: none;">
-                <h3 style="margin-top: 0; color: var(--text-secondary);">Next Steps</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0;">
-                    Your authentication matrix is fully functional. The next phase will involve adding application
-                    timelines and document stores.
-                </p>
+                    <button type="submit" class="primary-btn">Update Password</button>
+                </form>
             </section>
 
         </main>
     </div>
 
+    <!-- Scripts -->
     <script src="js/supabase-config.js"></script>
     <script src="js/app-notifications.js"></script>
-    <script src="js/app-dashboard.js"></script>
+    <script src="js/app-settings.js"></script>
 </body>
 
 </html>
