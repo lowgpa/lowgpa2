@@ -243,6 +243,57 @@
                 </div>
             </section>
 
+            <!-- AI Admission Predictor -->
+            <section class="content-card" id="ai-prediction-card" style="margin-bottom: 2rem;">
+                <h3 style="margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="sparkles" style="color: var(--primary);"></i> AI Admission Predictor
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;"
+                    id="ai-prediction-desc">
+                    Get an AI-powered assessment of your admission chances based on your complete study profile.
+                </p>
+
+                <div id="ai-setup-container"
+                    style="display: none; padding: 1.5rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px dashed var(--border-focus); text-align: center;">
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Your profile is incomplete. Please
+                        fill out all required fields in the Profile section to use the AI Predictor.</p>
+                    <a href="profile.html" class="primary-btn"
+                        style="text-decoration: none; display: inline-block; padding: 0.5rem 1.5rem; width: auto;">Go to
+                        Profile</a>
+                </div>
+
+                <div id="ai-action-container" style="display: none; text-align: center; padding: 2rem 1rem;">
+                    <button id="predict-chances-btn" class="primary-btn"
+                        style="width: auto; padding: 0.75rem 2.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i data-lucide="zap"></i> Predict My Chances
+                    </button>
+                    <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary);">Note: You can only
+                        generate this report once per profile.</p>
+                </div>
+
+                <div id="ai-loading-container" style="display: none; text-align: center; padding: 2rem 1rem;">
+                    <div class="loader-logo-wrapper"
+                        style="position: relative; width: 40px; height: 40px; margin: 0 auto 1rem auto;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"
+                            style="width: 100%; height: 100%; animation: pulse-logo 1.5s ease-in-out infinite;">
+                            <rect x="10" y="55" width="25" height="45" rx="4" fill="#000000" class="bar-1" />
+                            <rect x="37.5" y="35" width="25" height="65" rx="4" fill="#DD0000" class="bar-2" />
+                            <rect x="65" y="15" width="25" height="85" rx="4" fill="#FFCE00" class="bar-3" />
+                        </svg>
+                    </div>
+                    <p style="color: var(--text-secondary);">Analyzing your profile with Gemini AI... This may take a
+                        few seconds.</p>
+                </div>
+
+                <div id="ai-result-container"
+                    style="display: none; padding: 1.5rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <div id="ai-result-content"
+                        style="line-height: 1.6; color: var(--text-primary); font-size: 0.95rem;">
+                        <!-- Markdown content will be injected here -->
+                    </div>
+                </div>
+            </section>
+
             <section class="content-card"
                 style="background: transparent; border: 1px dashed var(--border-focus); box-shadow: none;">
                 <h3 style="margin-top: 0; color: var(--text-secondary);">Next Steps</h3>
