@@ -14,9 +14,9 @@ serve(async (req) => {
     try {
         const { profile } = await req.json()
 
-        const apiKey = Deno.env.get('GEMINI_API_KEY')
+        const apiKey = Deno.env.get('OPENROUTER_API_KEY')
         if (!apiKey) {
-            throw new Error("GEMINI_API_KEY is not set in Edge Function secrets.")
+            throw new Error("OPENROUTER_API_KEY is not set in Edge Function secrets.")
         }
 
         const prompt = `You are an expert admission counselor for German Public Universities.
@@ -42,16 +42,19 @@ Instructions:
 4. Format your response beautifully in Markdown using headings, bold text, and bullet points. Keep it professional but encouraging.`
 
         const payload = {
-            contents: [{
-                parts: [{ text: prompt }]
-            }]
+            model: "google/gemini-2.0-flash-lite-preview-02-05:free",
+            messages: [
+                { role: "user", content: prompt }
+            ]
         }
 
-        // Fix: Use correct endpoint format for Gemini 2.0 Flash
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'https://lowgpa.com',
+                'X-Title': 'LowGPA Predictor'
             },
             body: JSON.stringify(payload)
         })
@@ -59,11 +62,11 @@ Instructions:
         const data = await response.json()
 
         if (!response.ok) {
-            console.error("Gemini API Error details:", data);
-            throw new Error((data.error && data.error.message) || `Gemini API returned ${response.status}`)
+            console.error("OpenRouter API Error details:", data);
+            throw new Error((data.error && data.error.message) || `OpenRouter API returned ${response.status}`)
         }
 
-        const predictionText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to generate prediction."
+        const predictionText = data.choices?.[0]?.message?.content || "Unable to generate prediction."
 
         return new Response(
             JSON.stringify({ prediction: predictionText }),
