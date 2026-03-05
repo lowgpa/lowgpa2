@@ -14,69 +14,35 @@ serve(async (req) => {
     try {
         const { profile } = await req.json()
 
-        const apiKey = Deno.env.get('OPENROUTER_API_KEY')
-        if (!apiKey) {
-            throw new Error("OPENROUTER_API_KEY is not set in Edge Function secrets.")
+        // Worker URL stored as secret - never exposed in code or GitHub
+        const CLOUDFLARE_WORKER_URL = Deno.env.get('CLOUDFLARE_WORKER_URL')
+        if (!CLOUDFLARE_WORKER_URL) {
+            throw new Error("CLOUDFLARE_WORKER_URL secret is not set.")
         }
 
-        const prompt = `You are an expert admission counselor for German Public Universities.
-Please evaluate the following student profile for their chances of admission:
-
-Nationality: ${profile.nationality || 'N/A'}
-Bachelor's University: ${profile.bachelors_university || 'N/A'}
-Degree Type: ${profile.degree_name || 'N/A'}
-Graduation Year: ${profile.graduation_year || 'N/A'}
-Native GPA: ${profile.native_gpa || 'N/A'}
-German Grade Equivalent: ${profile.german_grade || 'N/A'}
-English Proficiency: ${profile.english_proficiency || 'N/A'} (${profile.english_score || 'N/A'})
-German Proficiency: ${profile.german_proficiency || 'N/A'}
-Work Experience: ${profile.work_experience_years || '0'} years
-Recent Role: ${profile.recent_role || 'N/A'}
-Target Degree: ${profile.target_degree || 'N/A'}
-Target Field: ${profile.desired_field || 'N/A'}
-
-Instructions:
-1. Provide a realistic and concise assessment of their chances (High, Medium, Low).
-2. Detail 2-3 key strengths and 2-3 key weaknesses.
-3. Be highly objective based on German public university standards.
-4. Format your response beautifully in Markdown using headings, bold text, and bullet points. Keep it professional but encouraging.`
-
-        const payload = {
-            model: "google/gemini-2.0-flash-lite-preview-02-05:free",
-            messages: [
-                { role: "user", content: prompt }
-            ]
-        }
-
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const response = await fetch(CLOUDFLARE_WORKER_URL, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://lowgpa.com',
-                'X-Title': 'LowGPA Predictor'
-            },
-            body: JSON.stringify(payload)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profile })
         })
 
         const data = await response.json()
 
-        if (!response.ok) {
-            console.error("OpenRouter API Error details:", data);
-            throw new Error((data.error && data.error.message) || `OpenRouter API returned ${response.status}`)
+        if (!response.ok || data.error) {
+            console.error("Cloudflare Worker Error:", data)
+            throw new Error(data.error || `Worker returned status ${response.status}`)
         }
 
-        const predictionText = data.choices?.[0]?.message?.content || "Unable to generate prediction."
+        const predictionText = data.prediction || "Unable to generate prediction."
 
         return new Response(
             JSON.stringify({ prediction: predictionText }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
-    } catch (error) {
-        // Log the error for debugging in the Supabase Dashboard
+    } catch (error: unknown) {
         console.error("Function Error:", error)
-
-        return new Response(JSON.stringify({ error: error.message || "An unknown error occurred" }), {
+        const message = error instanceof Error ? error.message : "An unknown error occurred"
+        return new Response(JSON.stringify({ error: message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         })

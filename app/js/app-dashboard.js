@@ -147,28 +147,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         return requiredFields.every(field => sp[field]);
     }
 
-    // Helper to format basic markdown safely
+    // Helper to render AI result as a clean, styled card
     function formatMarkdown(text) {
         if (!text) return '';
-        // Escape HTML
-        const escapeHtml = (unsafe) => unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
 
-        let safeText = escapeHtml(text);
+        // Determine verdict badge color
+        let badgeColor = '#6b7280';
+        let badgeBg = 'rgba(107,114,128,0.12)';
+        if (/strong fit/i.test(text)) { badgeColor = '#16a34a'; badgeBg = 'rgba(22,163,74,0.1)'; }
+        else if (/good fit|moderate fit/i.test(text)) { badgeColor = '#d97706'; badgeBg = 'rgba(217,119,6,0.1)'; }
+        else if (/needs improvement|weak fit/i.test(text)) { badgeColor = '#ea580c'; badgeBg = 'rgba(234,88,12,0.1)'; }
+        else if (/developing profile/i.test(text)) { badgeColor = '#7c3aed'; badgeBg = 'rgba(124,58,237,0.1)'; }
 
-        let html = safeText
-            .replace(/^### (.*$)/gim, '<h4 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--text-primary);">$1</h4>')
-            .replace(/^## (.*$)/gim, '<h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">$1</h3>')
-            .replace(/^# (.*$)/gim, '<h2 style="margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text-primary);">$1</h2>')
+        const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        let html = escapeHtml(text)
+            // Remove score breakdown table completely
+            .replace(/\|.*?\|[\s\S]*?\n\n/g, '')
+            // Verdict heading as badge
+            .replace(/^## Result:\s*(.*?)$/gim, `<div style="display:inline-block;padding:0.35rem 1rem;border-radius:999px;background:${badgeBg};color:${badgeColor};font-weight:700;font-size:1.1rem;margin-bottom:1rem;">$1</div>`)
+            // Remove total score line (internal logic)
+            .replace(/\*\*Total Score:.*?\*\*/gi, '')
+            // Section headings
+            .replace(/^###\s+(.*?)$/gim, '<p style="font-weight:700;color:var(--text-primary);margin:1.2rem 0 0.4rem;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.05em;">$1</p>')
+            .replace(/^##\s+(.*?)$/gim, '<p style="font-weight:700;color:var(--text-primary);margin:1rem 0 0.3rem;">$1</p>')
+            // Bold
             .replace(/\*\*(.*?)\*\*/gim, '<b>$1</b>')
-            .replace(/\*(.*?)\*/gim, '<i>$1</i>')
-            .replace(/^\* (.*$)/gim, '<ul style="margin: 0.5rem 0; padding-left: 1.5rem;"><li>$1</li></ul>')
-            .replace(/<\/ul>\n<ul style=".*">/gim, '') // merge adjacent uls
-            .replace(/\n\n/gim, '<br/><br/>')
+            // Bullet points
+            .replace(/^[-*]\s+(.*?)$/gim, '<li style="margin:0.3rem 0;color:var(--text-secondary);">$1</li>')
+            // Wrap consecutive li items
+            .replace(/(<li[^>]*>.*?<\/li>\n?)+/gim, (m) => `<ul style="margin:0.4rem 0;padding-left:1.4rem;">${m}</ul>`)
+            // Disclaimer line
+            .replace(/---\n\*(.*?)\*/gim, '<p style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-color);font-size:0.78rem;color:var(--text-muted);font-style:italic;">$1</p>')
+            // Paragraphs
+            .replace(/\n\n/gim, '</p><p style="margin:0.5rem 0;color:var(--text-secondary);">')
             .replace(/\n/gim, ' ');
-        return html;
+
+        return `<div style="line-height:1.7;">${html}</div>`;
     }
 
     if (aiSetupContainer) {
@@ -191,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             aiLoadingContainer.style.display = 'block';
 
             try {
-                // Call Supabase Edge Function securely
+                // Securely call the Supabase Edge Function - Worker URL is hidden server-side
                 const { data, error } = await supabaseClient.functions.invoke('predict-chances', {
                     body: { profile: studyProfile }
                 });
@@ -202,7 +217,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 if (!data || !data.prediction) {
-                    console.error("Function returned unexpected data:", data);
                     throw new Error("No prediction returned from AI.");
                 }
 
