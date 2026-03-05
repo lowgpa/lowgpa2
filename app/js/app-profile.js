@@ -169,9 +169,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Trigger custom toast notification instead of native UI
-            if (!profileForm.checkValidity()) {
-                showToastNotification("Please fill all required fields.", "error");
+            // Smart tab-aware required field validation
+            const requiredFields = [
+                { id: 'profile-nationality', label: 'Nationality', tab: 'tab-personal' },
+                { id: 'profile-phone', label: 'Phone Number', tab: 'tab-personal' },
+                { id: 'acad-uni', label: "Bachelor's University", tab: 'tab-academic' },
+                { id: 'acad-degree', label: 'Degree Type', tab: 'tab-academic' },
+                { id: 'acad-year', label: 'Graduation Year', tab: 'tab-academic' },
+                { id: 'acad-native-gpa', label: 'Native GPA / Percentage', tab: 'tab-academic' },
+            ];
+
+            const missing = requiredFields.find(f => {
+                const el = document.getElementById(f.id);
+                return !el || !el.value.trim();
+            });
+
+            if (missing) {
+                // Switch to the tab containing the missing field
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                document.querySelector(`[data-target="${missing.tab}"]`)?.classList.add('active');
+                document.getElementById(missing.tab)?.classList.add('active');
+
+                // Highlight the missing field
+                const el = document.getElementById(missing.id);
+                if (el) {
+                    el.style.borderColor = '#ef4444';
+                    el.focus();
+                    el.addEventListener('input', () => el.style.borderColor = '', { once: true });
+                }
+
+                showToastNotification(`Please fill in: ${missing.label}`, 'error');
                 return;
             }
 
