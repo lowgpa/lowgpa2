@@ -313,6 +313,70 @@
         </div>
     </div>
 
+    <!-- View Application Modal -->
+    <div id="view-app-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-primary);">Application Details</h3>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Review your tracked
+                        application.</p>
+                </div>
+                <button class="close-modal" id="close-view-modal-btn"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">University</h4>
+                    <p style="margin: 0; font-size: 1.1rem; font-weight: 500; color: var(--text-primary);"
+                        id="view-app-uni"></p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Program</h4>
+                    <p style="margin: 0; font-size: 1.1rem; font-weight: 500; color: var(--text-primary);"
+                        id="view-app-program"></p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Degree Level
+                        </h4>
+                        <p style="margin: 0; font-size: 1rem; color: var(--text-primary);" id="view-app-degree"></p>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Status</h4>
+                        <p style="margin: 0;"><span id="view-app-status"></span></p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Application
+                        Deadline</h4>
+                    <p style="margin: 0; font-size: 1rem; color: var(--text-primary);" id="view-app-deadline">Not set
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Application URL
+                    </h4>
+                    <a href="#" target="_blank" id="view-app-url"
+                        style="color: var(--primary); text-decoration: none; word-break: break-all;">No URL provided</a>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: var(--text-secondary);">Notes</h4>
+                    <div style="margin: 0; padding: 1rem; background: var(--bg-color); border-radius: var(--radius-md); font-size: 0.95rem; color: var(--text-primary); white-space: pre-wrap;"
+                        id="view-app-notes">No notes available.</div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="justify-content: flex-end;">
+                <button type="button" class="primary-btn" id="close-view-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/app-notifications.js"></script>

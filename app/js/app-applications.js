@@ -68,8 +68,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalTitle = modal.querySelector('h3');
     const deleteAppBtn = document.getElementById('delete-app-btn');
 
+    // View Modal Elements
+    const viewModal = document.getElementById('view-app-modal');
+    const closeViewModalBtn = document.getElementById('close-view-modal-btn');
+    const closeViewBtn = document.getElementById('close-view-btn');
+
     // Make sure Modal is hidden organically on load
     modal.classList.add('hidden');
+    if (viewModal) viewModal.classList.add('hidden');
 
     // Modal Toggles
     const openModal = () => {
@@ -79,6 +85,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (deleteAppBtn) deleteAppBtn.classList.add('hidden');
         modal.classList.remove('hidden');
     };
+
+    const openViewModal = (app) => {
+        document.getElementById('view-app-uni').textContent = app.university_name;
+        document.getElementById('view-app-program').textContent = app.program_name;
+        document.getElementById('view-app-degree').textContent = app.degree_level;
+
+        const statusSpan = document.getElementById('view-app-status');
+        statusSpan.textContent = app.status;
+        statusSpan.className = `status-pill ${getStatusClass(app.status)}`;
+
+        document.getElementById('view-app-deadline').textContent = app.deadline || 'Not set';
+
+        const urlEl = document.getElementById('view-app-url');
+        if (app.url) {
+            urlEl.href = app.url;
+            urlEl.textContent = app.url;
+            urlEl.style.cssText = 'color: var(--primary); text-decoration: underline; word-break: break-all;';
+        } else {
+            urlEl.removeAttribute('href');
+            urlEl.textContent = 'No URL provided';
+            urlEl.style.cssText = 'color: var(--text-secondary); text-decoration: none; word-break: break-all;';
+        }
+
+        document.getElementById('view-app-notes').textContent = app.notes || 'No notes available.';
+
+        if (viewModal) viewModal.classList.remove('hidden');
+    };
+
+    const closeViewModal = () => {
+        if (viewModal) viewModal.classList.add('hidden');
+    };
+
+    if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeViewModal);
+    if (closeViewBtn) closeViewBtn.addEventListener('click', closeViewModal);
 
     const openEditModal = (app) => {
         document.getElementById('app-id').value = app.id;
@@ -195,6 +235,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         countEl.textContent = `${apps.length} application${apps.length === 1 ? '' : 's'} tracked`;
 
+        // --- DATA LOADED: REVEAL PAGE ---
+        const preloader = document.getElementById('brand-preloader');
+        const content = document.getElementById('dashboard-content');
+
+        if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
+        }
+
+        setTimeout(() => {
+            if (content) content.style.opacity = '1';
+        }, 100);
+
         if (apps.length === 0) {
             gridEl.innerHTML = `
                <div class="empty-state" id="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary); border: 1px dashed var(--surface-border); border-radius: var(--radius-md);">
@@ -218,7 +272,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.innerHTML = `
                 <div class="app-card-header">
                     <h3 class="app-card-title"><i data-lucide="graduation-cap" style="color:var(--primary); width:20px;"></i> ${app.university_name}</h3>
-                    <div class="app-card-menu"><i data-lucide="more-vertical" style="width:18px;"></i></div>
                 </div>
                 <p class="app-card-program">${app.program_name}</p>
                 
@@ -227,35 +280,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="app-card-degree">${app.degree_level}</span>
                 </div>
 
-                <div class="app-card-actions">
-                    <button class="primary-btn view-details-btn" data-id="${app.id}" style="flex: 1; padding: 0.5rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;"><i data-lucide="eye" style="width:16px;height:16px;"></i> View Details</button>
+                <div class="app-card-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="secondary-btn view-details-btn" data-id="${app.id}" style="flex: 1; padding: 0.5rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;"><i data-lucide="eye" style="width:16px;height:16px;"></i> View</button>
+                    <button class="primary-btn edit-app-btn" data-id="${app.id}" style="flex: 1; padding: 0.5rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;"><i data-lucide="edit" style="width:16px;height:16px;"></i> Edit</button>
                     ${urlButtonHtml}
                 </div>
             `;
 
-            // Attach event listener to dynamically created button
+            // Attach event listeners to dynamically created buttons
             const viewBtn = card.querySelector('.view-details-btn');
             if (viewBtn) {
                 viewBtn.addEventListener('click', () => {
+                    openViewModal(app);
+                });
+            }
+            const editBtn = card.querySelector('.edit-app-btn');
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
                     openEditModal(app);
                 });
             }
             gridEl.appendChild(card);
         });
-
-        // --- DATA LOADED: REVEAL PAGE ---
-        const preloader = document.getElementById('brand-preloader');
-        const content = document.getElementById('dashboard-content');
-
-        if (preloader) {
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-            setTimeout(() => preloader.remove(), 400); // Wait for fade to finish
-        }
-
-        setTimeout(() => {
-            if (content) content.style.opacity = '1';
-        }, 100);
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     };
