@@ -47,7 +47,8 @@ Instructions:
             }]
         }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // Fix: Use correct endpoint format for Gemini 2.0 Flash
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,8 +58,9 @@ Instructions:
 
         const data = await response.json()
 
-        if (data.error) {
-            throw new Error(data.error.message || "Failed to call Gemini API")
+        if (!response.ok) {
+            console.error("Gemini API Error details:", data);
+            throw new Error((data.error && data.error.message) || `Gemini API returned ${response.status}`)
         }
 
         const predictionText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to generate prediction."
