@@ -191,17 +191,67 @@ document.addEventListener('DOMContentLoaded', async () => {
             aiLoadingContainer.style.display = 'block';
 
             try {
-                // Call Supabase Edge Function
-                const { data, error } = await supabaseClient.functions.invoke('predict-chances', {
-                    body: { profile: studyProfile }
+                // 1. Fetch API Key securely from the database
+                const { data: secretData, error: secretError } = await supabaseClient
+                    .from('system_secrets')
+                    .select('key_value')
+                    .eq('key_name', 'GEMINI_API_KEY')
+                    .single();
+
+                if (secretError || !secretData || !secretData.key_value) {
+                    throw new Error("API Key not found in database. Please ask the admin to configure system_secrets.");
+                }
+
+                const activeKey = secretData.key_value;
+
+                // 2. Call Gemini API directly
+                const promptText = `You are an expert admission counselor for German Public Universities.
+Please evaluate the following student profile for their chances of admission:
+
+Nationality: ${studyProfile.nationality || 'N/A'}
+Bachelor's University: ${studyProfile.bachelors_university || 'N/A'}
+Degree Type: ${studyProfile.degree_name || 'N/A'}
+Graduation Year: ${studyProfile.graduation_year || 'N/A'}
+Native GPA: ${studyProfile.native_gpa || 'N/A'}
+German Grade Equivalent: ${studyProfile.german_grade || 'N/A'}
+English Proficiency: ${studyProfile.english_proficiency || 'N/A'} (${studyProfile.english_score || 'N/A'})
+German Proficiency: ${studyProfile.german_proficiency || 'N/A'}
+Work Experience: ${studyProfile.work_experience_years || '0'} years
+Recent Role: ${studyProfile.recent_role || 'N/A'}
+Target Degree: ${studyProfile.target_degree || 'N/A'}
+Target Field: ${studyProfile.desired_field || 'N/A'}
+
+Instructions:
+1. Provide a realistic and concise assessment of their chances (High, Medium, Low).
+2. Detail 2-3 key strengths and 2-3 key weaknesses.
+3. Be highly objective based on German public university standards.
+4. Format your response beautifully in Markdown using headings, bold text, and bullet points. Keep it professional but encouraging.`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: promptText }]
+                    }]
+                };
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
                 });
 
-                if (error) throw error;
-                if (!data || !data.prediction) throw new Error("No prediction returned from AI.");
+                const data = await response.json();
 
-                const prediction = data.prediction;
+                if (data.error) {
+                    throw new Error(data.error.message || "Failed to call Gemini API");
+                }
 
-                // Save to database
+                const prediction = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!prediction) throw new Error("No prediction returned from AI.");
+
+                // 3. Save to database
                 const { error: updateError } = await supabaseClient
                     .from('study_profile')
                     .update({ ai_prediction: prediction })

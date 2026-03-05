@@ -68,7 +68,10 @@ Instructions:
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        // Log the error for debugging in the Supabase Dashboard
+        console.error("Function Error:", error)
+
+        return new Response(JSON.stringify({ error: error.message || "An unknown error occurred" }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         })
