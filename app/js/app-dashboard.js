@@ -142,7 +142,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!sp) return false;
         const requiredFields = [
             'nationality', 'bachelors_university', 'degree_name',
-            'graduation_year', 'native_gpa'
+            'graduation_year', 'native_gpa',
+            'english_proficiency', 'target_degree', 'desired_field'
         ];
         return requiredFields.every(field => sp[field]);
     }

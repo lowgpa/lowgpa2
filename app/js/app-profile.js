@@ -177,6 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 { id: 'acad-degree', label: 'Degree Type', tab: 'tab-academic' },
                 { id: 'acad-year', label: 'Graduation Year', tab: 'tab-academic' },
                 { id: 'acad-native-gpa', label: 'Native GPA / Percentage', tab: 'tab-academic' },
+                { id: 'lang-english', label: 'English Proficiency', tab: 'tab-academic' },
+                { id: 'pref-target-degree', label: 'Target Degree', tab: 'tab-preferences' },
+                { id: 'pref-field', label: 'Desired Field of Study', tab: 'tab-preferences' },
             ];
 
             const missing = requiredFields.find(f => {
