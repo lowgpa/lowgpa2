@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Estimator - LowGPA to Germany</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/favicon-192x192.png">
+    <link rel="apple-touch-icon" href="../images/favicon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* ── Preloader animations ── */
+        .bar-1 {
+            animation: grow-bar 1.2s ease-in-out infinite alternate;
+            transform-origin: bottom;
+        }
+
+        .bar-2 {
+            animation: grow-bar 1.2s ease-in-out infinite alternate 0.2s;
+            transform-origin: bottom;
+        }
+
+        .bar-3 {
+            animation: grow-bar 1.2s ease-in-out infinite alternate 0.4s;
+            transform-origin: bottom;
+        }
+
+        @keyframes grow-bar {
+            0% {
+                transform: scaleY(0.6);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-logo {
+            0% {
+                filter: drop-shadow(0 0 4px rgba(221, 0, 0, 0.2));
+                transform: scale(0.98);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 12px rgba(221, 0, 0, 0.4));
+                transform: scale(1.02);
+            }
+
+            100% {
+                filter: drop-shadow(0 0 4px rgba(221, 0, 0, 0.2));
+                transform: scale(0.98);
+            }
+        }
+
+        /* ── Skeleton loader ── */
+        .skeleton {
+            animation: pulse-skeleton 1.5s infinite ease-in-out;
+            color: transparent !important;
+            background-color: var(--surface-border) !important;
+            border-radius: var(--radius-sm);
+            min-width: 100px;
+        }
+
+        @keyframes pulse-skeleton {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* ── Page-specific layout ── */
+        .qe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 860px) {
+            .qe-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Data Table ── */
+        .qe-table-wrap {
+            overflow-x: auto;
+        }
+
+        table.qe-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        table.qe-table th {
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        table.qe-table td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--surface-border);
+            vertical-align: middle;
+            color: var(--text-primary);
+        }
+
+        table.qe-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.qe-table tr:hover td {
+            background: rgba(13, 148, 136, 0.04);
+        }
+
+        table.qe-table tr.processed-row td {
+            opacity: 0.45;
+            text-decoration: line-through;
+        }
+
+        table.qe-table tr.processed-row td:last-child {
+            text-decoration: none;
+            opacity: 1;
+        }
+
+        table.qe-table input[type="number"] {
+            width: 90px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        /* ── Week Pill Selector ── */
+        .week-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .week-pill {
+            padding: 0.55rem 1rem;
+            border-radius: 999px;
+            border: 1px solid var(--surface-border);
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .week-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .week-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+        }
+
+        /* ── Processed toggle ── */
+        .toggle-processed {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid var(--surface-border);
+            background: transparent;
+            font-size: 0.78rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .toggle-processed:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .toggle-processed.done {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        /* ── Collapsible table ── */
+        .table-collapsible {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .table-collapsible.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        .btn-toggle-data {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--surface-border);
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-toggle-data:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn-edit {
+            padding: 0.3rem 0.85rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--surface-border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: var(--surface-glass-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-save {
+            padding: 0.3rem 0.85rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--primary);
+            background: var(--primary);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-hover);
+        }
+
+        /* ── Add Month form ── */
+        .add-month-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .add-month-row .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .add-month-row label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .add-month-row input {
+            padding: 0.65rem 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add {
+            padding: 0.65rem 1.25rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ── Result cards ── */
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-card {
+            background: rgba(13, 148, 136, 0.06);
+            border: 1px solid rgba(13, 148, 136, 0.2);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .result-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-card.date-range {
+            grid-column: span 1;
+        }
+
+        .result-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .result-value.small {
+            font-size: 1.1rem;
+        }
+
+        .result-sublabel {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        .result-warning {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 1.25rem;
+            padding: 0.75rem 1rem;
+            background: rgba(13, 148, 136, 0.05);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* ── Estimator form ── */
+        .est-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .est-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .est-form-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        /* Week badge */
+        .week-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(13, 148, 136, 0.1);
+            color: var(--primary);
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 0.3rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .calc-btn-wrap {
+            margin-top: 1.5rem;
+        }
+
+        .calc-btn-wrap button.primary-btn {
+            width: auto;
+            padding: 0.75rem 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .results-placeholder {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .results-placeholder i {
+            width: 36px;
+            height: 36px;
+            opacity: 0.3;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Embassy badge ── */
+        .embassy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.85rem;
+            background: rgba(221, 0, 0, 0.08);
+            border: 1px solid rgba(221, 0, 0, 0.2);
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #b91c1c;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Summary stats bar ── */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 720px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-chip {
+            background: var(--surface-glass);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .stat-chip-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .stat-chip-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-chip-value.accent {
+            color: var(--primary);
+        }
+
+        /* ── Queue progress bar ── */
+        .queue-progress-wrap {
+            margin: 1.25rem 0 0;
+        }
+
+        .queue-progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+
+        .queue-progress-bar {
+            height: 8px;
+            border-radius: 999px;
+            background: var(--surface-border);
+            overflow: hidden;
+        }
+
+        .queue-progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        /* ── Urgency color overrides on result cards ── */
+        .result-card.urgent-soon {
+            background: rgba(16, 185, 129, 0.07);
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .result-card.urgent-soon .result-value {
+            color: #10b981;
+        }
+
+        .result-card.urgent-mid {
+            background: rgba(245, 158, 11, 0.07);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        .result-card.urgent-mid .result-value {
+            color: #d97706;
+        }
+
+        .result-card.urgent-far {
+            background: rgba(239, 68, 68, 0.07);
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .result-card.urgent-far .result-value {
+            color: #ef4444;
+        }
+
+        /* ── Copy button ── */
+        .copy-result-btn {
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--surface-border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-result-btn:hover {
+            background: var(--surface-glass-hover);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .copy-result-btn.copied {
+            color: #10b981;
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.07);
+        }
+
+        /* ── WhatsApp share button ── */
+        .whatsapp-btn {
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(37, 211, 102, 0.4);
+            background: rgba(37, 211, 102, 0.08);
+            color: #16a34a;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .whatsapp-btn:hover {
+            background: rgba(37, 211, 102, 0.16);
+            border-color: rgba(37, 211, 102, 0.6);
+            text-decoration: none;
+        }
+
+        /* ── Month timeline strip ── */
+        .month-timeline {
+            display: flex;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .timeline-pill {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: default;
+            transition: all 0.2s;
+        }
+
+        .timeline-pill .tl-month {
+            font-size: 0.68rem;
+            line-height: 1;
+        }
+
+        .timeline-pill .tl-count {
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .timeline-pill.done {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #059669;
+        }
+
+        .timeline-pill.pending {
+            background: rgba(13, 148, 136, 0.07);
+            border-color: rgba(13, 148, 136, 0.2);
+            color: var(--primary);
+        }
+
+        /* ── Improved empty-state placeholder ── */
+        .results-placeholder {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(13, 148, 136, 0.08);
+            border: 1px solid rgba(13, 148, 136, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .placeholder-icon-wrap i {
+            width: 26px;
+            height: 26px;
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        .placeholder-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .placeholder-sub {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        /* ── Inline error banner ── */
+        .calc-error {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1rem;
+            border-radius: var(--radius-sm);
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="app-body">
+
+    <!-- Preloader -->
+    <div id="brand-preloader"
+        style="position:fixed;inset:0;background:var(--bg-gradient-1);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s ease,visibility 0.4s ease;">
+        <div style="position:relative;width:60px;height:60px;margin-bottom:1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"
+                style="width:100%;height:100%;animation:pulse-logo 1.5s ease-in-out infinite;">
+                <rect x="10" y="55" width="25" height="45" rx="4" fill="#000000" class="bar-1" />
+                <rect x="37.5" y="35" width="25" height="65" rx="4" fill="#DD0000" class="bar-2" />
+                <rect x="65" y="15" width="25" height="85" rx="4" fill="#FFCE00" class="bar-3" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="dashboard-layout" id="dashboard-content" style="opacity:0;transition:opacity 0.5s ease;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo" style="margin-bottom:2rem;">
+                <a href="../index.html"
+                    style="display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1.5rem;color:var(--primary);letter-spacing:-0.05em;text-decoration:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"
+                        style="width:28px;height:28px;">
+                        <rect x="10" y="55" width="25" height="45" rx="4" fill="#000000" />
+                        <rect x="37.5" y="35" width="25" height="65" rx="4" fill="#DD0000" />
+                        <rect x="65" y="15" width="25" height="85" rx="4" fill="#FFCE00" />
+                    </svg>
+                    LowGPA<span style="color:var(--text-primary)">.</span>
+                </a>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Overview</a></li>
+                <li><a href="applications.html"><i data-lucide="folder-open"></i> Applications</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Documents</a></li>
+                <li><a href="queue-estimator.html" class="active"><i data-lucide="clock"></i> Queue Estimator</a></li>
+                <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+                <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="topbar-left" style="gap:1rem;">
+                    <h2 style="margin:0;">Queue Estimator</h2>
+                    <span class="embassy-badge">
+                        <i data-lucide="landmark" style="width:13px;height:13px;"></i>
+                        Islamabad Embassy Only
+                    </span>
+                </div>
+                <div class="topbar-right">
+                    <!-- Profile Dropdown -->
+                    <div class="profile-menu-container">
+                        <div class="profile-trigger" id="profile-trigger">
+                            <div class="avatar-circle">
+                                <span id="avatar-initials" class="skeleton">...</span>
+                            </div>
+                            <div class="profile-info">
+                                <span id="nav-fullname" class="profile-name-sm skeleton">Fetching</span>
+                                <span id="nav-role" class="profile-role-sm  skeleton">user</span>
+                            </div>
+                            <i data-lucide="chevron-down"
+                                style="width:16px;height:16px;color:var(--text-secondary);"></i>
+                        </div>
+
+                        <div class="dropdown-menu" id="profile-dropdown">
+                            <a href="profile.html" class="dropdown-item"><i data-lucide="user"></i> My Profile</a>
+                            <a href="settings.html" class="dropdown-item"><i data-lucide="settings"></i> Account
+                                Settings</a>
+                            <button id="logout-btn" class="dropdown-item danger"><i data-lucide="log-out"></i> Log
+                                Out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── Summary Stats Bar ── -->
+            <div class="stats-bar" id="stats-bar" style="grid-template-columns: repeat(3,1fr);">
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Total Months</span>
+                    <span class="stat-chip-value" id="stat-total-months">—</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Students In Queue</span>
+                    <span class="stat-chip-value accent" id="stat-in-queue">—</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Weeks to Clear Queue</span>
+                    <span class="stat-chip-value accent" id="stat-weeks-clear">—</span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════
+                 SECTION 1 — Monthly Data Table
+            ════════════════════════════════════════════════ -->
+            <section class="content-card" style="margin-bottom:1.5rem;">
+                <div
+                    style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.3rem;">
+                    <h3 class="section-title" style="margin:0;">
+                        <i data-lucide="table-2" style="width:18px;height:18px;color:var(--primary);"></i>
+                        Monthly Student Data
+                    </h3>
+                    <button class="btn-toggle-data" id="btn-toggle-table">
+                        <i data-lucide="eye" style="width:14px;height:14px;"></i>
+                        <span id="toggle-table-label">Show Data</span>
+                    </button>
+                </div>
+                <p class="section-desc" style="margin-bottom:0.75rem;">Edit student counts per month. Processed months
+                    are excluded from calculations.</p>
+
+                <div class="table-collapsible" id="table-collapsible">
+                    <div class="qe-table-wrap">
+                        <table class="qe-table" id="monthly-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Students</th>
+                                    <th>Status</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-tbody">
+                                <!-- Rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Add Month -->
+                    <div class="add-month-row">
+                        <div class="form-group">
+                            <label for="new-month-name">Month Name</label>
+                            <input type="text" id="new-month-name" placeholder="e.g. March 2026">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-month-students">Students</label>
+                            <input type="number" id="new-month-students" placeholder="e.g. 110" min="0">
+                        </div>
+                        <button class="btn-add" id="btn-add-month">
+                            <i data-lucide="plus" style="width:16px;height:16px;"></i> Add Month
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════
+                 SECTION 2 — Estimator Form
+            ════════════════════════════════════════════════ -->
+            <div class="qe-grid">
+                <section class="content-card">
+                    <h3 class="section-title"><i data-lucide="calculator"
+                            style="width:18px;height:18px;color:var(--primary);"></i> Estimator</h3>
+                    <p class="section-desc">Enter your details to estimate your queue position.</p>
+
+                    <div class="est-form-grid">
+                        <div class="form-group">
+                            <label for="select-month">Month Joined</label>
+                            <select id="select-month">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Week Joined</label>
+                            <div class="week-pills" id="week-pills">
+                                <button type="button" class="week-pill" data-week="1">Week 1</button>
+                                <button type="button" class="week-pill" data-week="2">Week 2</button>
+                                <button type="button" class="week-pill" data-week="3">Week 3</button>
+                                <button type="button" class="week-pill" data-week="4">Week 4</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-rate">Processing Rate* (submissions per week)</label>
+                            <input type="number" id="input-rate" value="25" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-current-date">Current Date</label>
+                            <input type="date" id="input-current-date">
+                        </div>
+                    </div>
+
+                    <div class="calc-btn-wrap">
+                        <div class="calc-error" id="calc-error">
+                            <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+                            <span></span>
+                        </div>
+                        <button class="primary-btn" id="btn-calculate">
+                            <i data-lucide="zap" style="width:18px;height:18px;"></i> Calculate
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ═══════════════════════════════════════════════
+                     SECTION 3 — Results
+                ════════════════════════════════════════════════ -->
+                <section class="content-card" id="results-section">
+                    <h3 class="section-title"><i data-lucide="bar-chart-2"
+                            style="width:18px;height:18px;color:var(--primary);"></i> Prediction Results</h3>
+                    <p class="section-desc">Based on current data and processing rate.</p>
+
+                    <div id="results-placeholder" class="results-placeholder">
+                        <div class="placeholder-icon-wrap">
+                            <i data-lucide="calendar-clock"></i>
+                        </div>
+                        <p class="placeholder-title">No estimate yet</p>
+                        <p class="placeholder-sub">Select your month &amp; week, then click <strong>Calculate</strong>.
+                        </p>
+                    </div>
+
+                    <div id="results-output" style="display:none;">
+                        <div class="result-grid">
+                            <div class="result-card" id="rc-position">
+                                <div class="result-label">Queue Position</div>
+                                <div class="result-value" id="rv-position">—</div>
+                                <div class="result-sublabel">students ahead of you</div>
+                            </div>
+                            <div class="result-card" id="rc-weeks">
+                                <div class="result-label">Est. Weeks Remaining</div>
+                                <div class="result-value" id="rv-weeks">—</div>
+                                <div class="result-sublabel">at current pace</div>
+                            </div>
+                            <div class="result-card date-range" id="rc-date">
+                                <div class="result-label">Estimated Window</div>
+                                <div class="result-value small" id="rv-date-from">—</div>
+                                <div class="result-sublabel" style="margin:0.15rem 0 0.4rem;">to</div>
+                                <div class="result-value small" id="rv-date-to">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Queue progress bar -->
+                        <div class="queue-progress-wrap">
+                            <div class="queue-progress-label">
+                                <span>Your position in overall queue</span>
+                                <span id="rv-progress-pct">—</span>
+                            </div>
+                            <div class="queue-progress-bar">
+                                <div class="queue-progress-fill" id="queue-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-top:0.25rem;">
+                            <p class="result-warning" style="margin:0;flex:1;min-width:200px;">
+                                ⚠️ <strong>Prediction only</strong> — Islamabad Embassy.
+                                Actual submission dates may vary.
+                            </p>
+                            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                                <button class="copy-result-btn" id="copy-result-btn">
+                                    <i data-lucide="copy" style="width:13px;height:13px;"></i> Copy
+                                </button>
+                                <a class="whatsapp-btn" id="whatsapp-share-btn" href="#" target="_blank" rel="noopener">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                                        <path
+                                            d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.118 1.528 5.849L0 24l6.302-1.51A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.017-1.378l-.36-.214-3.732.894.942-3.643-.235-.374A9.782 9.782 0 012.182 12c0-5.424 4.394-9.818 9.818-9.818 5.424 0 9.818 4.394 9.818 9.818 0 5.424-4.394 9.818-9.818 9.818z" />
+                                    </svg>
+                                    Share
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="data/queue-months-data.js"></script>
+    <script src="js/app-queue-estimator.js"></script>
+</body>
+
+</html>
