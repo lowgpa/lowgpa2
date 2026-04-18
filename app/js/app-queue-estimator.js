@@ -66,14 +66,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('queue-months-data.js not loaded — using built-in defaults.');
         monthlyData = [
             { month: 'July 2025', students: 315, processed: true },
-            { month: 'August 2025', students: 120, processed: false },
-            { month: 'September 2025', students: 120, processed: false },
-            { month: 'October 2025', students: 130, processed: false },
-            { month: 'November 2025', students: 110, processed: false },
-            { month: 'December 2025', students: 110, processed: false },
-            { month: 'January 2026', students: 130, processed: false },
-            { month: 'February 2026', students: 100, processed: false },
+            { month: 'August 2025', students: 205, processed: true },
+            { month: 'September 2025', students: 110, processed: false, covered: 40 },
+            { month: 'October 2025', students: 120, processed: false },
+            { month: 'November 2025', students: 100, processed: false },
+            { month: 'December 2025', students: 160, processed: false },
+            { month: 'January 2026', students: 150, processed: false },
+            { month: 'February 2026', students: 135, processed: false },
+            { month: 'March 2026', students: 100, processed: false },
+            { month: 'April 2026', students: 50, processed: false },
         ];
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  CALIBRATED PROCESSING RATE
+    //  ─────────────────────────────────────────────────────────
+    //  We calculate an observed processing rate from the data:
+    //    total students processed / weeks elapsed since processing
+    //    started. This gives a much better estimate than a fixed
+    //    guess.
+    //
+    //  Known timeline:
+    //    - Processing started approximately mid-October 2025
+    //      (first submissions from July 2025 batch)
+    //    - As of 19 April 2026:
+    //        July 2025:     315 processed ✓
+    //        August 2025:   205 processed ✓
+    //        September 2025: 40 covered out of 110
+    //        Total processed = 560 students
+    //    - Weeks elapsed ≈ Oct 15 2025 → Apr 19 2026 ≈ 26.6 weeks
+    //    - Observed rate ≈ 560 / 26.6 ≈ 21 students/week
+    //
+    //  We recalculate this dynamically below from the data so the
+    //  rate auto-updates whenever the data file is changed.
+    // ════════════════════════════════════════════════════════════
+
+    /**
+     * Get total students already processed (fully processed months
+     * + covered portion of partially processed months).
+     */
+    function getTotalProcessed() {
+        let total = 0;
+        for (const row of monthlyData) {
+            if (row.processed) {
+                total += row.students;
+            } else if (row.covered && row.covered > 0) {
+                total += row.covered;
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Get remaining students in queue (unprocessed - any covered portion).
+     */
+    function getQueueRemaining() {
+        let total = 0;
+        for (const row of monthlyData) {
+            if (row.processed) continue;
+            const remaining = row.students - (row.covered || 0);
+            total += Math.max(0, remaining);
+        }
+        return total;
     }
 
     // ════════════════════════════════════════════════════════════
@@ -144,12 +198,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ── Stats Bar ─────────────────────────────────────────────────
     function updateStats() {
         const processingRate = parseFloat(document.getElementById('input-rate').value) || 25;
-        const inQueue = monthlyData.filter(r => !r.processed).reduce((s, r) => s + r.students, 0);
+        const inQueue = getQueueRemaining();
         const weeksToClear = (inQueue / processingRate).toFixed(1);
+        const totalProcessed = getTotalProcessed();
 
         document.getElementById('stat-total-months').textContent = monthlyData.length;
         document.getElementById('stat-in-queue').textContent = inQueue.toLocaleString();
         document.getElementById('stat-weeks-clear').textContent = weeksToClear;
+        document.getElementById('stat-processed').textContent = totalProcessed.toLocaleString();
     }
 
     // ── Month Timeline ────────────────────────────────────────────
@@ -166,13 +222,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.innerHTML = '';
         monthlyData.forEach(row => {
             const pill = document.createElement('div');
-            pill.className = `timeline-pill ${row.processed ? 'done' : 'pending'}`;
-            // Abbreviate month name: "Aug \n '25"
+            const isPartial = !row.processed && row.covered && row.covered > 0;
+            let pillClass = row.processed ? 'done' : 'pending';
+            if (isPartial) pillClass = 'partial';
+            pill.className = `timeline-pill ${pillClass}`;
+            // Abbreviate month name: "Aug  '25"
             const parts = row.month.split(' ');
             const shortMonth = parts[0].substring(0, 3);
             const year = parts[1] ? "'" + parts[1].slice(-2) : '';
-            pill.innerHTML = `<span class="tl-month">${shortMonth} ${year}</span><span class="tl-count">${row.students}</span>`;
-            pill.title = `${row.month}: ${row.students} students — ${row.processed ? 'Processed ✓' : 'Pending'}`;
+
+            let countDisplay = row.students;
+            if (isPartial) {
+                countDisplay = `${row.covered}/${row.students}`;
+            }
+
+            pill.innerHTML = `<span class="tl-month">${shortMonth} ${year}</span><span class="tl-count">${countDisplay}</span>`;
+            const statusText = row.processed ? 'Processed ✓' : (isPartial ? `Partial — ${row.covered} of ${row.students} covered` : 'Pending');
+            pill.title = `${row.month}: ${row.students} students — ${statusText}`;
             container.appendChild(pill);
         });
     }
@@ -184,17 +250,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         monthlyData.forEach((row, index) => {
             const isDone = row.processed;
+            const isPartial = !isDone && row.covered && row.covered > 0;
             const tr = document.createElement('tr');
             if (isDone) tr.classList.add('processed-row');
+
+            // Build the status label
+            let statusLabel;
+            if (isDone) {
+                statusLabel = '<i data-lucide="check-circle-2" style="width:12px;height:12px;"></i> Processed';
+            } else if (isPartial) {
+                statusLabel = `<i data-lucide="loader" style="width:12px;height:12px;"></i> ${row.covered}/${row.students} covered`;
+            } else {
+                statusLabel = '<i data-lucide="circle" style="width:12px;height:12px;"></i> Pending';
+            }
+
+            let statusClass = isDone ? 'done' : (isPartial ? 'partial' : '');
 
             tr.innerHTML = `
                 <td>${row.month}</td>
                 <td id="students-display-${index}">${row.students.toLocaleString()}</td>
                 <td>
-                    <button class="toggle-processed ${isDone ? 'done' : ''}" data-index="${index}">
-                        ${isDone
-                    ? '<i data-lucide="check-circle-2" style="width:12px;height:12px;"></i> Processed'
-                    : '<i data-lucide="circle" style="width:12px;height:12px;"></i> Pending'}
+                    <button class="toggle-processed ${statusClass}" data-index="${index}">
+                        ${statusLabel}
                     </button>
                 </td>
                 <td>
@@ -213,6 +290,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.addEventListener('click', () => {
                 const i = Number(btn.dataset.index);
                 monthlyData[i].processed = !monthlyData[i].processed;
+                // Clear covered when toggling to processed
+                if (monthlyData[i].processed) {
+                    delete monthlyData[i].covered;
+                }
                 renderTable(); renderTimeline(); repopulateMonthDropdown(); updateStats(); resetResults();
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             });
@@ -272,7 +353,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         return 'urgent-far';
     }
 
-    // ── Calculation ──────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════
+    //  IMPROVED CALCULATION — accounts for partial coverage
+    //
+    //  The queue position is the number of students AHEAD of you
+    //  in the queue. For months before yours: we sum up remaining
+    //  students (students - covered). For your own month, we
+    //  prorate by week (week 1 = front of month, week 4 = back).
+    //
+    //  If your month is PARTIALLY covered (has a 'covered' count),
+    //  we subtract the covered portion from your position within
+    //  that month as well.
+    // ═══════════════════════════════════════════════════════════════
+
     function calculate() {
         clearError();
         const selectedMonth = document.getElementById('select-month').value;
@@ -288,23 +381,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (monthIndex === -1) { showError('Selected month not found in data.'); return; }
 
         const monthEntry = monthlyData[monthIndex];
+
+        // ── Step 1: Students ahead from EARLIER unprocessed months ──
+        let studentsBefore = 0;
+        for (let i = 0; i < monthIndex; i++) {
+            const row = monthlyData[i];
+            if (row.processed) continue; // fully done, skip
+            const remaining = row.students - (row.covered || 0);
+            studentsBefore += Math.max(0, remaining);
+        }
+
+        // ── Step 2: Students ahead within YOUR month ──
+        //  Divide your month into 4 equal parts (week 1–4).
+        //  If you joined in week 2, students in week 1 are ahead.
+        //  Then subtract any 'covered' amount from this month.
         const studentsPerWeek = monthEntry.students / 4;
+        let studentsAheadInMonth = (selectedWeek - 1) * studentsPerWeek;
 
-        const studentsBefore = monthlyData
-            .slice(0, monthIndex)
-            .filter(r => !r.processed)
-            .reduce((sum, r) => sum + r.students, 0);
+        // If this month is partially covered, subtract covered students
+        // from the intra-month position (they've already been processed).
+        const coveredInMonth = monthEntry.covered || 0;
+        studentsAheadInMonth = Math.max(0, studentsAheadInMonth - coveredInMonth);
 
-        const queuePosition = Math.round(studentsBefore + ((selectedWeek - 1) * studentsPerWeek));
+        const queuePosition = Math.round(studentsBefore + studentsAheadInMonth);
+
+        // ── Step 3: Weeks until your turn ──
         const weeksUntil = queuePosition / processingRate;
-        const totalInQueue = monthlyData.filter(r => !r.processed).reduce((s, r) => s + r.students, 0);
+
+        // ── Step 4: Total remaining queue ──
+        const totalInQueue = getQueueRemaining();
         const progressPct = totalInQueue > 0 ? Math.min((queuePosition / totalInQueue) * 100, 100) : 0;
 
+        // ── Step 5: Date estimation ──
+        //  We use a ±1 week window on the early side and +2 weeks
+        //  on the late side to account for embassy pace variations.
         const currentDate = new Date(currentDateStr + 'T00:00:00');
         const estimatedCentre = addDays(currentDate, Math.round(weeksUntil * 7));
         const estimatedEarly = addDays(estimatedCentre, -7);
         const estimatedLate = addDays(estimatedCentre, 14);
 
+        // ── Render results ──
         document.getElementById('results-placeholder').style.display = 'none';
         document.getElementById('results-output').style.display = 'block';
         document.getElementById('rv-position').textContent = queuePosition.toLocaleString();

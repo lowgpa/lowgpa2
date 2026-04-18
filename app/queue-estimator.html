@@ -689,6 +689,18 @@
             color: var(--primary);
         }
 
+        .timeline-pill.partial {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #d97706;
+        }
+
+        .toggle-processed.partial {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
         /* ── Improved empty-state placeholder ── */
         .results-placeholder {
             text-align: center;
@@ -839,10 +851,14 @@
             </header>
 
             <!-- ── Summary Stats Bar ── -->
-            <div class="stats-bar" id="stats-bar" style="grid-template-columns: repeat(3,1fr);">
+            <div class="stats-bar" id="stats-bar">
                 <div class="stat-chip">
                     <span class="stat-chip-label">Total Months</span>
                     <span class="stat-chip-value" id="stat-total-months">—</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Students Processed</span>
+                    <span class="stat-chip-value" id="stat-processed" style="color:#10b981;">—</span>
                 </div>
                 <div class="stat-chip">
                     <span class="stat-chip-label">Students In Queue</span>
