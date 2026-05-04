@@ -28,41 +28,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Helper: fetch with a timeout using Promise.race (no AbortController).
- * If the fetch doesn't resolve within timeoutMs, the promise rejects.
- */
-function fetchWithTimeout(url, timeoutMs = 30000) {
-    return Promise.race([
-        fetch(url).then(r => {
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            return r.json();
-        }),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
-        )
-    ]);
-}
-
-/**
  * Fetch all pages for a given month from the API.
- * Waits up to 30 seconds for the API to respond before timing out.
- * Returns the full data array by paginating through all pages.
+ * Uses plain fetch() — no AbortController, no Promise.race.
+ * Waits as long as needed for the API to respond.
  */
 async function fetchAllPages(month) {
     const url = `${API_BASE}?month=${month}&page=1&pageSize=${DEFAULT_PAGE_SIZE}`;
     console.log('[Tracker] Fetching:', url);
-    const firstResult = await fetchWithTimeout(url);
-    console.log('[Tracker] Page 1 received, total:', firstResult.total, 'totalPages:', firstResult.totalPages);
 
-    const allData = [...(firstResult.data || [])];
-    const totalPages = firstResult.totalPages || 1;
+    const response = await fetch(url);
+    console.log('[Tracker] Response status:', response.status);
+
+    if (!response.ok) throw new Error(`API returned ${response.status}`);
+
+    const result = await response.json();
+    console.log('[Tracker] Parsed JSON, total:', result.total, 'totalPages:', result.totalPages, 'data length:', (result.data || []).length);
+
+    const allData = [...(result.data || [])];
+    const totalPages = result.totalPages || 1;
 
     // Fetch remaining pages concurrently
     if (totalPages > 1) {
+        console.log('[Tracker] Fetching remaining pages 2-' + totalPages);
         const pagePromises = [];
         for (let p = 2; p <= totalPages; p++) {
+            const pageUrl = `${API_BASE}?month=${month}&page=${p}&pageSize=${DEFAULT_PAGE_SIZE}`;
             pagePromises.push(
-                fetchWithTimeout(`${API_BASE}?month=${month}&page=${p}&pageSize=${DEFAULT_PAGE_SIZE}`)
+                fetch(pageUrl)
+                    .then(r => {
+                        if (!r.ok) throw new Error(`Page ${p} failed: ${r.status}`);
+                        return r.json();
+                    })
                     .then(json => json.data || [])
             );
         }
@@ -79,15 +75,19 @@ async function fetchAllPages(month) {
  */
 async function fetchBackup(month) {
     const backupUrl = `data/backup-${month}.json`;
+    console.log('[Tracker] Trying backup:', backupUrl);
     const response = await fetch(backupUrl);
     if (!response.ok) throw new Error(`Backup fetch failed: ${response.status}`);
     const result = await response.json();
-    return result.data || result;
+    const data = result.data || result;
+    console.log('[Tracker] Backup loaded, records:', Array.isArray(data) ? data.length : 'not array');
+    return data;
 }
 
 // Main Load Function
 async function loadCategory(categoryKey) {
     currentCategory = categoryKey;
+    console.log('[Tracker] === Loading category:', categoryKey, '===');
 
     // Update UI Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -155,28 +155,34 @@ async function loadCategory(categoryKey) {
         let data;
         // Check in-memory cache (no localStorage)
         if (dataCache[categoryKey]) {
+            console.log('[Tracker] Using cached data');
             data = dataCache[categoryKey];
         } else {
+            // Try API first, then backup
             try {
-                // Primary: fetch from API with pagination
                 data = await fetchAllPages(categoryKey);
+                console.log('[Tracker] API success! Records:', data.length);
             } catch (apiError) {
-                console.warn('API failed, trying backup:', apiError);
-                // Fallback: static backup JSON
+                console.warn('[Tracker] API failed:', apiError.message);
+                console.log('[Tracker] Falling back to backup...');
                 data = await fetchBackup(categoryKey);
             }
             dataCache[categoryKey] = data;
         }
 
         // Ensure data is an array
-        if (!Array.isArray(data)) data = [];
+        if (!Array.isArray(data)) {
+            console.warn('[Tracker] Data is not an array, wrapping:', typeof data);
+            data = [];
+        }
 
+        console.log('[Tracker] Rendering', data.length, 'records');
         // Clear skeleton and render
         tbody.innerHTML = '';
         renderTable(data);
 
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('[Tracker] BOTH API and backup failed:', error);
         // Both API and backup failed — show clean error state
         if (statsContainer) statsContainer.innerHTML = '';
         tbody.innerHTML = '';
