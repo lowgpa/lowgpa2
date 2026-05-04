@@ -5,11 +5,17 @@ const API_BASE = 'https://api.lowgpa.online/proxy';
 const DEFAULT_PAGE_SIZE = 50;
 
 const API_CONFIG = {
-    '2025-07': { label: 'July 2025' },
-    '2025-08': { label: 'Aug - Oct 2025' },
-    '2025-11': { label: 'Nov - Dec 2025' },
-    '2026-01': { label: 'Jan - Feb 2026' },
-    '2026-03': { label: 'Mar - Apr 2026' }
+    '2025-06': { label: 'Jun 2025' },
+    '2025-07': { label: 'Jul 2025' },
+    '2025-08': { label: 'Aug 2025' },
+    '2025-09': { label: 'Sep 2025' },
+    '2025-10': { label: 'Oct 2025' },
+    '2025-11': { label: 'Nov 2025' },
+    '2025-12': { label: 'Dec 2025' },
+    '2026-01': { label: 'Jan 2026' },
+    '2026-02': { label: 'Feb 2026' },
+    '2026-03': { label: 'Mar 2026' },
+    '2026-04': { label: 'Apr 2026' }
 };
 
 // State
