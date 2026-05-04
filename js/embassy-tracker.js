@@ -1,38 +1,66 @@
 
-// Configuration with API Endpoints 
-// only legend is accessing your data :
+// Configuration: New unified API endpoint with month-based categories
 // Shout out to you Waleed Ashraf
+const API_BASE = 'https://api.lowgpa.online/proxy';
+const DEFAULT_PAGE_SIZE = 50;
+
 const API_CONFIG = {
-    july25: {
-        url: "https://script.google.com/macros/s/AKfycbyq-sZgQa5L1EzAklUJ2VaDbDv9rrjtFoMKWbJKyNNh5M8XKD0gEEDETz4V4I_eNhCW4A/exec",
-        label: "July 2025"
-    },
-    augOct25: {
-        url: "https://script.google.com/macros/s/AKfycbzMZdDO16OpcSAVldoGVxVxRJ44z58avalej2ORnkY6IGNe180Y_Vbhbtq_s9hROiI43A/exec",
-        label: "Aug - Oct 2025"
-    },
-    novDec25: {
-        url: "https://script.google.com/macros/s/AKfycbxB7Xt4hWljI4dw34skJFcIaBE-BR0-wacaZTP8REPwKUNnlFZ07NA9JlCgK1OZzt65CQ/exec",
-        label: "Nov - Dec 2025"
-    },
-    janFeb26: {
-        url: "https://script.google.com/macros/s/AKfycbxSznzkfuZH0lyps0_35DVF2jcDV4pFV7nKOMJZX0bce1fOYNCLTUbmbdYHtcEwa2JsYQ/exec",
-        label: "Jan - Feb 2026"
-    },
-    marApr26: {
-        url: "https://script.google.com/macros/s/AKfycbwGeW5Wpq7Aq_0YAMLoyprVqGFkCsi8uglIZhOmrs0yMwAx_QentUeQD40fEWDvnKX2Sg/exec",
-        label: "Mar - Apr 2026"
-    }
+    '2025-07': { label: 'July 2025' },
+    '2025-08': { label: 'Aug - Oct 2025' },
+    '2025-11': { label: 'Nov - Dec 2025' },
+    '2026-01': { label: 'Jan - Feb 2026' },
+    '2026-03': { label: 'Mar - Apr 2026' }
 };
 
 // State
-let currentCategory = 'july25';
+let currentCategory = '2025-07';
 let dataCache = {};
 
 // On Load
 document.addEventListener('DOMContentLoaded', () => {
     loadCategory(currentCategory);
 });
+
+/**
+ * Fetch all pages for a given month from the API.
+ * Returns the full data array by paginating through all pages.
+ */
+async function fetchAllPages(month) {
+    const firstUrl = `${API_BASE}?month=${month}&page=1&pageSize=${DEFAULT_PAGE_SIZE}`;
+    const firstResponse = await fetch(firstUrl);
+    if (!firstResponse.ok) throw new Error(`API returned ${firstResponse.status}`);
+    const firstResult = await firstResponse.json();
+
+    const allData = [...(firstResult.data || [])];
+    const totalPages = firstResult.totalPages || 1;
+
+    // Fetch remaining pages concurrently
+    if (totalPages > 1) {
+        const pagePromises = [];
+        for (let p = 2; p <= totalPages; p++) {
+            pagePromises.push(
+                fetch(`${API_BASE}?month=${month}&page=${p}&pageSize=${DEFAULT_PAGE_SIZE}`)
+                    .then(r => { if (!r.ok) throw new Error(`Page ${p} failed`); return r.json(); })
+                    .then(json => json.data || [])
+            );
+        }
+        const pages = await Promise.all(pagePromises);
+        pages.forEach(pageData => allData.push(...pageData));
+    }
+
+    return allData;
+}
+
+/**
+ * Fallback: fetch from static backup JSON.
+ */
+async function fetchBackup(month) {
+    const backupUrl = `data/backup-${month}.json`;
+    const response = await fetch(backupUrl);
+    if (!response.ok) throw new Error(`Backup fetch failed: ${response.status}`);
+    const result = await response.json();
+    return result.data || result;
+}
 
 // Main Load Function
 async function loadCategory(categoryKey) {
@@ -46,7 +74,6 @@ async function loadCategory(categoryKey) {
         }
     });
 
-    // Show Loading
     // Show Loading
     const tbody = document.getElementById('tracker-body');
     const loading = document.getElementById('loading-indicator');
@@ -98,27 +125,51 @@ async function loadCategory(categoryKey) {
         ${skeletonRow.repeat(5)}
     `;
 
-    // Hide standard loading text Since we use Skeleton
+    // Hide standard loading text since we use Skeleton
     loading.style.display = 'none';
 
     try {
         let data;
-        // Check Cache
+        // Check in-memory cache (no localStorage)
         if (dataCache[categoryKey]) {
             data = dataCache[categoryKey];
         } else {
-            const response = await fetch(API_CONFIG[categoryKey].url);
-            data = await response.json();
+            try {
+                // Primary: fetch from API with pagination
+                data = await fetchAllPages(categoryKey);
+            } catch (apiError) {
+                console.warn('API failed, trying backup:', apiError);
+                // Fallback: static backup JSON
+                data = await fetchBackup(categoryKey);
+            }
             dataCache[categoryKey] = data;
         }
 
-        // Once data is returned, we need to clear the skeleton before rendering
+        // Ensure data is an array
+        if (!Array.isArray(data)) data = [];
+
+        // Clear skeleton and render
         tbody.innerHTML = '';
         renderTable(data);
 
     } catch (error) {
-        console.error("Error fetching data:", error);
-        loading.innerHTML = `<span style="color:red">Error loading data. Please try again.</span>`;
+        console.error('Error fetching data:', error);
+        // Both API and backup failed — show clean error state
+        if (statsContainer) statsContainer.innerHTML = '';
+        tbody.innerHTML = '';
+        loading.style.display = 'block';
+        loading.innerHTML = `
+            <div style="padding: 3rem; text-align: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p style="color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">Unable to load data</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Please check your connection and try again.</p>
+                <button onclick="loadCategory('${categoryKey}')" style="margin-top:1rem; padding:0.5rem 1.25rem; border-radius:99px; border:1px solid var(--border-light); background:#fff; cursor:pointer; font-weight:600; color:var(--accent-primary);">Retry</button>
+            </div>
+        `;
     }
 }
 
