@@ -2,7 +2,7 @@
 // Configuration: New unified API endpoint with month-based categories
 // Shout out to you Waleed Ashraf
 const API_BASE = 'https://api.lowgpa.online/proxy';
-const DEFAULT_PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 500;
 
 const API_CONFIG = {
     '2025-06': { label: 'Jun 2025' },
