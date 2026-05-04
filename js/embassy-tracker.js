@@ -29,32 +29,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Fetch all pages for a given month from the API.
+ * Waits up to 10 seconds for the API to respond before timing out.
  * Returns the full data array by paginating through all pages.
  */
 async function fetchAllPages(month) {
-    const firstUrl = `${API_BASE}?month=${month}&page=1&pageSize=${DEFAULT_PAGE_SIZE}`;
-    const firstResponse = await fetch(firstUrl);
-    if (!firstResponse.ok) throw new Error(`API returned ${firstResponse.status}`);
-    const firstResult = await firstResponse.json();
+    const TIMEOUT_MS = 10000; // 10 seconds timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    const allData = [...(firstResult.data || [])];
-    const totalPages = firstResult.totalPages || 1;
+    try {
+        const firstUrl = `${API_BASE}?month=${month}&page=1&pageSize=${DEFAULT_PAGE_SIZE}`;
+        const firstResponse = await fetch(firstUrl, { signal: controller.signal });
+        if (!firstResponse.ok) throw new Error(`API returned ${firstResponse.status}`);
+        const firstResult = await firstResponse.json();
 
-    // Fetch remaining pages concurrently
-    if (totalPages > 1) {
-        const pagePromises = [];
-        for (let p = 2; p <= totalPages; p++) {
-            pagePromises.push(
-                fetch(`${API_BASE}?month=${month}&page=${p}&pageSize=${DEFAULT_PAGE_SIZE}`)
-                    .then(r => { if (!r.ok) throw new Error(`Page ${p} failed`); return r.json(); })
-                    .then(json => json.data || [])
-            );
+        const allData = [...(firstResult.data || [])];
+        const totalPages = firstResult.totalPages || 1;
+
+        // Fetch remaining pages concurrently (with same abort signal)
+        if (totalPages > 1) {
+            const pagePromises = [];
+            for (let p = 2; p <= totalPages; p++) {
+                pagePromises.push(
+                    fetch(`${API_BASE}?month=${month}&page=${p}&pageSize=${DEFAULT_PAGE_SIZE}`, { signal: controller.signal })
+                        .then(r => { if (!r.ok) throw new Error(`Page ${p} failed`); return r.json(); })
+                        .then(json => json.data || [])
+                );
+            }
+            const pages = await Promise.all(pagePromises);
+            pages.forEach(pageData => allData.push(...pageData));
         }
-        const pages = await Promise.all(pagePromises);
-        pages.forEach(pageData => allData.push(...pageData));
-    }
 
-    return allData;
+        clearTimeout(timeoutId);
+        return allData;
+    } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+            throw new Error('API timed out after 10 seconds');
+        }
+        throw err;
+    }
 }
 
 /**
